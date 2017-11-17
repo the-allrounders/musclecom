@@ -1,0 +1,20 @@
+{
+  "name": "musclecom",
+  "version": "0.0.0-development",
+  "description": "Musclecom!",
+  "main": "src/index.js",
+  "repository": "https://github.com/the-allrounders/musclecom.git",
+  "author": "The Allrounders",
+  "license": "GNU-v3",
+  "dependencies": {
+    "express": "^4.16.2"
+  },
+  "scripts": {
+    "start": "babel-watch src/index.js"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-watch": "^2.0.7"
+  }
+}
