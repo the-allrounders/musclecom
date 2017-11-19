@@ -1,4 +1,5 @@
 import express from 'express';
+import signalProessing from './server/signal-processing';
 
 const app = express();
 
