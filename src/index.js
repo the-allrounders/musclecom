@@ -4,7 +4,7 @@ import signalProessing from './server/signal-processing';
 const app = express();
 
 app.get('/', (req, res) => {
-  return res.json({
+  res.json({
     text: 'Hello world!'
   });
 });
