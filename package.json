@@ -11,7 +11,8 @@
   },
   "scripts": {
     "start": "babel-watch src/index.js",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "test": "eslint src"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
