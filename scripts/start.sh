@@ -29,4 +29,4 @@ echo ""
 echo ""
 
 echo "ℹ️ Starting application"
-yarn start
+yarn start-prod

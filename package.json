@@ -7,10 +7,12 @@
   "author": "The Allrounders",
   "license": "GNU-v3",
   "dependencies": {
+    "chrome-launcher": "^0.8.1",
     "express": "^4.16.2"
   },
   "scripts": {
     "start": "babel-watch src/index.js",
+    "start-prod": "babel src --out-dir lib --copy-files && node lib/index.js prod",
     "lint": "eslint src --fix",
     "test": "eslint src"
   },
