@@ -1,4 +1,4 @@
-import EventEmitter from "events";
+import EventEmitter from 'events';
 
 class SignalProcessing extends EventEmitter {
   numOfSensors = 3;
@@ -11,7 +11,7 @@ class SignalProcessing extends EventEmitter {
 
   constructor() {
     super();
-    this.emit("recieved-signal", 3, 1);
+    this.emit('recieved-signal', 3, 1);
   }
 
   // Emits:
