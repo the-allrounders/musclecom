@@ -1,8 +1,6 @@
 import EventEmitter from 'events';
 
 class SignalProcessing extends EventEmitter {
-  numOfSensors = 3;
-
   async init() {
     return {
       numOfSensors: this.numOfSensors,
@@ -11,6 +9,7 @@ class SignalProcessing extends EventEmitter {
 
   constructor() {
     super();
+    this.numOfSensors = 3;
     this.emit('recieved-signal', 3, 1);
   }
 
