@@ -1,6 +1,7 @@
 # musclecom
 
 [![Build Status](https://travis-ci.org/the-allrounders/musclecom.svg?branch=master)](https://travis-ci.org/the-allrounders/musclecom)
+[![Greenkeeper badge](https://badges.greenkeeper.io/the-allrounders/musclecom.svg)](https://greenkeeper.io/)
 
 ## Setup locally
 
