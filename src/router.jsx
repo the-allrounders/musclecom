@@ -5,10 +5,11 @@ import scenes from './scenes';
 const Router = () => (
   <Switch>
     <Redirect exact from={'/'} to={'/main'} />
-    <Route path={'/admin'} component={scenes.AdminScene} />
     <Route path={'/main'} component={scenes.MainScene} />
     <Route path={'/mario'} component={scenes.MarioScene} />
     <Route path={'/menu'} component={scenes.MenuScene} />
+    <Route path={'/setup'} component={scenes.SetupScene} />
+    <Route path={'/settings'} component={scenes.SettingsScene} />
   </Switch>
 );
 

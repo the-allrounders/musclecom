@@ -1,11 +1,13 @@
-import AdminScene from './admin';
 import MainScene from './main';
 import MarioScene from './mario';
 import MenuScene from './menu';
+import SetupScene from './setup';
+import SettingsScene from './settings';
 
 export default {
-  AdminScene,
   MainScene,
   MarioScene,
   MenuScene,
+  SetupScene,
+  SettingsScene,
 };
