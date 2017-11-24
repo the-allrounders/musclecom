@@ -1,5 +1,7 @@
-import ActionStore from './ActionStore';
+import actionStore from './ActionStore';
 
-export default {
-  ActionStore,
-}
+const stores = {
+  actionStore,
+};
+
+export default stores;

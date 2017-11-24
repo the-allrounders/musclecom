@@ -1,12 +1,13 @@
 import React from 'react';
-import { observer } from 'mobx-react';
-import { ActionStore } from '../../stores';
+import { observer, Provider  } from 'mobx-react';
+import stores from '../../stores';
 
 const Root = observer(() => (
-  <div>
-    Root
-    { ActionStore.action }
-  </div>
+  <Provider {...stores}>
+    <div>
+      Root
+    </div>
+  </Provider>
 ));
 
 export default Root;

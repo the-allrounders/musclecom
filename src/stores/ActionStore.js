@@ -14,4 +14,8 @@ class ActionStore {
   }
 }
 
-export default new ActionStore(io);
+const store = new ActionStore(io);
+export default store;
+export {
+  ActionStore,
+}
