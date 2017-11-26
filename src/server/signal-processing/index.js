@@ -9,12 +9,23 @@ class SignalProcessing extends EventEmitter {
 
   constructor() {
     super();
-    this.numOfSensors = 3;
-    this.emit('recieved-signal', 3, 1);
-  }
 
-  // Emits:
-  // - recieved_signal: sensor_id, signal_value
+    // Set initial number of signals / sensors.
+    this.numOfSensors = 10;
+
+    // ** How to send a signal to the api.**
+    // @params
+    // string : eventName
+    // int : sensorNumber
+    // bool : activation
+    this.emit('recieved-signal', 3, true);
+
+    // ** Send a amount of sensors to set within the API. **
+    // @params
+    // string : eventName
+    // int : sensorNumber
+    this.emit('numberOfSensors', this.numOfSensors);
+  }
 }
 
 export default new SignalProcessing();
