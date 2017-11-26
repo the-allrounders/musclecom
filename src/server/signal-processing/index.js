@@ -18,7 +18,7 @@ class SignalProcessing extends EventEmitter {
     // string : eventName
     // int : sensorNumber
     // bool : activation
-    this.emit('recieved-signal', 3, true);
+    this.emit('recievedSignal', 3, true);
 
     // ** Send a amount of sensors to set within the API. **
     // @params
