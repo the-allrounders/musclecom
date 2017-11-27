@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import EventEmitter from 'events';
-import signalProcessing from '../signal-processing';
+import signalProcessing from '../signal-controller';
 import {emit, listen} from '../middleware/sockets';
 
 class SignalInterpretation extends EventEmitter {
