@@ -1,36 +1,27 @@
+import { Server } from 'http';
 import express from 'express';
-import chromeLauncher from 'chrome-launcher';
 import SocketIo from 'socket.io';
-import UI from './ui';
+import sockets from './middleware/sockets';
+import ui from './middleware/ui';
 
-const port = process.env.PORT || parseInt(KYT.SERVER_PORT, 10);
-const socketPort = process.env.SOCKET_PORT || 3033;
+const chromeLauncher = require('chrome-launcher');
 
 const app = express();
+const server = Server(app);
+const io = SocketIo(server);
 
-// initialize socket.io
-const server = app.listen(socketPort);
-const io = SocketIo.listen(server);
+// Sockets middleware
+sockets(io);
 
-app.use(UI);
+// Webpack middleware
+app.use(ui);
 
-app.listen(port, () => {
-  console.log(`✅  server started on port: ${port}`); // eslint-disable-line
+server.listen(6969, () => {
+  console.log(`✅  server started on port 6969`); // eslint-disable-line
   if(process.argv[2] === 'prod') {
     chromeLauncher.launch({
-      startingUrl: `http://localhost:${port}`,
+      startingUrl: `http://localhost:6969`,
       chromeFlags: ['--disable-translate', '--kiosk', '--incognito'],
     });
   }
 });
-
-io.on( "connection", (socket) => {
-  console.info(socket);
-});
-
-
-// app.get('/', (req, res) => {
-//   res.json({
-//     text: 'Hello world!',
-//   });
-// });

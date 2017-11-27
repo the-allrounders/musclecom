@@ -7,20 +7,16 @@
   "author": "The Allrounders",
   "license": "GNU-v3",
   "scripts": {
-    "start": "yarn dev",
-    "dev": "kyt dev",
+    "start": "NODE_ENV=development babel-watch src/server/index.js",
     "start-prod": "babel src --out-dir lib --copy-files && node lib/index.js prod",
-    "build": "kyt build",
-    "serve": "node build/server/main.js",
-    "build-serve": "yarn build && yarn serve",
-    "test": "yarn lint",
-    "lint": "yarn lint:script || yarn lint:style",
-    "lint:script": "kyt lint-script",
     "lint:style": "stylelint './src/**/*.j*'",
     "lint:fix": "eslint ./src --ext .js,.jsx --fix || stylelint './src/**/*.css' --fix",
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "babel-loader": "^7.1.2",
+    "babel-preset-react-app": "^3.1.0",
+    "babel-preset-stage-1": "^6.24.1",
     "cache-control": "^2.0.0",
     "chrome-launcher": "^0.8.1",
     "classnames": "^2.2.5",
@@ -28,6 +24,7 @@
     "express": "^4.16.2",
     "fetch-everywhere": "^1.0.5",
     "get-nested": "^4.0.0",
+    "html-webpack-plugin": "^2.30.1",
     "mobx": "^3.3.1",
     "mobx-react": "^4.3.4",
     "moment": "^2.19.2",
@@ -44,6 +41,7 @@
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
     "styled-components": "^2.2.3",
+    "webpack-hot-middleware": "^2.20.0",
     "window-or-global": "^1.0.1"
   },
   "devDependencies": {

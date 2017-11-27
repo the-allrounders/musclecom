@@ -1,32 +1,10 @@
 {
-  "presets": ["kyt-react"],
-  "env": {
-    "development": {
-      "plugins": [
-        "transform-decorators-legacy",
-        "transform-react-constant-elements",
-        "transform-object-rest-spread",
-        "syntax-object-rest-spread",
-        "transform-class-properties",
-        ["styled-components", {
-          "ssr": false,
-          "displayName": true
-        }]
-      ]
-    },
-    "production": {
-      "plugins": [
-        "transform-decorators-legacy",
-        "transform-react-constant-elements",
-        "transform-object-rest-spread",
-        "syntax-object-rest-spread",
-        "transform-class-properties",
-        "transform-react-remove-prop-types",
-        ["styled-components", {
-          "ssr": true,
-          "displayName": false
-        }]
-      ]
-    }
-  }
+  "presets": [
+    "react-app",
+    "stage-1"
+  ],
+  "plugins": [
+    "transform-es2015-modules-commonjs",
+    "transform-decorators-legacy"
+  ]
 }
