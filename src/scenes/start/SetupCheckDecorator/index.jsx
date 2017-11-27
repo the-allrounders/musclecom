@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 // Components
 import Loading from './Loading';
@@ -16,11 +17,18 @@ const setupCheckDecorator = (InnerComponent) => {
 
       // Calibration has yet to be done...
       if(actionStore.sensorsCalibrated !== actionStore.sensorsConnected) {
-        return <Redirect to={'/setup'} />;
+        return <Redirect to='/setup' />;
       }
 
       return <InnerComponent {...this.props} />;
     }
+
+    static propTypes = {
+      actionStore: PropTypes.shape({
+        sensorsCalibrated: PropTypes.number,
+        sensorsConnected: PropTypes.number,
+      }).isRequired,
+    };
   }
 
   return _HOC;
