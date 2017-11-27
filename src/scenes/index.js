@@ -3,6 +3,7 @@ import MarioScene from './mario';
 import MenuScene from './menu';
 import SetupScene from './setup';
 import SettingsScene from './settings';
+import StartScene from './start';
 
 export default {
   MainScene,
@@ -10,4 +11,5 @@ export default {
   MenuScene,
   SetupScene,
   SettingsScene,
+  StartScene,
 };
