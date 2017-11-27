@@ -22,6 +22,7 @@ server.listen(6969, () => {
     chromeLauncher.launch({
       startingUrl: `http://localhost:6969`,
       chromeFlags: ['--disable-translate', '--kiosk', '--incognito'],
+      chromePath: '/usr/bin/chromium-browser',
     });
   }
 });
