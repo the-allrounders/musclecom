@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import EventEmitter from 'events';
-import signalProcessing from '../signal-controller';
+import SignalController from '../signal-controller';
 import {emit, listen} from '../middleware/sockets';
 
 class SignalInterpretation extends EventEmitter {
@@ -12,21 +12,21 @@ class SignalInterpretation extends EventEmitter {
     this.numberOfSensors = 0;
 
     this.setupConnection();
-    this.addSPEventListeners();
+    this.addSCEventListeners();
   }
 
   setupConnection() {
     emit("numberOfSensors", this.numberOfSensors);
   }
 
-  addSPEventListeners() {
-    signalProcessing.addListener("recievedSignal", (sensor, value) => {
+  addSCEventListeners() {
+    SignalController.addListener("recievedSignal", (sensor, value) => {
       console.log("received signal", sensor, value);
       // mongodbmeuk
       emit("receivedSignal", {sensor, value});
     });
 
-    signalProcessing.addListener("numberOfSensors", (numSensors) => {
+    SignalController.addListener("numberOfSensors", (numSensors) => {
         console.log("number of sensors", numSensors);
         // mongodbmeuk
         this.numberOfSensors = numSensors;
