@@ -47,8 +47,3 @@ export default function(io) {
     });
   });
 }
-
-
-setInterval(() => {
-  emit('info', {numOfSensors: 2});
-}, 1000);
