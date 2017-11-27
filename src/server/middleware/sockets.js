@@ -13,9 +13,9 @@ export default function(io) {
 }
 
 export function listen(...args) {
-  socket.listen(...args);
+  if(socket) socket.listen(...args);
 }
 
 export function emit(...args) {
-  socket.emit(...args);
+  if(socket) socket.emit(...args);
 }
