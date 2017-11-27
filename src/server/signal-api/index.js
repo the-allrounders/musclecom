@@ -11,8 +11,8 @@ class SignalInterpretation extends EventEmitter {
 
     this.numberOfSensors = 0;
 
-    setupConnection();
-    addSPEventListeners();
+    this.setupConnection();
+    this.addSPEventListeners();
   }
 
   setupConnection() {
