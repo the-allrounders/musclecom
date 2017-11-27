@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import Root from './RootWrapper';
 
 const root = document.createElement('div');
@@ -11,9 +11,9 @@ document.body.appendChild(root);
 const mount = RootComponent => {
   render(
     <AppContainer>
-      <BrowserRouter>
+      <HashRouter>
         <RootComponent />
-      </BrowserRouter>
+      </HashRouter>
     </AppContainer>,
     root
   );
