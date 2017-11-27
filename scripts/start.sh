@@ -3,8 +3,16 @@
 # Change to current directory
 cd "$(dirname "$0")"
 
+echo "Resetting git repository..."
+git reset HEAD --hard
 
-if hash node 2>/dev/null; then
+echo "Pulling git repository..."
+git pull
+
+echo ""
+echo ""
+
+if hash npm 2>/dev/null; then
     echo "✅ Node is already installed."
     echo "ℹ️ Your node version is $(node -v)"
 else
