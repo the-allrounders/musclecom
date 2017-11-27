@@ -1,3 +1,5 @@
+import ip from 'internal-ip';
+
 let socket = null;
 
 const connectionListeners = [];
@@ -48,11 +50,11 @@ export default function(io) {
   });
 }
 
-// setInterval(() => {
-setTimeout(() => {
+onConnection(() => {
   emit('info', {
     sensorsConnected: 2 + Math.floor(Math.random() * 5),
     availableActions: Math.floor(Math.random() * 5),
     sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
+    ip: ip.v4.sync(),
   });
-}, 0);
+});
