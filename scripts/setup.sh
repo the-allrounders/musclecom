@@ -3,7 +3,7 @@
 # Change to current directory
 cd "$(dirname "$0")"
 
-crontab_entry="@reboot bash $(pwd)/start.sh"
+crontab_entry="@reboot bash $(pwd)/start.sh >> /var/log/musclecom.log 2>&1"
 
 if [[ $(crontab -l 2>/dev/null) == *${crontab_entry}* ]]; then
   echo "ℹ️ De cronjob bestaat al."
