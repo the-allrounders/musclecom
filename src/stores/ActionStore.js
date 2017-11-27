@@ -3,8 +3,9 @@ import io from 'socket.io-client';
 
 class ActionStore {
   @observable action = null;
-  @observable actionCount = 0;
-  @observable calibrationInfo = undefined;
+  @observable actionsAvailable = 0;
+  @observable sensorsCalibrated = undefined;
+  @observable sensorsConnected = undefined;
   @observable actions = [];
 
   constructor( ) {
@@ -18,8 +19,10 @@ class ActionStore {
   }
 
   updateInfo = (newInfo) => {
-    this.actionCount = newInfo.actionCount;
-    this.calibrationInfo = newInfo.calibrationInfo;
+    console.log('newinfo', newInfo);
+    this.actionsAvailable = newInfo.actionsAvailable;
+    this.sensorsCalibrated = newInfo.sensorsCalibrated;
+    this.sensorsConnected = newInfo.sensorsConnected;
     this.actions = newInfo.actions;
   }
 }

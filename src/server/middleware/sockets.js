@@ -48,10 +48,11 @@ export default function(io) {
   });
 }
 
-onConnection(() => {
+// setInterval(() => {
+setTimeout(() => {
   emit('info', {
     sensorsConnected: 2 + Math.floor(Math.random() * 5),
     availableActions: Math.floor(Math.random() * 5),
-    sensorsCalibrated: Math.floor(Math.random() * 2),
+    sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
   });
-});
+}, 0);

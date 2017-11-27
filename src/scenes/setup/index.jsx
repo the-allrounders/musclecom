@@ -1,7 +1,15 @@
 import React from 'react';
+import { inject, observer } from 'mobx-react';
+import { Redirect } from 'react-router-dom';
 
-const SetupScene = () => (
-  <section>Setup scene</section>
-);
+const SetupScene = ({ actionStore }) => {
+  if(actionStore.sensorsCalibrated === actionStore.sensorsConnected) {
+    return <Redirect to={'/main'} />
+  }
 
-export default SetupScene;
+  return (
+    'Setup'
+  );
+};
+
+export default inject('actionStore')(observer(SetupScene));
