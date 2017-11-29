@@ -1,4 +1,5 @@
 import ip from 'internal-ip';
+import SignalProcessing from '../signal-processing'
 
 let socket = null;
 
@@ -56,5 +57,6 @@ onConnection(() => {
     availableActions: Math.floor(Math.random() * 5),
     sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
     ip: ip.v4.sync(),
+    signal: SignalProcessing.init(),
   });
 });
