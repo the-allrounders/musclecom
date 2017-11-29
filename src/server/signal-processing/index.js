@@ -11,12 +11,11 @@ class SignalProcessing extends EventEmitter {
     constructor() {
         console.info('Starting signal processing');
         super();
-
-        // Dummy mode off else dummy data is given
+        // Dummy mode off
         this.dummy = false;
-        // Set initial number of signals / sensors.
-        this.numOfSensors = this.checkChannels();
 
+        // Try to import the module that allows us to read the adc
+        // If this fails return dummy data
         try {
             const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require
             this.adc = new Ads1x15(0);
@@ -25,6 +24,9 @@ class SignalProcessing extends EventEmitter {
             console.info('It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions');
             this.dummy = true;
         }
+
+        // Set initial number of signals / sensors.
+        this.numOfSensors = this.checkChannels();
 
         // ** How to send a signal to the api.**
         // @params
