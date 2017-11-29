@@ -18,8 +18,9 @@ class SignalProcessing extends EventEmitter {
         // If this fails return dummy data
         try {
             const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require
-            this.adc = new Ads1x15(0);
-            console.info(`ADC = ${this.adc}`);
+            const adc = new Ads1x15(0);
+            console.info(adc);
+            this.adc = adc;
         } catch(err) {
             console.info('It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions');
             this.dummy = true;
@@ -46,7 +47,7 @@ class SignalProcessing extends EventEmitter {
      * Read the channel for a single value
      * @param channel
      */
-    static readChannel(channel) {
+     readChannel(channel) {
         if(!this.dummy && !this.adc.busy) {
             const samplesPerSecond = '250'; // see index.js for allowed values for your chip
             const progGainAmp = '4096'; // see index.js for allowed values for your chip
@@ -57,13 +58,12 @@ class SignalProcessing extends EventEmitter {
                     console.error(err);
                 }
 
-                console.info(`ChannelRead: ${data}`);
+                console.info(`ChannelRead: ${channel} : ${data}`);
                 return data;
             });
         }
 
-        console.error('ADC busy');
-        return -1;
+        return false
     }
 
     /**
@@ -71,31 +71,32 @@ class SignalProcessing extends EventEmitter {
      *
      * @returns {*}
      */
-    checkChannels() {
+    async checkChannels() {
         if(!this.dummy) {
             // Create an array for our sensor
             this.sensors = [];
             // Since we only use max 4 channels for our prototype we loop trough those 4 channels
+            const results = [];
             for(let count = 0; count < 4; count += 1) {
                 // Set basic output to negative
-                let output = -1;
+                // const callback = (value) =>{
+                //     if(value > 0) {
+                //         // value = -1 when adc is busy
+                //         // value = > 0 when value is returned
+                //         // value = 0 means no sensor is connected to this port
+                //         this.sensors.push(count);
+                //     }
+                // };
 
                 // Start reading the channel and break only if a value has returned
-                // output = -1 when adc is busy
-                // output = > 0 when value is returned
-                // output = 0 means no sensor is connected to this port
-                while(output < 0) {
-                    output = SignalProcessing.readChannel(count);
-                    if(output > 0){
-                        this.sensors.push(count);
-                    }
-                }
+                results.push(this.readChannel(count));
             }
+            console.info(await Promise.all(results));
             return this.sensors.length;
         }
 
         return SignalProcessing.getRandomInt(1,4);
-    }
+    };
 
     /**
      * Get a random integer value used for dummy data
