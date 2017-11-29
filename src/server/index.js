@@ -1,6 +1,7 @@
 import { Server } from 'http';
 import express from 'express';
 import SocketIo from 'socket.io';
+import mongoose from 'mongoose';
 import sockets from './middleware/sockets';
 import ui from './middleware/ui';
 
@@ -12,6 +13,9 @@ const io = SocketIo(server);
 
 // Sockets middleware
 sockets(io);
+
+mongoose.connect('mongodb://localhost/test', { useMongoClient: true });
+mongoose.Promise = global.Promise;
 
 // Webpack middleware
 app.use(ui);
