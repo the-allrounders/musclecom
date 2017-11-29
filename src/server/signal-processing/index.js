@@ -83,7 +83,7 @@ class SignalProcessing extends EventEmitter {
                 // output = > 0 when value is returned
                 // output = 0 means no sensor is connected to this port
                 while(output < 0) {
-                    output = this.readChannel(count);
+                    output = SignalProcessing.readChannel(count);
                     if(output > 0){
                         this.sensors.push(count);
                     }
@@ -92,7 +92,7 @@ class SignalProcessing extends EventEmitter {
             return this.sensors.length;
         }
 
-        return this.getRandomInt(1,4)
+        return SignalProcessing.getRandomInt(1,4);
     }
 
     /**
