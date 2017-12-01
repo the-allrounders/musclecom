@@ -10,7 +10,7 @@ class ActionStore {
   @observable ip = 'http://145.24.246.20:6969';
 
   constructor() {
-    this.socket = io(`${window.location.pathname}${window.location.port}`);
+    this.socket = io(window.location.origin);
     this.socket.on('action', this.setCurrentAction);
     this.socket.on('info', this.updateInfo);
   }
