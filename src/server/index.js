@@ -14,7 +14,7 @@ const io = SocketIo(server);
 // Sockets middleware
 sockets(io);
 
-mongoose.connect('mongodb://localhost/test', { useMongoClient: true });
+mongoose.connect('mongodb://localhost/musclecomdb', { useMongoClient: true });
 mongoose.Promise = global.Promise;
 
 // Webpack middleware
