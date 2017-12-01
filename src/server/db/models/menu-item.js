@@ -11,6 +11,9 @@ const Schema = mongoose.Schema({
   icon: {
     type: String,
   },
+  order: {
+    type: Number,
+  },
 });
 
-export default mongoose.model('menuItem', Schema);
+export default mongoose.model('menu-item', Schema);
