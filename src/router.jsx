@@ -8,6 +8,7 @@ export const routes = {
   MARIO: '/mario',
   MENU: '/menu',
   SETUP: '/setup',
+  SETUP_ADMIN: '/setup/admin',
   SETTINGS: '/settings',
 };
 

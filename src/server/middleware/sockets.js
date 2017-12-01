@@ -35,4 +35,6 @@ onConnection((socket) => {
     sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
     ip: ip.v4.sync(),
   });
+
+  socket.on('step', (step) => emit('step', step));
 });
