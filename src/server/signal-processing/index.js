@@ -18,8 +18,7 @@ class SignalProcessing extends EventEmitter {
         // If this fails return dummy data
         try {
             const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require
-            const adc = new Ads1x15(0);
-            this.adc = adc;
+            this.adc = new Ads1x15(0);
         } catch(err) {
             console.info('It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions');
             this.dummy = true;
@@ -37,7 +36,9 @@ class SignalProcessing extends EventEmitter {
 
     /**
      * Read the channel for a single value
+     *
      * @param channel
+     * @param callback
      */
     readChannel(channel, callback) {
         console.info(`Reading channel: ${channel}`);

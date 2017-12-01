@@ -3261,7 +3261,7 @@ husky@^0.14.3:
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
 
-i2c@^0.2.1:
+i2c@^0.2.1, i2c@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/i2c/-/i2c-0.2.3.tgz#f43f7028141026ae48af2990a374633d1dab3d2b"
   dependencies:
