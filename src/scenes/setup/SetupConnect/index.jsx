@@ -1,10 +1,8 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
+import QRCode from 'qrcode.react';
 import { routes } from '../../../router';
-import { setupRoutes } from '../';
-// Components
-import QRCode from '../../../components/common/qr-code';
 
 const SetupConnect = ({ actionStore }) => {
   if(!actionStore.ip) {
@@ -13,7 +11,7 @@ const SetupConnect = ({ actionStore }) => {
 
   return (
     <div>
-      <QRCode>{actionStore.ip}/#{routes.SETUP}{setupRoutes.ADMIN}</QRCode>
+      <QRCode value={`${actionStore.ip}/#${routes.SETUP_ADMIN}`}>{actionStore.ip}/#{routes.SETUP_ADMIN}</QRCode>
     </div>
   );
 };

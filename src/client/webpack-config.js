@@ -20,7 +20,9 @@ export default {
     }],
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: './src/client/template.html',
+    }),
     new webpack.HotModuleReplacementPlugin(),
   ],
 };

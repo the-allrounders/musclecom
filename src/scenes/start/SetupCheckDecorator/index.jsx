@@ -16,7 +16,7 @@ const setupCheckDecorator = (InnerComponent) => {
       }
 
       // Calibration has yet to be done...
-      if(actionStore.sensorsCalibrated !== actionStore.sensorsConnected) {
+      if(true||actionStore.sensorsCalibrated !== actionStore.sensorsConnected) {
         return <Redirect to='/setup' />;
       }
 
