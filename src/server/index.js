@@ -4,6 +4,7 @@ import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
 import sockets from './middleware/sockets';
 import ui from './middleware/ui';
+import {setDummyData} from './db/dummy';
 
 const chromeLauncher = require('chrome-launcher');
 
@@ -14,8 +15,10 @@ const io = SocketIo(server);
 // Sockets middleware
 sockets(io);
 
-mongoose.connect('mongodb://localhost/musclecomdb', { useMongoClient: true });
+mongoose.connect('mongodb://127.0.0.1:27017/musclecomdb');
 mongoose.Promise = global.Promise;
+
+setDummyData();
 
 // Webpack middleware
 app.use(ui);
