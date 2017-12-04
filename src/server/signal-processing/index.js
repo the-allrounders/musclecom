@@ -1,8 +1,6 @@
 import EventEmitter from 'events';
-import {promisify} from 'util';
 
 class SignalProcessing extends EventEmitter {
-
     async init() {
         return {
             numOfSensors: this.sensors.length,
@@ -12,6 +10,12 @@ class SignalProcessing extends EventEmitter {
     constructor() {
         console.info('Starting signal processing');
         super();
+
+        // Define our constants
+        this.maxNumOfSensors = 4;
+        this.calibrationTime = 5000;
+        this.dataCollection = true;
+        this.sensors = [];
 
         (async () => {
             // Dummy mode off
@@ -32,8 +36,12 @@ class SignalProcessing extends EventEmitter {
             this.numOfSensors = await this.checkChannels();
             console.info(`Number of sensors final: ${this.numOfSensors}`)
 
+            // Emit the number of sensors
+            emit("numberOfSensors", this.numberOfSensors);
+
+            // Start collecting data
             this.startDataCollection();
-            this.calibrateMin(1);
+            // this.calibrateMin(1);
         })();
     }
 
@@ -44,9 +52,9 @@ class SignalProcessing extends EventEmitter {
      * @param callback
      */
     readChannel(channel) {
-        console.debug(`Reading channel: ${channel}`);
+        console.info(`Reading channel: ${channel}`);
         if(!this.dummy && !this.adc.busy) {
-            return new Promise(async (resolve,reject) => {
+            return new Promise(async (resolve) => {
                 const samplesPerSecond = '250'; // see index.js for allowed values for your chip
                 const progGainAmp = '4096'; // see index.js for allowed values for your chip
 
@@ -63,8 +71,8 @@ class SignalProcessing extends EventEmitter {
             });
         }
 
-        console.debug('Device busy');
-        return new Promise((resolve, reject) => {
+        console.info('Device busy');
+        return new Promise((resolve) => {
             resolve(false);
         });
     }
@@ -75,21 +83,19 @@ class SignalProcessing extends EventEmitter {
      * @returns {*}
      */
     checkChannels() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             console.info('Checking number of sensors');
-            this.sensors = [];
-            if(!this.dummy) {
-                // Create an array for our sensor
-                // Set a default counter
-                const results = [];
 
-                for(let count = 0; count < 4; count += 1) {
+            if(!this.dummy) {
+                /*eslint-disable */ // Disable eslint for await in loop
+                for(let count = 0; count < this.maxNumOfSensors; count += 1) {
                     // Start reading the channel and break only if a value has returned
-                    const channel_value = await this.readChannel(count);
-                    if(channel_value > 0) {
-                        this.sensors.push({'channel': count, 'min': 3000, 'max': 0, 'value': 0});
+                    let channelValue = await this.readChannel(count);
+                    if(channelValue > 0) {
+                        this.sensors.push({'channel': count, 'min': 3000, 'max': 0, 'value': channelValue});
                     }
                 }
+                /* eslint-enable */
 
                 resolve(this.sensors.length);
             }
@@ -102,66 +108,73 @@ class SignalProcessing extends EventEmitter {
         let count = 0;
         const objIndex = this.sensors.findIndex((obj => obj.channel === channel));
         const intervalID = setInterval(async () => {
-            console.debug(`Calibration_counter:${count}`)
+            console.info(`Calibration_counter:${count}`)
             const value = await this.readChannel(channel);
 
             if(value > 0) {
-                console.debug(`SensorMin: ${this.sensors[objIndex].min}`);
+                console.info(`SensorMin: ${this.sensors[objIndex].min}`);
                 if(value < this.sensors[objIndex].min) {
                     this.sensors[objIndex].min = value;
-                    console.debug(`minval: ${value}`);
+                    console.info(`minval: ${value}`);
                 }
             }
 
-            if(count === 25) {
-                console.debug('Clearing calibration interval')
+            if(count === (this.calibrationTime / 100)) {
+                console.info('Clearing calibration interval')
                 clearInterval(intervalID);
             }
             count += 1;
-        }, 10);
+        }, 100);
     }
 
     calibrateMax(channel) {
         let count = 0;
         const objIndex = this.sensors.findIndex((obj => obj.channel === channel));
         const intervalID = setInterval(async () => {
-            console.debug(`Calibration_counter:${count}`)
+            console.info(`Calibration_counter:${count}`)
             const value = await this.readChannel(channel);
 
             if(value > 0) {
-                console.debug(`SensorMax: ${this.sensors[objIndex].max}`);
+                console.info(`SensorMax: ${this.sensors[objIndex].max}`);
                 if(value > this.sensors[objIndex].max) {
                     this.sensors[objIndex].max = value;
-                    console.debug(`maxval: ${value}`);
+                    console.info(`maxval: ${value}`);
                 }
             }
 
-            if(count === 25) {
-                console.debug('Clearing calibration interval')
+            if(count === (this.calibrationTime / 100)) {
+                console.info('Clearing calibration interval')
                 clearInterval(intervalID);
             }
             count += 1;
-        }, 10);
-    }
-
-    async startDataCollection() {
-        for(let count = 0; count < this.sensors.length; count += 1) {
-            // while(true) {
-            //     let value = await this.readChannel(this.sensors[count].channel);
-            //
-            //     if (value > 0) {
-            //         //Saving to database
-            //         console.info(`Saving:${value}`);
-            //     }
-            // };
-        }
+        }, 100);
     }
 
     /**
-     * Pause
+     * Start collecting data
+     */
+    startDataCollection() {
+        console.info('Start datacollection');
+        /*eslint-disable */ // Disable esLint for using await in loop
+        while(this.datacollection) {
+            this.sensors.forEach(async () => {
+                const value = await this.readChannel(this.sensors[count].channel);
+
+                if(value > 0) {
+                    //Saving to database
+                    console.info(`Saving:${value}`);
+                    emit("receivedSignal", {sensor, value});
+                }
+            });
+        }
+        /* eslint-enable */
+    }
+
+    /**
+     * Pause collecting data
      */
     pauseDataCollection() {
-        clearInterval(this.dataInterval);
+        this.datacollection = false;
     }
 
     /**
