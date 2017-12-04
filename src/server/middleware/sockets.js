@@ -1,4 +1,5 @@
 import ip from 'internal-ip';
+import SignalProcessing from '../signal-processing'
 
 let connection = null;
 
@@ -28,12 +29,13 @@ export default function(io) {
   listeners.forEach(args => io.on(...args));
 }
 
-onConnection((socket) => {
+onConnection(async (socket) => {
   socket.emit('info', {
     sensorsConnected: 2 + Math.floor(Math.random() * 5),
     availableActions: Math.floor(Math.random() * 5),
     sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
     ip: ip.v4.sync(),
+    signal: await SignalProcessing.init(),
   });
 
   socket.on('step', (step) => emit('step', step));

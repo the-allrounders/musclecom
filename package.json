@@ -15,6 +15,10 @@
     "lint:fix": "eslint ./src --ext .js,.jsx --fix || stylelint './src/**/*.css' --fix",
     "precommit": "lint-staged"
   },
+  "optionalDependencies": {
+    "i2c":"^0.2.3",
+    "node-ads1x15": "^1.0.3"
+  },
   "dependencies": {
     "babel-eslint": "^8.0.2",
     "babel-loader": "^7.1.2",
