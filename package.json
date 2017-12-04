@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "repository": "https://github.com/the-allrounders/musclecom.git",
   "author": "The Allrounders",
-  "license": "GNU-v3",
+  "license": "GPL-3.0",
   "scripts": {
     "start": "cross-env NODE_ENV=development babel-watch src/server/index.js",
     "start-prod": "cross-env NODE_ENV=production babel-node src/server/index.js prod",
