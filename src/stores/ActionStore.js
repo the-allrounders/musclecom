@@ -1,11 +1,18 @@
 import { observable } from 'mobx';
 import io from 'socket.io-client';
+import Sensor from './Objects/Sensor';
 
 class ActionStore {
   @observable action = null;
   @observable actionsAvailable = 0;
   @observable sensorsCalibrated = undefined;
   @observable sensorsConnected = undefined;
+  @observable sensors = [
+    new Sensor(1, true, false),
+    new Sensor(2, false, false),
+    new Sensor(3, false, false),
+    new Sensor(4, false, false),
+  ];
   @observable actions = [];
   @observable ip = 'http://145.24.246.20:6969';
 
@@ -13,6 +20,7 @@ class ActionStore {
     this.socket = io(window.location.origin);
     this.socket.on('action', this.setCurrentAction);
     this.socket.on('info', this.updateInfo);
+    setTimeout(() => { this.sensors[1].connected = true; }, 5000);
   }
 
   setCurrentAction = (action) => {

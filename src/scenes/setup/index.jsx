@@ -5,9 +5,8 @@ import { Redirect, Switch, Route, withRouter } from 'react-router-dom';
 import qs from 'query-string';
 import { routes } from '../../router';
 // Components
-import SetupConnect from './SetupConnect';
 import Admin from './Admin';
-import ProgressBar from './ProgressBar';
+import Client from './Client';
 
 class SetupScene extends Component {
   static stepCount = 3;
@@ -31,26 +30,21 @@ class SetupScene extends Component {
     }
   }
 
+  getStep = () => {
+    const search = qs.parse(this.props.location.search);
+    return parseInt(search.step);
+  }
+
   render() {
-    const { actionStore, location } = this.props;
+    const { actionStore } = this.props;
     if(typeof actionStore.sensorsCalibrated !== 'undefined' && actionStore.sensorsCalibrated === actionStore.sensorsConnected) {
       // return <Redirect to='/main'/>
     }
 
-    const search = qs.parse(location.search);
-    const step = parseInt(search.step);
-
     return (
       <Switch>
-        <Route path={routes.SETUP} exact>
-          <section>
-            <ProgressBar step={step} />
-            {step === 1 && <SetupConnect />}
-            {step === 2 && <div>Stap 2 - Sensoren</div>}
-            {step === 3 && <div>Stap 3 - Kalibratie</div>}
-          </section>
-        </Route>
-        <Route path={routes.SETUP_ADMIN} exact component={Admin} />
+        <Route path={routes.SETUP} exact component={(p) => <Client {...p} getStep={this.getStep} actionStore={actionStore} />} />
+        <Route path={routes.SETUP_ADMIN} exact component={(p) => <Admin {...p} getStep={this.getStep} actionStore={actionStore} />} />
       </Switch>
     );
   }

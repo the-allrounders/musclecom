@@ -1,31 +1,40 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter} from 'react-router-dom';
-import qs from 'query-string';
 // Components
-import SetupScene from '../';
 import ProgressBar from '../ProgressBar';
+import SensorStep from './SensorStep';
+import CalibrationStep from './CalibrationStep';
 
 class AdminSetupComponent extends Component {
+  componentDidMount() {
+    const step = this.props.getStep();
+    if(!step || step === 1) {
+      this.onStep(2);
+    }
+  }
+
   onStep = (step) => {
     this.props.actionStore.socket.emit('step', step);
   }
 
-  componentDidMount() {
-    this.onStep(2);
-  }
-
   render() {
-    const search = qs.parse(this.props.location.search);
-    const step = parseInt(search.step);
+    const step = this.props.getStep();
+
+    const pager = {
+      step,
+      next: () => this.onStep(step + 1),
+      previous: () => this.onStep(step - 1),
+    };
+
     return (
-    <div>
-      <h1>Admin</h1>
-      <ProgressBar step={step} />
-      <button disabled={step < 3} onClick={() => this.onStep(step - 1)}>Previous step</button>
-      <button disabled={step > SetupScene.stepCount - 1} onClick={() => this.onStep(step + 1)}>Next step</button>
-    </div>
-  );
+      <section>
+        <ProgressBar step={step} />
+        <h1>Instellen</h1>
+        {step === 2 && <SensorStep sensors={this.props.actionStore.sensors} pager={pager} />}
+        {(step === 3 || step === 4) && <CalibrationStep sensors={this.props.actionStore.sensors} pager={pager} />}
+      </section>
+    );
   }
 }
 
