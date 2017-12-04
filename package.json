@@ -10,6 +10,7 @@
     "start": "cross-env NODE_ENV=development babel-watch src/server/index.js",
     "start-prod": "cross-env NODE_ENV=production babel-node src/server/index.js prod",
     "start-prod-old": "rimraf ./lib && NODE_ENV=production babel src --out-dir lib --copy-files && NODE_ENV=production node lib/server/index.js prod",
+    "db": "mongod --dbpath=db --rest",
     "lint:style": "stylelint './src/**/*.j*'",
     "lint:fix": "eslint ./src --ext .js,.jsx --fix || stylelint './src/**/*.css' --fix",
     "precommit": "lint-staged"
@@ -38,6 +39,7 @@
     "mobx": "^3.3.1",
     "mobx-react": "^4.3.4",
     "moment": "^2.19.2",
+    "mongodb": "^2.2.33",
     "mongoose": "^4.13.5",
     "prettier": "^1.8.2",
     "prettier-eslint-cli": "^4.4.0",
