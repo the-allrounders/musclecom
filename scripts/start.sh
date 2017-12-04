@@ -23,10 +23,10 @@ fi
 echo ""
 echo ""
 
-if hash mongod 2>/dev/null; then
-    echo "✅ Mongo is already installed."
-    echo "ℹ️ Your mongodb version information:"
-    mongod --version
+if service --status-all | grep -Fq 'mongodb'; then
+  echo "✅ Mongo is already installed."
+  echo "ℹ️ Your mongodb version information:"
+  mongod --version
 else
     echo "ℹ️ Mongodb not yet installed, installing.."
     sudo apt-get install -y mongodb-server
@@ -37,7 +37,7 @@ echo ""
 
 echo "Starting mongo service.."
 
-sudo service mongod start
+sudo service mongodb start
 
 echo ""
 echo ""
