@@ -23,6 +23,25 @@ fi
 echo ""
 echo ""
 
+if service --status-all | grep -Fq 'mongodb'; then
+  echo "✅ Mongo is already installed."
+  echo "ℹ️ Your mongodb version information:"
+  mongod --version
+else
+    echo "ℹ️ Mongodb not yet installed, installing.."
+    sudo apt-get install -y mongodb-server
+fi
+
+echo ""
+echo ""
+
+echo "Starting mongo service.."
+
+sudo service mongodb start
+
+echo ""
+echo ""
+
 echo "ℹ️ Installing yarn / checking for updates"
 npm install --global yarn@0
 

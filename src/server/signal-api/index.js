@@ -20,14 +20,20 @@ class SignalInterpretation extends EventEmitter {
   }
 
   addSCEventListeners() {
-    SignalController.addListener("recievedSignal", (sensor, value) => {
-      console.log("received signal", sensor, value);
+    SignalController.addListener("chosenAction", (sensor, value) => {
+      console.info("chosen action", sensor, value);
+      emit("chosenAction", {action});
       // mongodbmeuk
-      emit("receivedSignal", {sensor, value});
+
+    });
+
+    SignalController.addListener("recievedSignal", (sensor, value) => {
+      console.info("received signal", sensor, value);
+      // mongodbmeuk
     });
 
     SignalController.addListener("numberOfSensors", (numSensors) => {
-        console.log("number of sensors", numSensors);
+        console.info("number of sensors", numSensors);
         // mongodbmeuk
         this.numberOfSensors = numSensors;
         emit("numberOfSensors", numberOfSensors);
