@@ -1,6 +1,6 @@
 import menuItem from './models/menu-item';
 
-export default function setDummyData()
+export default function()
 {
   const menuItems =
       [
