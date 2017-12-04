@@ -156,7 +156,7 @@ class SignalProcessing extends EventEmitter {
     startDataCollection() {
         console.info('Start datacollection');
         /*eslint-disable */ // Disable esLint for using await in loop
-        while(this.datacollection) {
+        while(this.datacollection && !this.dummy) {
             this.sensors.forEach(async () => {
                 const value = await this.readChannel(this.sensors[count].channel);
 
