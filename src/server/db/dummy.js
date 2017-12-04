@@ -2,7 +2,7 @@ import MenuItem from './models/menu-item';
 
 export default function()
 {
-  menuItem.count({}, (err, count) => {
+  MenuItem.count({}, (err, count) => {
     if( count <= 0) {
 
       const menuParent1 = new MenuItem({
@@ -46,7 +46,7 @@ export default function()
         },
       ];
 
-      menuItem.create(menuItems, (error, results) => {
+      MenuItem.create(menuItems, (error, results) => {
          console.info(`Inserted into the db${  results}`);
       });
     }
