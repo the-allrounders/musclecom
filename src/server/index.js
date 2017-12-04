@@ -4,7 +4,7 @@ import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
 import sockets from './middleware/sockets';
 import ui from './middleware/ui';
-import {setDummyData} from './db/dummy';
+import setDummyData from './db/dummy';
 
 const chromeLauncher = require('chrome-launcher');
 
