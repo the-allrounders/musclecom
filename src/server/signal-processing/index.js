@@ -14,7 +14,6 @@ class SignalProcessing extends EventEmitter {
         // Define our constants
         this.maxNumOfSensors = 4;
         this.calibrationTime = 5000;
-        this.dataCollection = true;
         this.sensors = [];
 
         (async () => {
@@ -37,7 +36,7 @@ class SignalProcessing extends EventEmitter {
             console.info(`Number of sensors final: ${this.numOfSensors}`)
 
             // Emit the number of sensors
-            emit("numberOfSensors", this.numberOfSensors);
+            this.emit("numberOfSensors", this.numberOfSensors);
 
             // Start collecting data
             this.startDataCollection();
@@ -91,7 +90,7 @@ class SignalProcessing extends EventEmitter {
                 for(let count = 0; count < this.maxNumOfSensors; count += 1) {
                     // Start reading the channel and break only if a value has returned
                     let channelValue = await this.readChannel(count);
-                    if(channelValue > 0) {
+                    if(channelValue > 10) { // Check for values larger than 10 to avoid channel interference
                         this.sensors.push({'channel': count, 'min': 3000, 'max': 0, 'value': channelValue});
                     }
                 }
@@ -153,19 +152,23 @@ class SignalProcessing extends EventEmitter {
     /**
      * Start collecting data
      */
-    startDataCollection() {
+    async startDataCollection() {
         console.info('Start datacollection');
         /*eslint-disable */ // Disable esLint for using await in loop
-        while(this.datacollection && !this.dummy) {
-            this.sensors.forEach(async () => {
-                const value = await this.readChannel(this.sensors[count].channel);
+        this.dataCollection = true;
+        console.log(this.dummy);
+        while(this.dataCollection && !this.dummy) {
+            console.log(this.sensors);
+            for(let index = 0; index < this.sensors.length; index += 1) {
+                const value = await this.readChannel(this.sensors[index].channel);
 
                 if(value > 0) {
                     //Saving to database
                     console.info(`Saving:${value}`);
-                    emit("receivedSignal", {sensor, value});
+                    this.sensors[index].value = value;
+                    // this.emit("receivedSignal", {sensor, value});
                 }
-            });
+            };
         }
         /* eslint-enable */
     }
