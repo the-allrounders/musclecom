@@ -34,11 +34,7 @@ class SignalProcessing extends EventEmitter {
             }
 
             // Set initial number of signals / sensors.
-            this.numOfSensors = await this.checkChannels();
-            console.info(`Number of sensors final: ${this.numOfSensors}`)
-
-            // Emit the number of sensors
-            this.emit("numberOfSensors", this.numberOfSensors);
+            await this.checkChannels();
 
             // Start collecting data
             // this.startDataCollection();
@@ -93,18 +89,42 @@ class SignalProcessing extends EventEmitter {
         return new Promise(async (resolve) => {
             console.info('Checking number of sensors');
 
+            // Our channel return
+            const sens = [];
+
             if(!this.dummy) {
                 /*eslint-disable */ // Disable eslint for await in loop
                 for(let count = 0; count < this.maxNumOfSensors; count += 1) {
+                    const objIndex = this.sensors.findIndex((obj => obj.channel === count));
+                    let newSens = {'channel': count, 'connected': false, 'calibrated': false}
+
                     // Start reading the channel and break only if a value has returned
                     let channelValue = await this.readChannel(count);
                     if(channelValue > 10) { // Check for values larger than 10 to avoid channel interference
-                        this.sensors.push({'channel': count, 'min': 3000, 'max': 0, 'value': channelValue});
+                        newSens.connected = true;
+                        if(objIndex > -1 && this.sensors[objIndex].max > 0) {
+                            newSens.calibrated = true;
+                        } else { // add the new active sensor to the active list
+                            this.sensors.push({'channel': count, 'min': 3000, 'max': 0, 'value': channelValue});
+                        }
+                    } else if(objIndex > -1) { // Remove the inactive sensor from the active list
+                        this.sensors = this.sensors.splice(objIndex, 1);
                     }
+
+                    // Return our channels
+                    sens.push(newSens);
                 }
                 /* eslint-enable */
 
-                resolve(this.sensors.length);
+                console.info(`Number of sensors final: ${this.numOfSensors}`)
+
+                resolve( () => {
+                        console.info('Emitting sensors');
+
+                        // Emit the number of sensors
+                        this.emit("numberOfSensors", sens);
+                    }
+                );
             }
 
             return SignalProcessing.getRandomInt(1, 4);
@@ -199,7 +219,8 @@ class SignalProcessing extends EventEmitter {
         console.info('Start datacollection');
         /*eslint-disable */ // Disable esLint for using await in loop
         this.dataCollection = true;
-        console.log(this.dummy);
+        let counter = 0;
+
         while(this.dataCollection && !this.dummy) {
             console.log(this.sensors);
             for(let index = 0; index < this.sensors.length; index += 1) {
@@ -209,9 +230,29 @@ class SignalProcessing extends EventEmitter {
                     //Saving to database
                     console.info(`Saving:${value}`);
                     this.sensors[index].value = value;
-                    // this.emit("receivedSignal", {sensor, value});
+
+                    // TODO implement proper signal processing here
+                    const base = (((this.sensors[index].max - this.sensors[index].min) / 100) * 80)
+                    const signal = value - this.sensors[index].min;
+
+                    // We recieve wierd values... time to recalibrate...
+                    if(value < this.sensors[index].min || value > this.sensors[index].max) {
+                        emit('recalibrate', {
+                            'channel': this.sensors[index].channel
+                        });
+                    } else if(signal > base) { // Our signal is over our base lets emit the signal
+                        this.emit("receivedSignal", {'channel':this.sensors[index].channel, 'signal':signal});
+                    }
                 }
             };
+
+            // Check for new sensors every once in a while
+            if(counter === 15000) {
+                await this.checkChannels()
+                counter = 0;
+            }
+
+            counter += 1;
         }
         /* eslint-enable */
     }
