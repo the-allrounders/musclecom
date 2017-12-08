@@ -49,7 +49,7 @@ class SignalController extends EventEmitter {
         }
 
         let action = parseInt(binary, 2);
-        this.emit("chosenAction", {action});
+        this.emit("chosenAction", action);
 
         if(this.sensorChangeTimeout) {
           clearTimeout(this.sensorChangeTimeout);
