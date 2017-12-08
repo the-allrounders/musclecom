@@ -15,11 +15,11 @@ const mount = RootComponent => {
         <RootComponent />
       </HashRouter>
     </AppContainer>,
-    root
+    root,
   );
 };
 
-if(module.hot) {
+if (module.hot) {
   module.hot.accept('./RootWrapper', () => {
     // eslint-disable-next-line global-require,import/newline-after-import
     const RootComponent = require('./RootWrapper').default;

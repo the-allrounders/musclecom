@@ -5,13 +5,15 @@ import QRCode from 'qrcode.react';
 import { routes } from '../../../router';
 
 const SetupConnect = ({ actionStore }) => {
-  if(!actionStore.ip) {
+  if (!actionStore.ip) {
     return null;
   }
 
   return (
     <div>
-      <QRCode value={`${actionStore.ip}/#${routes.SETUP_ADMIN}`}>{actionStore.ip}/#{routes.SETUP_ADMIN}</QRCode>
+      <QRCode value={`${actionStore.ip}/#${routes.SETUP_ADMIN}`}>
+        {actionStore.ip}/#{routes.SETUP_ADMIN}
+      </QRCode>
     </div>
   );
 };

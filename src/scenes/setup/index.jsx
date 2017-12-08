@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { Redirect, Switch, Route, withRouter } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import qs from 'query-string';
 import { routes } from '../../router';
 // Components
-import SetupConnect from './SetupConnect';
 import Admin from './Admin';
-import ProgressBar from './ProgressBar';
+import Client from './Client';
 
 class SetupScene extends Component {
   static stepCount = 3;
@@ -15,7 +14,7 @@ class SetupScene extends Component {
   componentDidMount() {
     this.props.actionStore.socket.on('step', this.step);
     const search = qs.parse(this.props.location.search);
-    if(!search.step) {
+    if (!search.step) {
       this.props.history.push({ search: qs.stringify({ step: 1 }) });
     }
   }
@@ -24,33 +23,43 @@ class SetupScene extends Component {
     this.props.actionStore.socket.off('step');
   }
 
-  step = (step) => {
+  getStep = () => {
     const search = qs.parse(this.props.location.search);
-    if(search.step) {
+    return parseInt(search.step, 10);
+  };
+
+  step = step => {
+    const search = qs.parse(this.props.location.search);
+    if (search.step) {
       this.props.history.push({ search: qs.stringify({ step }) });
     }
-  }
+  };
 
   render() {
-    const { actionStore, location } = this.props;
-    if(typeof actionStore.sensorsCalibrated !== 'undefined' && actionStore.sensorsCalibrated === actionStore.sensorsConnected) {
+    const { actionStore } = this.props;
+    if (
+      typeof actionStore.sensorsCalibrated !== 'undefined' &&
+      actionStore.sensorsCalibrated === actionStore.sensorsConnected
+    ) {
       // return <Redirect to='/main'/>
     }
 
-    const search = qs.parse(location.search);
-    const step = parseInt(search.step);
-
     return (
       <Switch>
-        <Route path={routes.SETUP} exact>
-          <section>
-            <ProgressBar step={step} />
-            {step === 1 && <SetupConnect />}
-            {step === 2 && <div>Stap 2 - Sensoren</div>}
-            {step === 3 && <div>Stap 3 - Kalibratie</div>}
-          </section>
-        </Route>
-        <Route path={routes.SETUP_ADMIN} exact component={Admin} />
+        <Route
+          path={routes.SETUP}
+          exact
+          component={p => (
+            <Client {...p} getStep={this.getStep} actionStore={actionStore} />
+          )}
+        />
+        <Route
+          path={routes.SETUP_ADMIN}
+          exact
+          component={p => (
+            <Admin {...p} getStep={this.getStep} actionStore={actionStore} />
+          )}
+        />
       </Switch>
     );
   }
@@ -63,7 +72,9 @@ SetupScene.propTypes = {
   }).isRequired,
 };
 
-const DecoratedSetupScene = inject('actionStore')(observer(withRouter(SetupScene)))
+const DecoratedSetupScene = inject('actionStore')(
+  observer(withRouter(SetupScene)),
+);
 DecoratedSetupScene.stepCount = SetupScene.stepCount;
 
 export default DecoratedSetupScene;
