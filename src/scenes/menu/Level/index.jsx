@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Level from './styled/Level';
 import LevelImage from './styled/LevelImage';
 
-const LevelComponent = ({ id, name, image, children, active, action }) => (
+const LevelComponent = ({ name, image, active, action }) => (
   <Level active={active}>
     <LevelImage src={image} alt={name} />
     <figcaption>{name}</figcaption>
@@ -22,6 +22,7 @@ LevelComponent.propTypes = {
 LevelComponent.defaultProps = {
   image:
     'https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/cross-24-512.png',
+  active: false,
 };
 
 export default LevelComponent;

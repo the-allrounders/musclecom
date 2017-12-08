@@ -9,6 +9,13 @@ const setupCheckDecorator = InnerComponent => {
   @inject('actionStore')
   @observer
   class _HOC extends Component {
+    static propTypes = {
+      actionStore: PropTypes.shape({
+        sensorsCalibrated: PropTypes.number,
+        sensorsConnected: PropTypes.number,
+      }).isRequired,
+    };
+
     render() {
       const { actionStore } = this.props;
       if (typeof actionStore.sensorsCalibrated === 'undefined') {
@@ -25,13 +32,6 @@ const setupCheckDecorator = InnerComponent => {
 
       return <InnerComponent {...this.props} />;
     }
-
-    static propTypes = {
-      actionStore: PropTypes.shape({
-        sensorsCalibrated: PropTypes.number,
-        sensorsConnected: PropTypes.number,
-      }).isRequired,
-    };
   }
 
   return _HOC;

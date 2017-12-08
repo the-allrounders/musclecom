@@ -173,7 +173,7 @@ class SignalProcessing extends EventEmitter {
     while (this.dataCollection && !this.dummy) {
       console.log(this.sensors);
       for (let index = 0; index < this.sensors.length; index += 1) {
-        const value = await this.readChannel(this.sensors[index].channel);
+        const value = await this.readChannel(this.sensors[index].channel); // eslint-disable-line no-await-in-loop
 
         if (value > 0) {
           // Saving to database
@@ -208,9 +208,9 @@ class SignalProcessing extends EventEmitter {
    * @param max
    * @returns {*}
    */
-  static getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
+  static getRandomInt(minFloat, maxFloat) {
+    const min = Math.ceil(minFloat);
+    const max = Math.floor(maxFloat);
     return Math.floor(Math.random() * (max - min)) + min;
   }
 }

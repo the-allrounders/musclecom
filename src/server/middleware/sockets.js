@@ -58,14 +58,6 @@ export default function(newIo) {
  * This uses our own 'onConnection' function to keep track of connections and attach listeners.
  */
 onConnection(async socket => {
-  socket.emit('info', {
-    sensorsConnected: 2 + Math.floor(Math.random() * 5),
-    actionsAvailable: Math.floor(Math.random() * 5),
-    sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
-    ip: ip.v4.sync(),
-    signal: await SignalProcessing.init(),
-  });
-
   // Keep the sockets array up-to-date.
   sockets.push(socket);
   socket.on('disconnect', () => sockets.splice(sockets.indexOf(socket), 1));

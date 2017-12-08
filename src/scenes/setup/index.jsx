@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer } from 'mobx-react';
-import { Redirect, Switch, Route, withRouter } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
 import qs from 'query-string';
 import { routes } from '../../router';
 // Components
@@ -23,16 +23,16 @@ class SetupScene extends Component {
     this.props.actionStore.socket.off('step');
   }
 
+  getStep = () => {
+    const search = qs.parse(this.props.location.search);
+    return parseInt(search.step, 10);
+  };
+
   step = step => {
     const search = qs.parse(this.props.location.search);
     if (search.step) {
       this.props.history.push({ search: qs.stringify({ step }) });
     }
-  };
-
-  getStep = () => {
-    const search = qs.parse(this.props.location.search);
-    return parseInt(search.step);
   };
 
   render() {
