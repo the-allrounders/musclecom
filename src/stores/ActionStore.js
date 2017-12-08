@@ -21,6 +21,15 @@ class ActionStore {
     this.socket.on('action', this.setCurrentAction);
     this.socket.on('info', this.updateInfo);
     setTimeout(() => { this.sensors[1].connected = true; }, 5000);
+
+    const emitKey = (high, {key, code, ctrlKey}) => {
+      if(code.substr(0, 5) === 'Digit') {
+        this.socket.emit(`mocksensor`, {high, key: parseInt(key, 10), ctrlKey});
+      }
+    };
+
+    window.addEventListener('keydown', (e) => emitKey(1, e));
+    window.addEventListener('keyup', (e) => emitKey(0, e));
   }
 
   setCurrentAction = (action) => {

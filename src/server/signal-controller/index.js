@@ -24,7 +24,8 @@ class SignalController extends EventEmitter {
   }
 
   addSPEventListeners() {
-    signalProcessing.addListener("recievedSignal", (sensor, value) => {
+    signalProcessing.addListener("receivedSignal", ({sensor, value}) => {
+      console.log(`Sensor ${sensor} is now ${value ? 'HIGH' : 'LOW'}`);
       if(this.sensorChangeTimeout) {
         clearTimeout(this.sensorChangeTimeout);
         this.sensorChangeTimeout = null;

@@ -1,4 +1,6 @@
 import EventEmitter from 'events';
+import ip from 'internal-ip';
+import { listen, onConnection } from '../middleware/sockets';
 
 class SignalProcessing extends EventEmitter {
     async init() {
@@ -10,6 +12,12 @@ class SignalProcessing extends EventEmitter {
     constructor() {
         console.info('Starting signal processing');
         super();
+
+        listen('mocksensor', ({high, key, cntrlKey}) => {
+          if(!cntrlKey) {
+            this.emit("receivedSignal", {sensor: key - 1, value: high});
+          }
+        });
 
         // Define our constants
         this.maxNumOfSensors = 4;
@@ -26,7 +34,6 @@ class SignalProcessing extends EventEmitter {
                 const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require
                 this.adc = new Ads1x15(0);
             } catch(err) {
-                console.error(err);
                 console.info('It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions');
                 this.dummy = true;
             }
@@ -203,3 +210,13 @@ class SignalProcessing extends EventEmitter {
 }
 
 export default new SignalProcessing();
+
+onConnection(async socket => {
+    socket.emit('info', {
+      sensorsConnected: 2 + Math.floor(Math.random() * 5),
+      availableActions: Math.floor(Math.random() * 5),
+      sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
+      ip: ip.v4.sync(),
+      signal: await SignalProcessing.init(),
+  });
+});
