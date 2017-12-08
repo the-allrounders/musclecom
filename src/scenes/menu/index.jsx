@@ -16,7 +16,7 @@ class MenuScene extends Component {
     total: 6,
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const { actionStore } = this.props;
 
     let total = 6;
@@ -128,21 +128,21 @@ class MenuScene extends Component {
     clearInterval(this.interval);
 
     // Only continue when there are more categories
-    if (this.state.categories.length <= 0) return false;
+    if (this.state.categories.length <= 0) return;
 
     // Set interval, each interval the categories are selected based on the
     // total categories.
     this.interval = setInterval(() => {
-      let categories = this.state.categories;
-      let { offset, current, total } = this.state;
+      let { categories, offset, current } = this.state;
+      const { total } = this.state;
 
-      categories = categories.map(category => {
-        category.action = 0;
-        category.selected = false;
+      categories = categories.forEach(category => {
+        category.action = 0; // eslint-disable-line no-param-reassign
+        category.selected = false; // eslint-disable-line no-param-reassign
         return category;
       });
 
-      for (let i = 0; i < actionStore.actionsAvailable; i++) {
+      for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
         const pointer = offset % categories.length;
         categories[pointer].selected = true;
         offset += 1;
@@ -164,13 +164,8 @@ class MenuScene extends Component {
   render() {
     const { current, total } = this.state;
     const categories = this.state.categories.slice(current, current + total);
-    const renderCategories = categories.map(category => (
-      <Level
-        key={category.id}
-        name={category.name}
-        action={0}
-        active={category.selected}
-      />
+    const renderCategories = categories.map(({ id, name, selected }) => (
+      <Level key={id} name={name} action={0} active={selected} />
     ));
 
     return (
