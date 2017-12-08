@@ -220,6 +220,7 @@ class SignalProcessing extends EventEmitter {
         /*eslint-disable */ // Disable esLint for using await in loop
         this.dataCollection = true;
         let counter = 0;
+        let muscleHigh = false;
 
         while(this.dataCollection && !this.dummy) {
             console.log(this.sensors);
@@ -237,11 +238,15 @@ class SignalProcessing extends EventEmitter {
 
                     // We recieve wierd values... time to recalibrate...
                     if(value < this.sensors[index].min || value > this.sensors[index].max) {
-                        emit('recalibrate', {
-                            'channel': this.sensors[index].channel
-                        });
+                        console.info('Sudden movement');
                     } else if(signal > base) { // Our signal is over our base lets emit the signal
-                        this.emit("receivedSignal", {'channel':this.sensors[index].channel, 'signal':signal});
+                        muscleHigh = true;
+                        this.emit("receivedSignal", {'channel':this.sensors[index].channel, 'signal':1});
+                    }
+
+                    // Previous signal was high make sure we emit it is now low.
+                    if (signal < base && muscleHigh == true) {
+                        this.emit('receivedSignal', {'channel':this.sensors[index].channel,'signal':0});
                     }
                 }
             };
