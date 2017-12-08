@@ -7,6 +7,7 @@ const Schema = mongoose.Schema({
   },
   date: {
     type: Date,
+    default: Date.now,
   },
   value: {
     type: Number,

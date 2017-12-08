@@ -2,7 +2,10 @@
 
 import EventEmitter from 'events';
 import SignalController from '../signal-controller';
+import SignalProcessing from '../signal-processing';
 import {emit, listen} from '../middleware/sockets';
+import RawSensorLog from '../db/models/raw-sensor-log'
+import ProcessedSensorLog from '../db/models/processed-sensor-log'
 
 class SignalInterpretation extends EventEmitter {
 
@@ -20,16 +23,18 @@ class SignalInterpretation extends EventEmitter {
   }
 
   addSCEventListeners() {
-    SignalController.addListener("chosenAction", (sensor, value) => {
-      console.info("chosen action", sensor, value);
+    SignalController.addListener("chosenAction", (action) => {
+      console.info("chosen action", action);
       emit("chosenAction", {action});
-      // mongodbmeuk
-
     });
 
     SignalController.addListener("recievedSignal", (sensor, value) => {
       console.info("received signal", sensor, value);
-      // mongodbmeuk
+      const processedSensorLog = new ProcessedSensorLog({
+        sensor: sensor,
+        value: value,
+      });
+      processedSensorLog.save();
     });
 
     SignalController.addListener("numberOfSensors", (numSensors) => {
@@ -37,6 +42,14 @@ class SignalInterpretation extends EventEmitter {
         // mongodbmeuk
         this.numberOfSensors = numSensors;
         emit("numberOfSensors", numberOfSensors);
+    });
+
+    SignalProcessing.addListener("receivedSignal", ({sensor, value}) => {
+      const rawSensorLog = new RawSensorLog({
+        sensor: sensor,
+        value: value,
+      });
+      rawSensorLog.save();
     });
   }
 }
