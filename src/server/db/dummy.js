@@ -1,15 +1,13 @@
 import MenuItem from './models/menu-item';
 
-export default function()
-{
+export default function() {
   MenuItem.count({}, (err, count) => {
-    if( count <= 0) {
-
+    if (count <= 0) {
       const menuParent1 = new MenuItem({
-          parent: '',
-          name: 'Primair',
-          icon: '',
-          order: 0,
+        parent: '',
+        name: 'Primair',
+        icon: '',
+        order: 0,
       });
       menuParent1.save();
 
@@ -21,25 +19,25 @@ export default function()
           order: 0,
         },
         {
-          parent:  menuParent1._id,
+          parent: menuParent1._id,
           name: 'Honger',
           icon: '',
           order: 1,
         },
         {
-          parent:  menuParent1._id,
+          parent: menuParent1._id,
           name: 'WC',
           icon: '',
           order: 2,
         },
         {
-          parent:  menuParent1._id,
+          parent: menuParent1._id,
           name: 'Spelletje',
           icon: '',
           order: 3,
         },
         {
-          parent:  menuParent1._id,
+          parent: menuParent1._id,
           name: 'Naar buiten',
           icon: '',
           order: 4,
@@ -47,7 +45,7 @@ export default function()
       ];
 
       MenuItem.create(menuItems, (error, results) => {
-         console.info(`Inserted into the db${  results}`);
+        console.info(`Inserted into the db${results}`);
       });
     }
   });

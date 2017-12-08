@@ -16,7 +16,7 @@
     "precommit": "lint-staged"
   },
   "optionalDependencies": {
-    "i2c":"^0.2.3",
+    "i2c": "^0.2.3",
     "node-ads1x15": "^1.0.3"
   },
   "dependencies": {

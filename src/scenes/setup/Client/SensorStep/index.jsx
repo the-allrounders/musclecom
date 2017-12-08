@@ -1,5 +1,5 @@
 import React from 'react';
-import SensorConnection from "../../SensorConnection";
+import SensorConnection from '../../SensorConnection';
 
 const SensorStepComponent = ({ sensors }) => (
   <section>

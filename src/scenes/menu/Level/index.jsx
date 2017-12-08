@@ -20,7 +20,8 @@ LevelComponent.propTypes = {
 };
 
 LevelComponent.defaultProps = {
-  image: 'https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/cross-24-512.png',
+  image:
+    'https://cdn2.iconfinder.com/data/icons/flat-ui-icons-24-px/24/cross-24-512.png',
 };
 
 export default LevelComponent;

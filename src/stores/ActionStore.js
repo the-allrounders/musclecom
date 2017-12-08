@@ -7,7 +7,8 @@ class ActionStore {
   @observable actionsAvailable = 0;
   @observable sensorsCalibrated = undefined;
   @observable sensorsConnected = undefined;
-  @observable sensors = [
+  @observable
+  sensors = [
     new Sensor(1, true, false),
     new Sensor(2, false, false),
     new Sensor(3, false, false),
@@ -21,33 +22,37 @@ class ActionStore {
     this.socket = io(window.location.origin);
     this.socket.on('action', this.setCurrentAction);
     this.socket.on('info', this.updateInfo);
-    setTimeout(() => { this.sensors[1].connected = true; }, 5000);
+    setTimeout(() => {
+      this.sensors[1].connected = true;
+    }, 5000);
 
-    const emitKey = (high, {key, code, ctrlKey}) => {
-      if(code.substr(0, 5) === 'Digit') {
-        this.socket.emit(`mocksensor`, {high, key: parseInt(key, 10), ctrlKey});
+    const emitKey = (high, { key, code, ctrlKey }) => {
+      if (code.substr(0, 5) === 'Digit') {
+        this.socket.emit(`mocksensor`, {
+          high,
+          key: parseInt(key, 10),
+          ctrlKey,
+        });
       }
     };
 
-    window.addEventListener('keydown', (e) => emitKey(1, e));
-    window.addEventListener('keyup', (e) => emitKey(0, e));
+    window.addEventListener('keydown', e => emitKey(1, e));
+    window.addEventListener('keyup', e => emitKey(0, e));
   }
 
-  setCurrentAction = (action) => {
+  setCurrentAction = action => {
     this.action = action;
   };
 
-  updateInfo = (newInfo) => {
+  updateInfo = newInfo => {
     this.actionsAvailable = newInfo.availableActions;
     this.sensorsCalibrated = newInfo.sensorsCalibrated;
     this.sensorsConnected = newInfo.sensorsConnected;
     this.actions = newInfo.actions;
     this.ip = `http://${newInfo.ip}:6969`;
-  }
+  };
 }
 
 const store = new ActionStore(io);
 export default store;
-export {
-  ActionStore,
-}
+export { ActionStore };

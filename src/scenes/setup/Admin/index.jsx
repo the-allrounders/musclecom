@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 // Components
 import ProgressBar from '../ProgressBar';
 import SensorStep from './SensorStep';
@@ -9,14 +9,14 @@ import CalibrationStep from './CalibrationStep';
 class AdminSetupComponent extends Component {
   componentDidMount() {
     const step = this.props.getStep();
-    if(!step || step === 1) {
+    if (!step || step === 1) {
       this.onStep(2);
     }
   }
 
-  onStep = (step) => {
+  onStep = step => {
     this.props.actionStore.socket.emit('step', step);
-  }
+  };
 
   render() {
     const step = this.props.getStep();
@@ -31,8 +31,15 @@ class AdminSetupComponent extends Component {
       <section>
         <ProgressBar step={step} />
         <h1>Instellen</h1>
-        {step === 2 && <SensorStep sensors={this.props.actionStore.sensors} pager={pager} />}
-        {(step === 3 || step === 4) && <CalibrationStep sensors={this.props.actionStore.sensors} pager={pager} />}
+        {step === 2 && (
+          <SensorStep sensors={this.props.actionStore.sensors} pager={pager} />
+        )}
+        {(step === 3 || step === 4) && (
+          <CalibrationStep
+            sensors={this.props.actionStore.sensors}
+            pager={pager}
+          />
+        )}
       </section>
     );
   }

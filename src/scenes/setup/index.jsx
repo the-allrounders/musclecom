@@ -14,7 +14,7 @@ class SetupScene extends Component {
   componentDidMount() {
     this.props.actionStore.socket.on('step', this.step);
     const search = qs.parse(this.props.location.search);
-    if(!search.step) {
+    if (!search.step) {
       this.props.history.push({ search: qs.stringify({ step: 1 }) });
     }
   }
@@ -23,28 +23,43 @@ class SetupScene extends Component {
     this.props.actionStore.socket.off('step');
   }
 
-  step = (step) => {
+  step = step => {
     const search = qs.parse(this.props.location.search);
-    if(search.step) {
+    if (search.step) {
       this.props.history.push({ search: qs.stringify({ step }) });
     }
-  }
+  };
 
   getStep = () => {
     const search = qs.parse(this.props.location.search);
     return parseInt(search.step);
-  }
+  };
 
   render() {
     const { actionStore } = this.props;
-    if(typeof actionStore.sensorsCalibrated !== 'undefined' && actionStore.sensorsCalibrated === actionStore.sensorsConnected) {
+    if (
+      typeof actionStore.sensorsCalibrated !== 'undefined' &&
+      actionStore.sensorsCalibrated === actionStore.sensorsConnected
+    ) {
       // return <Redirect to='/main'/>
     }
 
     return (
       <Switch>
-        <Route path={routes.SETUP} exact component={(p) => <Client {...p} getStep={this.getStep} actionStore={actionStore} />} />
-        <Route path={routes.SETUP_ADMIN} exact component={(p) => <Admin {...p} getStep={this.getStep} actionStore={actionStore} />} />
+        <Route
+          path={routes.SETUP}
+          exact
+          component={p => (
+            <Client {...p} getStep={this.getStep} actionStore={actionStore} />
+          )}
+        />
+        <Route
+          path={routes.SETUP_ADMIN}
+          exact
+          component={p => (
+            <Admin {...p} getStep={this.getStep} actionStore={actionStore} />
+          )}
+        />
       </Switch>
     );
   }
@@ -57,7 +72,9 @@ SetupScene.propTypes = {
   }).isRequired,
 };
 
-const DecoratedSetupScene = inject('actionStore')(observer(withRouter(SetupScene)))
+const DecoratedSetupScene = inject('actionStore')(
+  observer(withRouter(SetupScene)),
+);
 DecoratedSetupScene.stepCount = SetupScene.stepCount;
 
 export default DecoratedSetupScene;

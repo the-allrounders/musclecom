@@ -5,19 +5,22 @@ import { observer, inject } from 'mobx-react';
 // Components
 import Loading from './Loading';
 
-const setupCheckDecorator = (InnerComponent) => {
+const setupCheckDecorator = InnerComponent => {
   @inject('actionStore')
   @observer
   class _HOC extends Component {
     render() {
       const { actionStore } = this.props;
-      if(typeof actionStore.sensorsCalibrated === 'undefined') {
+      if (typeof actionStore.sensorsCalibrated === 'undefined') {
         return <Loading>Connecting...</Loading>;
       }
 
       // Calibration has yet to be done...
-      if(true||actionStore.sensorsCalibrated !== actionStore.sensorsConnected) {
-        return <Redirect to='/setup' />;
+      if (
+        true ||
+        actionStore.sensorsCalibrated !== actionStore.sensorsConnected
+      ) {
+        return <Redirect to="/setup" />;
       }
 
       return <InnerComponent {...this.props} />;

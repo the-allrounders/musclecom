@@ -28,7 +28,7 @@ app.use(ui);
 
 server.listen(6969, () => {
   console.log(`✅  server started on port 6969`); // eslint-disable-line
-  if(process.argv[2] === 'prod') {
+  if (process.argv[2] === 'prod') {
     chromeLauncher.launch({
       startingUrl: `http://localhost:6969`,
       chromeFlags: ['--disable-translate', '--kiosk', '--incognito'],

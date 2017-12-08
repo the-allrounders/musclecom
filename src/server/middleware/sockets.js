@@ -41,7 +41,7 @@ export { listen };
  * Can be used to emit something to all sockets.
  */
 export function emit(...args) {
-  if(io) io.emit(...args);
+  if (io) io.emit(...args);
 }
 
 /**
@@ -57,7 +57,7 @@ export default function(newIo) {
 /**
  * This uses our own 'onConnection' function to keep track of connections and attach listeners.
  */
-onConnection(async (socket) => {
+onConnection(async socket => {
   socket.emit('info', {
     sensorsConnected: 2 + Math.floor(Math.random() * 5),
     actionsAvailable: Math.floor(Math.random() * 5),
@@ -71,8 +71,8 @@ onConnection(async (socket) => {
   socket.on('disconnect', () => sockets.splice(sockets.indexOf(socket), 1));
 
   // Attach all listeners.
-  listeners.forEach((args) => socket.on(...args));
+  listeners.forEach(args => socket.on(...args));
 
   // Todo: Move this to another file.
-  socket.on('step', (step) => emit('step', step));
+  socket.on('step', step => emit('step', step));
 });

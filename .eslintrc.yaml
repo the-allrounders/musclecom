@@ -1,72 +1,24 @@
-extends: eslint-config-kyt
-rules:
-  'no-undef': 0
-  prettier/prettier: 0
-  keyword-spacing:
-    - 2
-    -
-      after: false
-      overrides:
-        from:
-          after: true
-        case:
-          after: true
-        return:
-          after: true
-        const:
-          after: true
-        let:
-          after: true
-        import:
-          after: true
-        export:
-          after: true
-        else:
-          after: true
-        try:
-          after: true
-  max-len:
-    - 2
-    -
-      code: 120
-      ignoreComments: true
-      ignoreUrls: true
-      ignoreStrings: true
-      ignoreTemplateLiterals: true
-  jsx-quotes:
-    - 2
-    - prefer-single
-  "react/jsx-tag-spacing":
-    - 2
-    -
-      closingSlash: never
-      beforeSelfClosing: always
-      afterOpening: never
-  no-return-assign:
-    - 1
-  no-console:
-    - 2
-    -
-      allow:
-        - "warn"
-        - "error"
-        - "info"
-  no-underscore-dangle: 0
-  no-unused-expressions:
-    - 2
-    -
-      allowTaggedTemplates: true
-  no-warning-comments:
-    - 0
-    -
-      terms:
-        - "todo"
-  no-confusing-arrow: 0
-  ignoreRestSiblings: 0
-  import/no-restricted-paths: 0
-
+extends:
+  - airbnb
+  - prettier
+  - prettier/react
+plugins:
+  - prettier
 parser: babel-eslint
-globals:
-  window: true
-  document: true
-  requestAnimationFrame: true
+parserOptions:
+  sourceType: module
+  ecmaFeatures:
+    jsx: true
+env:
+  es6: true
+  node: true
+  browser: true
+rules:
+  prettier/prettier: error
+  # No proptypes for now
+  react/prop-types: warn
+  # Console is allowed for now
+  no-console: off
+  # Required for mongodb, should be disabled in the places used though
+  no-underscore-dangle: warn
+

@@ -8,7 +8,9 @@ const ClientSetupComponent = ({ actionStore, getStep }) => {
     <section>
       <h1>Instellen</h1>
       {step === 1 && <SetupConnect />}
-      {(step === 2 || step === 3) && <SensorStep sensors={actionStore.sensors} />}
+      {(step === 2 || step === 3) && (
+        <SensorStep sensors={actionStore.sensors} />
+      )}
     </section>
   );
 };

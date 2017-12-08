@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 // Define a schema
 const Schema = mongoose.Schema({
