@@ -15,6 +15,7 @@ class ActionStore {
   ];
   @observable actions = [];
   @observable ip = 'http://145.24.246.20:6969';
+  @observable timer = 2000;
 
   constructor() {
     this.socket = io(window.location.origin);
@@ -34,7 +35,7 @@ class ActionStore {
 
   setCurrentAction = (action) => {
     this.action = action;
-  }
+  };
 
   updateInfo = (newInfo) => {
     this.actionsAvailable = newInfo.actionsAvailable;
