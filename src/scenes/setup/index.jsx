@@ -13,8 +13,8 @@ class SetupScene extends Component {
 
   componentDidMount() {
     this.props.actionStore.socket.on('step', this.step);
-    const search = qs.parse(this.props.location.search);
-    if (!search.step) {
+    const step = this.getStep();
+    if (step === false) {
       this.props.history.push({ search: qs.stringify({ step: 1 }) });
     }
   }
@@ -25,13 +25,14 @@ class SetupScene extends Component {
 
   getStep = () => {
     const search = qs.parse(this.props.location.search);
-    return parseInt(search.step, 10);
+    const step = parseInt(search.step, 10);
+    return Number.isNaN(step) ? false : step;
   };
 
   step = step => {
     const search = qs.parse(this.props.location.search);
     if (search.step) {
-      this.props.history.push({ search: qs.stringify({ step }) });
+      this.props.history.push({ search: qs.stringify({ ...search, step }) });
     }
   };
 

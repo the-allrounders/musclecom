@@ -11,7 +11,7 @@ const ProgressBar = ({ step }) => (
     <BarItem done={step > 1} active={step === 2}>
       Sensoren
     </BarItem>
-    <BarItem done={step > 2} active={step === 3}>
+    <BarItem done={step > 2} active={step === 3 || step === 4}>
       Kalibratie
     </BarItem>
   </Bar>

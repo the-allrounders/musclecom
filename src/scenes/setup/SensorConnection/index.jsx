@@ -5,7 +5,9 @@ import SensorConnectionItem from './SensorConnectionItem';
 const SensorConnectionComponent = ({ sensors }) => (
   <ul>
     {sensors.map(sensor => (
-      <SensorConnectionItem key={sensor.channel} sensor={sensor} />
+      <li>
+        <SensorConnectionItem key={sensor.channel} sensor={sensor} />
+      </li>
     ))}
   </ul>
 );

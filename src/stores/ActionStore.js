@@ -9,7 +9,7 @@ class ActionStore {
   @observable sensorsConnected = undefined;
   @observable
   sensors = [
-    new Sensor(1, true, false),
+    new Sensor(1, false, false),
     new Sensor(2, false, false),
     new Sensor(3, false, false),
     new Sensor(4, false, false),
@@ -22,9 +22,9 @@ class ActionStore {
     this.socket = io(window.location.origin);
     this.socket.on('action', this.setCurrentAction);
     this.socket.on('info', this.updateInfo);
-    setTimeout(() => {
-      this.sensors[1].connected = true;
-    }, 5000);
+    // setTimeout(() => {
+    //   this.sensors[1].connected = true;
+    // }, 5000);
 
     const emitKey = (high, { key, code, ctrlKey }) => {
       if (code.substr(0, 5) === 'Digit') {
@@ -45,11 +45,19 @@ class ActionStore {
   };
 
   updateInfo = newInfo => {
-    this.actionsAvailable = newInfo.actionsAvailable;
-    this.sensorsCalibrated = newInfo.sensorsCalibrated;
-    this.sensorsConnected = newInfo.sensorsConnected;
-    this.actions = newInfo.actions;
-    this.ip = `http://${newInfo.ip}:6969`;
+    Object.entries(newInfo).forEach(([key, value]) => {
+      if (key === 'ip') {
+        this.ip = `http://${newInfo.ip}:6969`;
+      } else if (key === 'sensors') {
+        newInfo.sensors.forEach(({ channel, connected, calibrated }) => {
+          const sensor = this.sensors.find(s => s.channel === channel);
+          sensor.connected = connected;
+          sensor.calibrated = calibrated;
+        });
+      } else {
+        this[key] = value;
+      }
+    });
   };
 }
 

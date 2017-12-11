@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import moment from 'moment';
-import ip from 'internal-ip';
-import { emit, listen, onConnection } from '../middleware/sockets';
+import { emit, listen } from '../middleware/sockets';
 
 class SignalProcessing extends EventEmitter {
   // async init() {
@@ -42,6 +41,8 @@ class SignalProcessing extends EventEmitter {
       this.startDataCollection();
       // await this.calibrateMin(1);
     })();
+
+    this.setGlobalListeners();
   }
 
   setGlobalListeners() {
@@ -139,97 +140,99 @@ class SignalProcessing extends EventEmitter {
       }
 
       const dummySens = [
-        { channel: 0, connected: true, calibrated: true },
-        { channel: 1, connected: true, calibrated: false },
-        { channel: 2, connected: false, calibrated: false },
+        { channel: 1, connected: true, calibrated: true },
+        { channel: 2, connected: true, calibrated: false },
         { channel: 3, connected: false, calibrated: false },
+        { channel: 4, connected: false, calibrated: false },
       ];
+
+      this.sensors = dummySens;
 
       return dummySens;
     });
   }
 
+  // TODO: make calibration cancelable
   calibrateMin(channel) {
+    const startTime = moment().unix();
     emit('startCalibration', {
       channel,
-      action: 'max',
-      calibrationtime: this.calibrationTime,
-      starttime: moment().unix(),
+      action: 'min',
+      calibrationTime: this.calibrationTime,
+      startTime,
     });
 
     return new Promise(async resolve => {
       let count = 0;
-      const objIndex = this.sensors.findIndex(obj => obj.channel === channel);
+      const sensor = this.sensors.find(s => s.channel === channel);
+
+      // TODO: temp
+      sensor.calibrated = false;
+      emit('info', { sensors: this.sensors });
+
       while (count <= this.calibrationTime / 100) {
         console.info(`Calibration_counter:${count}`);
-        let value = await this.readChannel(channel); // eslint-disable-line
+         const value = await this.readChannel(channel); // eslint-disable-line
 
         if (value > 0) {
-          console.info(`SensorMin: ${this.sensors[objIndex].min}`);
-          if (value < this.sensors[objIndex].min) {
-            this.sensors[objIndex].min = value;
+          console.info(`SensorMin: ${sensor.min}`);
+          if (value < sensor.min) {
+            sensor.min = value;
             console.info(`minval: ${value}`);
           }
         }
         count += 1;
       }
 
-      // console.info({
-      //     'channel': channel,
-      //     'action': 'min',
-      //     'calibrationtime': this.calibrationTime,
-      //     'starttime': moment().unix()
-      // });
-      resolve(
-        emit('stopCalibration', {
-          channel,
-          action: 'min',
-          calibrationtime: this.calibrationTime,
-          starttime: moment().unix(),
-        }),
-      );
+      const checkDoneInterval = setInterval(() => {
+        if (moment().unix() > startTime + this.calibrationTime / 1000) {
+          clearInterval(checkDoneInterval);
+          emit('stopCalibration', { channel });
+
+          this.calibrateMax(channel);
+          resolve();
+        }
+      }, 100);
     });
   }
 
   calibrateMax(channel) {
+    const startTime = moment().unix();
     emit('startCalibration', {
       channel,
       action: 'max',
-      calibrationtime: this.calibrationTime,
-      starttime: moment().unix(),
+      calibrationTime: this.calibrationTime,
+      startTime,
     });
 
     return new Promise(async resolve => {
       let count = 0;
-      const objIndex = this.sensors.findIndex(obj => obj.channel === channel);
+      const sensor = this.sensors.find(s => s.channel === channel);
       while (count <= this.calibrationTime / 100) {
         console.info(`Calibration_counter:${count}`);
-        let value = await this.readChannel(channel); // eslint-disable-line
+        const value = await this.readChannel(channel); // eslint-disable-line
 
         if (value > 0) {
-          console.info(`SensorMax: ${this.sensors[objIndex].max}`);
-          if (value > this.sensors[objIndex].max) {
-            this.sensors[objIndex].max = value;
+          console.info(`SensorMin: ${sensor.max}`);
+          if (value < sensor.max) {
+            sensor.max = value;
             console.info(`maxval: ${value}`);
           }
         }
         count += 1;
       }
 
-      // console.info({
-      //     'channel': channel,
-      //     'action': 'max',
-      //     'calibrationtime': this.calibrationTime,
-      //     'starttime': moment().unix()
-      // });
-      resolve(
-        emit('stopCalibration', {
-          channel,
-          action: 'max',
-          calibrationtime: this.calibrationTime,
-          starttime: moment().unix(),
-        }),
-      );
+      // TODO: temp
+      sensor.calibrated = true;
+
+      const checkDoneInterval = setInterval(() => {
+        if (moment().unix() > startTime + this.calibrationTime / 1000) {
+          clearInterval(checkDoneInterval);
+          emit('stopCalibration', { channel });
+          emit('info', { sensors: this.sensors });
+          resolve();
+        }
+      }, 100);
     });
   }
 
@@ -301,13 +304,3 @@ class SignalProcessing extends EventEmitter {
 }
 
 export default new SignalProcessing();
-
-onConnection(async socket => {
-  socket.emit('info', {
-    sensorsConnected: 2 + Math.floor(Math.random() * 5),
-    actionsAvailable: Math.floor(Math.random() * 5),
-    sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
-    ip: ip.v4.sync(),
-    signal: await SignalProcessing.init(),
-  });
-});
