@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import { autorun } from 'mobx';
+import PropTypes from 'prop-types';
 
 // Components
 import Level from './Level';
@@ -9,6 +11,13 @@ import LevelWrapper from './styled/LevelWrapper';
 @inject('actionStore')
 @observer
 class MenuScene extends Component {
+  static propTypes = {
+    actionStore: PropTypes.shape({
+      actionsAvailable: PropTypes.number,
+      timer: PropTypes.number,
+    }).isRequired,
+  };
+
   state = {
     categories: [],
     offset: 0,
@@ -19,11 +28,17 @@ class MenuScene extends Component {
   componentWillMount() {
     const { actionStore } = this.props;
 
-    let total = 6;
-    if (actionStore.actionsAvailable > 3) {
-      total = actionStore.actionsAvailable * 2;
-    }
-    this.setState({ total }, this.getCategories());
+    autorun(() => {
+      console.log(actionStore.actionsAvailable);
+      let total = 6;
+      if (
+        actionStore.actionsAvailable > 0 &&
+        actionStore.actionsAvailable > 3
+      ) {
+        total = actionStore.actionsAvailable * 2;
+      }
+      this.setState({ total }, this.getCategories());
+    });
   }
 
   componentWillUnmount() {
@@ -32,6 +47,7 @@ class MenuScene extends Component {
 
   // Get all the categories.
   getCategories = () => {
+    console.log('getCategories');
     const categories = [
       {
         id: '1234567890',
@@ -136,7 +152,7 @@ class MenuScene extends Component {
       let { categories, offset, current } = this.state;
       const { total } = this.state;
 
-      categories = categories.forEach(category => {
+      categories = categories.map(category => {
         category.action = 0; // eslint-disable-line no-param-reassign
         category.selected = false; // eslint-disable-line no-param-reassign
         return category;
@@ -165,12 +181,20 @@ class MenuScene extends Component {
     const { current, total } = this.state;
     const categories = this.state.categories.slice(current, current + total);
     const renderCategories = categories.map(({ id, name, selected }) => (
-      <Level key={id} name={name} action={0} active={selected} />
+      <Level
+        key={id}
+        name={name}
+        action={0}
+        active={selected}
+        total={this.state.total}
+      />
     ));
 
     return (
       <div>
-        <LevelWrapper>{renderCategories}</LevelWrapper>
+        <LevelWrapper actions={this.props.actionStore.actionsAvailable}>
+          {renderCategories}
+        </LevelWrapper>
       </div>
     );
   }

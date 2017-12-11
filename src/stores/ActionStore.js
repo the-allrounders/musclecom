@@ -45,7 +45,7 @@ class ActionStore {
   };
 
   updateInfo = newInfo => {
-    this.actionsAvailable = newInfo.availableActions;
+    this.actionsAvailable = newInfo.actionsAvailable;
     this.sensorsCalibrated = newInfo.sensorsCalibrated;
     this.sensorsConnected = newInfo.sensorsConnected;
     this.actions = newInfo.actions;
