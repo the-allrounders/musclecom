@@ -7,6 +7,7 @@ import {emit, listen} from '../middleware/sockets';
 import RawSensorLog from '../db/models/raw-sensor-log';
 import UserInputLog from '../db/models/user-input-log';
 import ProcessedSensorLog from '../db/models/processed-sensor-log';
+import Settings from '../db/models/settings';
 
 class SignalInterpretation extends EventEmitter {
 
@@ -29,6 +30,24 @@ class SignalInterpretation extends EventEmitter {
     listen("chosenMenuItem", (chosenMenuItem) => {
       const userInputLog = new UserInputLog({
         menuItemID: chosenMenuItem,
+      });
+      userInputLog.save();
+    });
+
+    listen("settingsChanged", (settingsArgs) => {
+      settingsArgs.forEach(function(setting){
+        const foundSetting = Settings.find({ key: setting.name });
+        if(foundSetting.count() > 0 )
+        {
+          Settings.update({ _id: foundSetting._id }, { $set: { value: setting.value }});
+        }
+        else {
+          const newSetting = new Settings({
+            key: setting.name,
+            value: setting.value,
+          });
+          newSetting.save();
+        }
       });
     });
 
