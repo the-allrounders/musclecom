@@ -303,7 +303,6 @@ class SignalProcessing extends EventEmitter {
 export default new SignalProcessing();
 
 onConnection(async socket => {
-  console.log('test');
   socket.emit('info', {
     sensorsConnected: 2 + Math.floor(Math.random() * 5),
     actionsAvailable: Math.floor(Math.random() * 5),

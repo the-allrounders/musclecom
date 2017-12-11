@@ -158,6 +158,11 @@ class MenuScene extends Component {
         return category;
       });
 
+      if (categories.length > current && categories.length < offset) {
+        offset = 0;
+        current = 0;
+      }
+
       for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
         const pointer = offset % categories.length;
         categories[pointer].selected = true;
@@ -166,11 +171,6 @@ class MenuScene extends Component {
 
       if (offset > current + total) {
         current += total;
-      }
-
-      if (offset > categories.length) {
-        offset = 0;
-        current = 0;
       }
 
       this.setState({ categories, offset, current });
