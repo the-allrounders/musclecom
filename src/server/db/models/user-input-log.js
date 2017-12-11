@@ -5,8 +5,9 @@ const Schema = mongoose.Schema({
   menuItemID: {
     type: String,
   },
-  timeStamp: {
+  timestamp: {
     type: Date,
+    default: Date.now,
   },
 });
 

@@ -4,8 +4,9 @@ import EventEmitter from 'events';
 import SignalController from '../signal-controller';
 import SignalProcessing from '../signal-processing';
 import {emit, listen} from '../middleware/sockets';
-import RawSensorLog from '../db/models/raw-sensor-log'
-import ProcessedSensorLog from '../db/models/processed-sensor-log'
+import RawSensorLog from '../db/models/raw-sensor-log';
+import UserInputLog from '../db/models/user-input-log';
+import ProcessedSensorLog from '../db/models/processed-sensor-log';
 
 class SignalInterpretation extends EventEmitter {
 
@@ -23,6 +24,14 @@ class SignalInterpretation extends EventEmitter {
   }
 
   addSCEventListeners() {
+
+    //Chosen menu items listener from frontend.
+    listen("chosenMenuItem", (chosenMenuItem) => {
+      const userInputLog = new UserInputLog({
+        menuItemID: chosenMenuItem,
+      });
+    });
+
     SignalController.addListener("chosenAction", (action) => {
       console.info("chosen action", action);
       emit("chosenAction", {action});
