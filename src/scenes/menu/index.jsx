@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { autorun } from 'mobx';
 import PropTypes from 'prop-types';
 
 // Components
@@ -27,18 +26,11 @@ class MenuScene extends Component {
 
   componentWillMount() {
     const { actionStore } = this.props;
-
-    autorun(() => {
-      console.log(actionStore.actionsAvailable);
-      let total = 6;
-      if (
-        actionStore.actionsAvailable > 0 &&
-        actionStore.actionsAvailable > 3
-      ) {
-        total = actionStore.actionsAvailable * 2;
-      }
-      this.setState({ total }, this.getCategories());
-    });
+    let total = 6;
+    if (actionStore.actionsAvailable > 0 && actionStore.actionsAvailable > 3) {
+      total = actionStore.actionsAvailable * 2;
+    }
+    this.setState({ total }, this.getCategories);
   }
 
   componentWillUnmount() {
@@ -47,7 +39,6 @@ class MenuScene extends Component {
 
   // Get all the categories.
   getCategories = () => {
-    console.log('getCategories');
     const categories = [
       {
         id: '1234567890',
@@ -158,7 +149,10 @@ class MenuScene extends Component {
         return category;
       });
 
-      if (categories.length > current && categories.length < offset) {
+      if (
+        (categories.length > current && categories.length < offset) ||
+        offset === categories.length
+      ) {
         offset = 0;
         current = 0;
       }
