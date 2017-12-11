@@ -3,6 +3,7 @@
 import EventEmitter from 'events';
 import signalProcessing from '../signal-processing';
 import {emit} from '../middleware/sockets';
+import Settings from '../db/models/settings';
 
 class SignalController extends EventEmitter {
 
@@ -17,6 +18,13 @@ class SignalController extends EventEmitter {
     this.sensorChangeTimeout;
 
     this.latestAction = -1;
+
+    this.actionDelayTimeout = null;
+
+    const actionDelayTimeoutSetting = Settings.find({ key: "actionDelayTimeout" });
+    if(actionDelayTimeoutSetting.count() > 0 ) {
+      this.actionDelayTimeout = actionDelayTimeoutSetting[0];
+    }
   }
 
   initialEmits() {

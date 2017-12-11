@@ -37,8 +37,7 @@ class SignalInterpretation extends EventEmitter {
     listen("settingsChanged", (settingsArgs) => {
       settingsArgs.forEach(function(setting){
         const foundSetting = Settings.find({ key: setting.name });
-        if(foundSetting.count() > 0 )
-        {
+        if(foundSetting.count() > 0 ) {
           Settings.update({ _id: foundSetting._id }, { $set: { value: setting.value }});
         }
         else {
