@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import { autorun } from 'mobx';
 import PropTypes from 'prop-types';
 
 // Components
@@ -26,11 +27,17 @@ class MenuScene extends Component {
 
   componentWillMount() {
     const { actionStore } = this.props;
-    let total = 6;
-    if (actionStore.actionsAvailable > 0 && actionStore.actionsAvailable > 3) {
-      total = actionStore.actionsAvailable * 2;
-    }
-    this.setState({ total }, this.getCategories);
+
+    autorun(() => {
+      let total = 6;
+      if (
+        actionStore.actionsAvailable > 0 &&
+        actionStore.actionsAvailable > 3
+      ) {
+        total = actionStore.actionsAvailable * 2;
+      }
+      this.setState({ total }, this.getCategories);
+    });
   }
 
   componentWillUnmount() {
