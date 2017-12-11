@@ -1,4 +1,5 @@
 import MenuItem from './models/menu-item';
+import Settings from './models/settings';
 
 export default function() {
   MenuItem.count({}, (err, count) => {
@@ -47,6 +48,16 @@ export default function() {
       MenuItem.create(menuItems, (error, results) => {
         console.info(`Inserted into the db${results}`);
       });
+    }
+  });
+
+  Settings.count({}, (err, count) => {
+    if (count <= 0) {
+      const timeOutSetting = new Settings({
+        key: 'actionDelayTimeout',
+        value: 2000,
+      });
+      timeOutSetting.save();
     }
   });
 }
