@@ -40,8 +40,6 @@ class SignalController extends EventEmitter {
         this.sensorChangeTimeout = null;
       }
 
-      let timeoutTime = 2000;
-      //get timeout time from user settings
       let sensorString = String(sensor);
       this.sensorsObject[sensorString] = value;
       this.sensorChangeTimeout = setTimeout( () => {
@@ -64,7 +62,7 @@ class SignalController extends EventEmitter {
           clearTimeout(this.sensorChangeTimeout);
           this.sensorChangeTimeout = null;
         }
-      }, timeoutTime);
+      }, this.actionDelayTimeout);
     });
 
     signalProcessing.addListener("numberOfSensors", (numSensors) => {
@@ -85,4 +83,3 @@ onConnection(async socket => {
     sensors: signalProcessing.sensors,
   });
 });
-
