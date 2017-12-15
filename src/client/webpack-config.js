@@ -3,7 +3,8 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 export default {
   entry: [
-    'webpack-hot-middleware/client?reload=true',
+    'webpack-hot-middleware/client?reload=true&noInfo=true',
+    'react-hot-loader/patch',
     require.resolve('../client/index.jsx'),
   ],
   output: { path: '/' },
@@ -12,6 +13,17 @@ export default {
   },
   module: {
     rules: [
+      {
+        test: /^((?!\/fonts\/).)*\.svg$/,
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+          {
+            loader: 'react-svg-loader',
+          },
+        ],
+      },
       {
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/,

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
+import socket from '../../../../../client/Socket';
 // Components
 import CalibrateSensor from './CalibrateSensor';
 
@@ -14,11 +15,8 @@ class CalibrateSensorsComponent extends Component {
   };
 
   componentDidMount() {
-    this.props.actionStore.socket.on(
-      'startCalibration',
-      this.onStartCalibration,
-    );
-    this.props.actionStore.socket.on('stopCalibration', this.onStopCalibration);
+    socket.on('startCalibration', this.onStartCalibration);
+    socket.on('stopCalibration', this.onStopCalibration);
   }
 
   onStartCalibration = ({ action, channel, calibrationTime, startTime }) => {
@@ -39,7 +37,7 @@ class CalibrateSensorsComponent extends Component {
   };
 
   startCalibration = channel => {
-    this.props.actionStore.socket.emit('onCalibrate', channel);
+    socket.emit('onCalibrate', channel);
   };
 
   render() {

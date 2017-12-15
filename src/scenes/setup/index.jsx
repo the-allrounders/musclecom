@@ -4,6 +4,7 @@ import { inject, observer } from 'mobx-react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import qs from 'query-string';
 import { routes } from '../../router';
+import socket from '../../client/Socket';
 // Components
 import Admin from './Admin';
 import Client from './Client';
@@ -12,7 +13,7 @@ class SetupScene extends Component {
   static stepCount = 3;
 
   componentDidMount() {
-    this.props.actionStore.socket.on('step', this.step);
+    socket.on('step', this.step);
     const step = this.getStep();
     if (step === false) {
       this.props.history.push({ search: qs.stringify({ step: 1 }) });
@@ -20,7 +21,7 @@ class SetupScene extends Component {
   }
 
   componentWillUnmount() {
-    this.props.actionStore.socket.off('step');
+    socket.off('step');
   }
 
   getStep = () => {
