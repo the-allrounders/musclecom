@@ -139,18 +139,19 @@ class SignalProcessing extends EventEmitter {
       this.emit('numberOfSensors', sens);
     }
 
-    const dummySens = [
-      { channel: 1, connected: true, calibrated: true },
-      { channel: 2, connected: true, calibrated: false },
-      { channel: 3, connected: false, calibrated: false },
-      { channel: 4, connected: false, calibrated: false },
-    ];
+    if (this.sensors.length < 1) {
+      this.sensors = [
+        { channel: 1, connected: true, calibrated: true },
+        { channel: 2, connected: true, calibrated: false },
+        { channel: 3, connected: false, calibrated: false },
+        { channel: 4, connected: false, calibrated: false },
+      ];
+    }
 
-    this.sensors = dummySens;
     console.info('Emitting sensors');
 
     // Emit the number of sensors
-    this.emit('numberOfSensors', dummySens);
+    this.emit('numberOfSensors', this.sensors);
   }
 
   /**
@@ -177,6 +178,8 @@ class SignalProcessing extends EventEmitter {
     } else {
       action = 'max';
     }
+
+    console.info(`Calibrating: ${channel}, action: ${action}`);
 
     const startTime = moment().unix();
     emit('startCalibration', {
@@ -232,11 +235,6 @@ class SignalProcessing extends EventEmitter {
         }
       }
     }
-
-    if (!max) {
-      await this.checkChannels();
-    }
-    emit('stopCalibration', { channel });
   }
 
   /**
@@ -295,12 +293,6 @@ class SignalProcessing extends EventEmitter {
       }
 
       counter += 1;
-    }
-
-    if (this.dummy) {
-      setInterval(async () => {
-        await this.checkChannels();
-      }, 5000);
     }
   }
 

@@ -50,7 +50,9 @@ class SignalInterpretation extends EventEmitter {
     });
 
     SignalController.addListener("chosenAction", (action) => {
-      console.info("chosen action", action);
+      if (action > 0) {
+        console.info("chosen action", action);
+      }
       emit("chosenAction", {action});
     });
 
