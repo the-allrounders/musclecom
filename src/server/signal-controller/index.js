@@ -89,6 +89,7 @@ class SignalController extends EventEmitter {
         clearTimeout(this.sensorChangeTimeout);
         this.sensorChangeTimeout = null;
       }
+      this.resetSensorChangeTimeout();
     }, this.actionDelayTimeout);
   }
 }
