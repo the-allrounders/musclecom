@@ -26,8 +26,11 @@ class ActionStore {
     //   this.sensors[1].connected = true;
     // }, 5000);
 
+    const keysWithValues = {};
+
     const emitKey = (high, { key, code, ctrlKey }) => {
-      if (code.substr(0, 5) === 'Digit') {
+      if (code.substr(0, 5) === 'Digit' && keysWithValues[key] !== high) {
+        keysWithValues[key] = high;
         this.socket.emit(`mocksensor`, {
           high,
           key: parseInt(key, 10),
