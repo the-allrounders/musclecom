@@ -1,12 +1,10 @@
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import socket from '../client/Socket';
 import Sensor from './Objects/Sensor';
 
 class ActionStore {
   @observable action = null;
   @observable actionsAvailable = 0;
-  @observable sensorsCalibrated = undefined;
-  @observable sensorsConnected = undefined;
   @observable
   sensors = [
     new Sensor(1, false, false),
@@ -19,12 +17,23 @@ class ActionStore {
   @observable timer = 2000;
   @observable totalMenuItems = 3;
 
+  @computed
+  get sensorsCalibrated() {
+    return this.sensors.filter(sensor => sensor.calibrated).length;
+  }
+
+  @computed
+  get sensorsConnected() {
+    return this.sensors.filter(sensor => sensor.connected).length;
+  }
+
   constructor() {
     socket.on('action', this.setCurrentAction);
     socket.on('info', this.updateInfo);
-    // setTimeout(() => {
-    //   this.sensors[1].connected = true;
-    // }, 5000);
+    socket.on('numberOfSensors', this.updateSensors);
+    setTimeout(() => {
+      this.sensors[2].connected = true;
+    }, 5000);
 
     const keysWithValues = {};
 
@@ -47,19 +56,17 @@ class ActionStore {
     this.action = action;
   };
 
-  updateInfo = newInfo => {
-    Object.entries(newInfo).forEach(([key, value]) => {
-      if (key === 'ip') {
-        this.ip = `http://${newInfo.ip}:6969`;
-      } else if (key === 'sensors') {
-        newInfo.sensors.forEach(({ channel, connected, calibrated }) => {
-          const sensor = this.sensors.find(s => s.channel === channel);
-          sensor.connected = connected;
-          sensor.calibrated = calibrated;
-        });
-      } else {
-        this[key] = value;
-      }
+  updateInfo = ({ ip, actionsAvailable }) => {
+    this.ip = `http://${ip}:6969`;
+    this.actionsAvailable = actionsAvailable;
+  };
+
+  updateSensors = sensors => {
+    // console.log('sensors', sensors);
+    sensors.forEach(({ channel, connected, calibrated }) => {
+      const sensor = this.sensors.find(s => s.channel === channel);
+      sensor.connected = connected;
+      sensor.calibrated = calibrated;
     });
   };
 }
