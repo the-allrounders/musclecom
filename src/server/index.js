@@ -2,11 +2,18 @@ import { Server } from 'http';
 import express from 'express';
 import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
-import { promisify } from 'util';
+import log from 'yurnalist';
 import sockets from './middleware/sockets';
 import ui from './middleware/ui';
 import setDummyData from './db/dummy';
 import signalApi from './signal-api';
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+  process.exit(1);
+});
+
+log.info('Starting server...');
 
 const chromeLauncher = require('chrome-launcher');
 
@@ -41,8 +48,9 @@ app.use(ui);
   await signalApi.init();
 
   // Bind the server to port 6969
-  await promisify(server.listen)(6969);
-  console.log(`✅  server started on port 6969`);
+  await new Promise(r => server.listen(6969, r));
+
+  log.success(`server started on port 6969`);
 
   // Start the chrome browser on the raspberry pi.
   if (process.argv[2] === 'prod') {
