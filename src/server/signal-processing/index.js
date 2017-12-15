@@ -100,15 +100,14 @@ class SignalProcessing extends EventEmitter {
    *
    * @returns {*}
    */
-  checkChannels() {
-    return new Promise(async resolve => {
-      console.info('Checking number of sensors');
+  async checkChannels() {
+    console.info('Checking number of sensors');
 
-      // Our channel return
-      const sens = [];
+    // Our channel return
+    const sens = [];
 
-      if (!this.dummy) {
-        /*eslint-disable */ // Disable eslint for await in loop
+    if (!this.dummy) {
+      /*eslint-disable */ // Disable eslint for await in loop
         for(let count = 0; count < this.maxNumOfSensors; count += 1) {
           const objIndex = this.sensors.findIndex((obj => obj.channel === count));
           let newSens = { channel: count, connected: false, calibrated: false};
@@ -130,33 +129,27 @@ class SignalProcessing extends EventEmitter {
           sens.push(newSens);
         }
         /* eslint-enable */
-        this.numOfSensors = sens;
-        console.info(`Number of sensors final: ${this.numOfSensors}`);
+      this.numOfSensors = sens;
+      console.info(`Number of sensors final: ${this.numOfSensors}`);
 
-        resolve(() => {
-          console.info('Emitting sensors');
+      console.info('Emitting sensors');
 
-          // Emit the number of sensors
-          this.emit('numberOfSensors', sens);
-        });
-      }
+      // Emit the number of sensors
+      this.emit('numberOfSensors', sens);
+    }
 
-      const dummySens = [
-        { channel: 1, connected: true, calibrated: true },
-        { channel: 2, connected: true, calibrated: false },
-        { channel: 3, connected: false, calibrated: false },
-        { channel: 4, connected: false, calibrated: false },
-      ];
+    const dummySens = [
+      { channel: 1, connected: true, calibrated: true },
+      { channel: 2, connected: true, calibrated: false },
+      { channel: 3, connected: false, calibrated: false },
+      { channel: 4, connected: false, calibrated: false },
+    ];
 
-      this.sensors = dummySens;
+    this.sensors = dummySens;
+    console.info('Emitting sensors');
 
-      resolve(() => {
-        console.info('Emitting sensors');
-
-        // Emit the number of sensors
-        this.emit('numberOfSensors', dummySens);
-      });
-    });
+    // Emit the number of sensors
+    this.emit('numberOfSensors', dummySens);
   }
 
   /**
