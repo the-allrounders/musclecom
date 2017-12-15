@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 export default {
   entry: [
-    'webpack-hot-middleware/client?reload=true',
+    'webpack-hot-middleware/client?reload=true&noInfo=true',
     'react-hot-loader/patch',
     require.resolve('../client/index.jsx'),
   ],
