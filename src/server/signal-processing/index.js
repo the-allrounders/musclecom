@@ -3,6 +3,37 @@ import moment from 'moment';
 import { emit, listen } from '../middleware/sockets';
 
 class SignalProcessing extends EventEmitter {
+  init() {
+    if (this.initializing) {
+      return this.initializing;
+    }
+    this.initializing = this.realInit();
+    return this.initializing;
+  }
+
+  async realInit() {
+    // Dummy mode off
+    this.dummy = false;
+
+    // Try to import the module that allows us to read the adc
+    // If this fails return dummy data
+    try {
+      const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require, import/no-extraneous-dependencies
+      this.adc = new Ads1x15(0);
+    } catch (err) {
+      console.info(
+        'It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions',
+      );
+      this.dummy = true;
+    }
+
+    // Set initial number of signals / sensors.
+    await this.checkChannels();
+
+    // Start collecting data
+    this.startDataCollection();
+  }
+
   constructor() {
     console.info('Starting signal processing');
     super();
@@ -11,30 +42,7 @@ class SignalProcessing extends EventEmitter {
     this.maxNumOfSensors = 4;
     this.calibrationTime = 5000;
     this.sensors = [];
-
-    (async () => {
-      // Dummy mode off
-      this.dummy = false;
-
-      // Try to import the module that allows us to read the adc
-      // If this fails return dummy data
-      try {
-        const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require, import/no-extraneous-dependencies
-        this.adc = new Ads1x15(0);
-      } catch (err) {
-        console.info(
-          'It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions',
-        );
-        this.dummy = true;
-      }
-
-      // Set initial number of signals / sensors.
-      await this.checkChannels();
-
-      // Start collecting data
-      this.startDataCollection();
-      // await this.calibrateMin(1);
-    })();
+    this.intializing = null;
 
     this.setGlobalListeners();
   }
@@ -288,7 +296,7 @@ class SignalProcessing extends EventEmitter {
       }
 
       // Check for new sensors every once in a while
-      if (counter === 15000) {
+      if (counter === 5000) {
         await this.checkChannels(); // eslint-disable-line
         counter = 0;
       }
