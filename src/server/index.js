@@ -2,18 +2,19 @@ import { Server } from 'http';
 import express from 'express';
 import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
-import log from 'yurnalist';
+import { inspect } from 'util';
+import log from './log';
 import sockets from './middleware/sockets';
 import ui from './middleware/ui';
 import setDummyData from './db/dummy';
 import signalApi from './signal-api';
 
-process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+process.on('unhandledRejection', reason => {
+  log.error(inspect(reason));
   process.exit(1);
 });
 
-log.info('Starting server...');
+log.info('Starting application...');
 
 const chromeLauncher = require('chrome-launcher');
 
@@ -37,9 +38,17 @@ app.use(ui);
 
 (async () => {
   // Connect to mongodb
-  await mongoose.connect('mongodb://127.0.0.1:27017/musclecomdb', {
-    useMongoClient: true,
-  });
+  try {
+    await mongoose.connect('mongodb://127.0.0.1:27017/musclecomdb', {
+      useMongoClient: true,
+    });
+  } catch (error) {
+    if (error.message.indexOf('connect ECONNREFUSED') !== -1) {
+      log.error(`Mongodb isn't running.`);
+      process.exit(1);
+    }
+    throw error;
+  }
 
   // Insert dummy data if there is no data available yet.
   await setDummyData();
@@ -50,7 +59,7 @@ app.use(ui);
   // Bind the server to port 6969
   await new Promise(r => server.listen(6969, r));
 
-  log.success(`server started on port 6969`);
+  log.success(`Server started on port 6969`);
 
   // Start the chrome browser on the raspberry pi.
   if (process.argv[2] === 'prod') {
