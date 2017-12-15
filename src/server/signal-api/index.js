@@ -16,11 +16,10 @@ class SignalInterpretation extends EventEmitter {
 
     this.numberOfSensors = 0;
 
-    this.setupConnection();
     this.addSCEventListeners();
   }
 
-  setupConnection() {
+  async init() {
     emit("numberOfSensors", this.numberOfSensors);
   }
 
