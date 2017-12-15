@@ -73,7 +73,7 @@ class SignalController extends EventEmitter {
         for (let i = 0; i < this.numberOfSensors; i++) {
           this.sensorsObject[String(i)] = 0;
         }
-        this.emit("numberOfSensors", this.numOfSensors);
+        this.emit("numberOfSensors", this.numberOfSensors);
     });
   }
 
@@ -102,5 +102,4 @@ onConnection(async socket => {
     actionsAvailable: Math.floor(Math.random() * 5),
     ip: ip.v4.sync(),
   });
-
 });

@@ -5,6 +5,7 @@ import { emit, listen } from '../middleware/sockets';
 class SignalProcessing extends EventEmitter {
   init() {
     if (this.initializing) {
+      this.checkChannels();
       return this.initializing;
     }
     this.initializing = this.realInit();
@@ -201,7 +202,6 @@ class SignalProcessing extends EventEmitter {
 
     while (!cancel) {
       if (moment().unix() > startTime + this.calibrationTime / 1000) {
-        // clearInterval(checkDoneInterval);
         emit('stopCalibration', { channel });
         cancel = true;
 
@@ -295,6 +295,12 @@ class SignalProcessing extends EventEmitter {
       }
 
       counter += 1;
+    }
+
+    if (this.dummy) {
+      setInterval(async () => {
+        await this.checkChannels();
+      }, 5000);
     }
   }
 
