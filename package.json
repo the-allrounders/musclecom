@@ -68,7 +68,8 @@
     "webpack": "^3.8.1",
     "webpack-dev-middleware": "^1.12.1",
     "webpack-hot-middleware": "^2.20.0",
-    "window-or-global": "^1.0.1"
+    "window-or-global": "^1.0.1",
+    "yurnalist": "^0.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
