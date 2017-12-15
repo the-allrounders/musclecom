@@ -44,20 +44,22 @@ class SignalController extends EventEmitter {
 
       let sensorString = String(sensor);
       this.sensorsObject[sensorString] = value;
+      let binary = '';
+
+      for (let key in this.sensorsObject) {
+        // skip loop if the property is from prototype
+        if (!this.sensorsObject.hasOwnProperty(key)) continue;
+
+        let finalValue = this.sensorsObject[key];
+        let tempBinary = finalValue ? '1' : '0';
+        binary += tempBinary;
+        this.emit("recievedSignal", sensor, value);
+      }
+
+      let action = parseInt(binary, 2);
+      this.emit("intendedAction", action);
+
       this.sensorChangeTimeout = setTimeout( () => {
-        let binary = '';
-
-        for (let key in this.sensorsObject) {
-          // skip loop if the property is from prototype
-          if (!this.sensorsObject.hasOwnProperty(key)) continue;
-
-          let finalValue = this.sensorsObject[key];
-          let tempBinary = finalValue ? '1' : '0';
-          binary += tempBinary;
-          this.emit("recievedSignal", sensor, value);
-        }
-
-        let action = parseInt(binary, 2);
         this.emit("chosenAction", action);
 
         if(this.sensorChangeTimeout) {
