@@ -4,6 +4,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 export default {
   entry: [
     'webpack-hot-middleware/client?reload=true',
+    'react-hot-loader/patch',
     require.resolve('../client/index.jsx'),
   ],
   output: { path: '/' },
