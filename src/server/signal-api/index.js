@@ -67,7 +67,7 @@ class SignalInterpretation extends EventEmitter {
         console.info("number of sensors", numSensors);
         // mongodbmeuk
         this.numberOfSensors = numSensors;
-        emit("numberOfSensors", numberOfSensors);
+        emit("numberOfSensors", numSensors);
     });
 
     SignalProcessing.addListener("receivedSignal", ({sensor, value}) => {
