@@ -14,6 +14,17 @@ export default {
   module: {
     rules: [
       {
+        test: /^((?!\/fonts\/).)*\.svg$/,
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+          {
+            loader: 'react-svg-loader',
+          },
+        ],
+      },
+      {
         test: /\.jsx?$/,
         exclude: /(node_modules|bower_components)/,
         use: {
