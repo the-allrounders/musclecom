@@ -8,7 +8,7 @@ const router = Router();
 
 const compiler = webpack(webpackConfig);
 
-router.use(webpackMiddleware(compiler));
+router.use(webpackMiddleware(compiler, { noInfo: true }));
 
 router.use(webpackHotMiddleware(compiler));
 
