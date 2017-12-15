@@ -1,5 +1,5 @@
 import { observable } from 'mobx';
-import io from 'socket.io-client';
+import socket from '../client/Socket';
 import Sensor from './Objects/Sensor';
 
 class ActionStore {
@@ -17,11 +17,11 @@ class ActionStore {
   @observable actions = [];
   @observable ip = 'http://145.24.246.20:6969';
   @observable timer = 2000;
+  @observable totalMenuItems = 3;
 
   constructor() {
-    this.socket = io(window.location.origin);
-    this.socket.on('action', this.setCurrentAction);
-    this.socket.on('info', this.updateInfo);
+    socket.on('action', this.setCurrentAction);
+    socket.on('info', this.updateInfo);
     // setTimeout(() => {
     //   this.sensors[1].connected = true;
     // }, 5000);
@@ -31,7 +31,7 @@ class ActionStore {
     const emitKey = (high, { key, code, ctrlKey }) => {
       if (code.substr(0, 5) === 'Digit' && keysWithValues[key] !== high) {
         keysWithValues[key] = high;
-        this.socket.emit(`mocksensor`, {
+        socket.emit(`mocksensor`, {
           high,
           key: parseInt(key, 10),
           ctrlKey,
@@ -64,6 +64,6 @@ class ActionStore {
   };
 }
 
-const store = new ActionStore(io);
+const store = new ActionStore();
 export default store;
 export { ActionStore };
