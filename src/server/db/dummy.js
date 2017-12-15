@@ -1,63 +1,63 @@
 import MenuItem from './models/menu-item';
 import Settings from './models/settings';
 
-export default function() {
-  MenuItem.count({}, (err, count) => {
-    if (count <= 0) {
-      const menuParent1 = new MenuItem({
+export default async function() {
+  if ((await MenuItem.count()) === 0) {
+    console.log(
+      '⚠️ There were no menu items found. Creating some default items...',
+    );
+    const menuParent1 = new MenuItem({
+      parent: '',
+      name: 'Primair',
+      icon: '',
+      order: 0,
+    });
+    await menuParent1.save();
+
+    const menuItems = [
+      {
         parent: '',
-        name: 'Primair',
+        name: 'Alarm',
         icon: '',
         order: 0,
-      });
-      menuParent1.save();
+      },
+      {
+        parent: menuParent1._id,
+        name: 'Honger',
+        icon: '',
+        order: 1,
+      },
+      {
+        parent: menuParent1._id,
+        name: 'WC',
+        icon: '',
+        order: 2,
+      },
+      {
+        parent: menuParent1._id,
+        name: 'Spelletje',
+        icon: '',
+        order: 3,
+      },
+      {
+        parent: menuParent1._id,
+        name: 'Naar buiten',
+        icon: '',
+        order: 4,
+      },
+    ];
 
-      const menuItems = [
-        {
-          parent: '',
-          name: 'Alarm',
-          icon: '',
-          order: 0,
-        },
-        {
-          parent: menuParent1._id,
-          name: 'Honger',
-          icon: '',
-          order: 1,
-        },
-        {
-          parent: menuParent1._id,
-          name: 'WC',
-          icon: '',
-          order: 2,
-        },
-        {
-          parent: menuParent1._id,
-          name: 'Spelletje',
-          icon: '',
-          order: 3,
-        },
-        {
-          parent: menuParent1._id,
-          name: 'Naar buiten',
-          icon: '',
-          order: 4,
-        },
-      ];
+    const results = await MenuItem.create(menuItems);
+    console.info(`✅ Created ${results.length + 1} menu items.`);
+  }
 
-      MenuItem.create(menuItems, (error, results) => {
-        console.info(`Inserted into the db${results}`);
-      });
-    }
-  });
-
-  Settings.count({}, (err, count) => {
-    if (count <= 0) {
-      const timeOutSetting = new Settings({
-        key: 'actionDelayTimeout',
-        value: 2000,
-      });
-      timeOutSetting.save();
-    }
-  });
+  if ((await Settings.count()) === 0) {
+    console.warn('⚠️ There were no settings found... saving default settings.');
+    const timeOutSetting = new Settings({
+      key: 'actionDelayTimeout',
+      value: 2000,
+    });
+    await timeOutSetting.save();
+    console.debug(`✅ Saved default settings to database.`);
+  }
 }
