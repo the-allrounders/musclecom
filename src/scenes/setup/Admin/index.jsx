@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import socket from '../../../client/Socket';
 // Components
 import ProgressBar from '../ProgressBar';
 import SensorStep from './SensorStep';
@@ -15,7 +16,7 @@ class AdminSetupComponent extends Component {
   }
 
   onStep = step => {
-    this.props.actionStore.socket.emit('step', step);
+    socket.emit('step', step);
   };
 
   render() {
