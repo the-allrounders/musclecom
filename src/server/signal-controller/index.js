@@ -96,11 +96,10 @@ class SignalController extends EventEmitter {
 export default new SignalController();
 
 onConnection(async socket => {
+  await signalProcessing.init();
   socket.emit('info', {
-    sensorsConnected: 2 + Math.floor(Math.random() * 5),
     actionsAvailable: Math.floor(Math.random() * 5),
-    sensorsCalibrated: 2 + Math.floor(Math.random() * 5),
     ip: ip.v4.sync(),
-    sensors: signalProcessing.sensors,
   });
+
 });
