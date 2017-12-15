@@ -3,12 +3,6 @@ import moment from 'moment';
 import { emit, listen } from '../middleware/sockets';
 
 class SignalProcessing extends EventEmitter {
-  // async init() {
-  //   return {
-  //     numOfSensors: [],
-  //   };
-  // }
-
   constructor() {
     console.info('Starting signal processing');
     super();
@@ -47,7 +41,7 @@ class SignalProcessing extends EventEmitter {
 
   setGlobalListeners() {
     listen('onCalibrate', channel => {
-      this.calibrateMin(channel);
+      this.calibrate(channel, false);
     });
 
     listen('mocksensor', ({ high, key, cntrlKey }) => {
@@ -109,7 +103,7 @@ class SignalProcessing extends EventEmitter {
         /*eslint-disable */ // Disable eslint for await in loop
         for(let count = 0; count < this.maxNumOfSensors; count += 1) {
           const objIndex = this.sensors.findIndex((obj => obj.channel === count));
-          let newSens = {'channel': count, 'connected': false, 'calibrated': false};
+          let newSens = { channel: count, connected: false, calibrated: false};
 
           // Start reading the channel and break only if a value has returned
           let channelValue = await this.readChannel(count);
@@ -118,7 +112,7 @@ class SignalProcessing extends EventEmitter {
             if(objIndex > -1 && this.sensors[objIndex].max > 0) {
               newSens.calibrated = true;
             } else { // add the new active sensor to the active list
-              this.sensors.push({'channel': count, 'min': 3000, 'max': 0, 'value': channelValue});
+              this.sensors.push({ channel: count, min: 3000, max: 0, value: channelValue});
             }
           } else if(objIndex > -1) { // Remove the inactive sensor from the active list
             this.sensors = this.sensors.splice(objIndex, 1);
@@ -148,92 +142,100 @@ class SignalProcessing extends EventEmitter {
 
       this.sensors = dummySens;
 
-      return dummySens;
+      resolve(() => {
+        console.info('Emitting sensors');
+
+        // Emit the number of sensors
+        this.emit('numberOfSensors', dummySens);
+      });
     });
   }
 
-  // TODO: make calibration cancelable
-  calibrateMin(channel) {
+  /**
+   * Reset the sensor calibration
+   * @param channel
+   */
+  resetSensorCalibration(channel) {
+    const sensor = this.sensors.find(s => s.channel === channel);
+    sensor.min = 3000;
+    sensor.max = 0;
+  }
+
+  /**
+   * Calibrate the sensor and set the min
+   * @param channel
+   * @param max
+   * @returns {Promise<any>}
+   */
+  async calibrate(channel, max) {
+    let action = 'min';
+    // Reset the calibration the sensors
+    if (!max) {
+      this.resetSensorCalibration(channel);
+    } else {
+      action = 'max';
+    }
+
     const startTime = moment().unix();
     emit('startCalibration', {
       channel,
-      action: 'min',
+      action,
       calibrationTime: this.calibrationTime,
       startTime,
     });
 
-    return new Promise(async resolve => {
-      let count = 0;
-      const sensor = this.sensors.find(s => s.channel === channel);
+    // Current sensor
+    const sensor = this.sensors.find(s => s.channel === channel);
 
-      // TODO: temp
-      sensor.calibrated = false;
-      emit('info', { sensors: this.sensors });
+    // Post the number of sensors pre calibration
+    await this.checkChannels();
 
-      while (count <= this.calibrationTime / 100) {
-        console.info(`Calibration_counter:${count}`);
-         const value = await this.readChannel(channel); // eslint-disable-line
+    // Set our cancel boolean
+    let cancel = false;
 
-        if (value > 0) {
-          console.info(`SensorMin: ${sensor.min}`);
-          if (value < sensor.min) {
-            sensor.min = value;
-            console.info(`minval: ${value}`);
-          }
+    listen('cancelCalibration', () => {
+      cancel = true;
+      emit('canceledCalibration', { channel });
+    });
+
+    while (!cancel) {
+      if (moment().unix() > startTime + this.calibrationTime / 1000) {
+        // clearInterval(checkDoneInterval);
+        emit('stopCalibration', { channel });
+        cancel = true;
+
+        if (max) {
+          await this.checkChannels(); // eslint-disable-line
+          return;
         }
-        count += 1;
+        this.calibrate(channel, true);
+        return;
       }
 
-      const checkDoneInterval = setInterval(() => {
-        if (moment().unix() > startTime + this.calibrationTime / 1000) {
-          clearInterval(checkDoneInterval);
-          emit('stopCalibration', { channel });
+      // Read the values
+      const value = await this.readChannel(channel); // eslint-disable-line
 
-          this.calibrateMax(channel);
-          resolve();
-        }
-      }, 100);
-    });
-  }
-
-  calibrateMax(channel) {
-    const startTime = moment().unix();
-    emit('startCalibration', {
-      channel,
-      action: 'max',
-      calibrationTime: this.calibrationTime,
-      startTime,
-    });
-
-    return new Promise(async resolve => {
-      let count = 0;
-      const sensor = this.sensors.find(s => s.channel === channel);
-      while (count <= this.calibrationTime / 100) {
-        console.info(`Calibration_counter:${count}`);
-        const value = await this.readChannel(channel); // eslint-disable-line
-
+      if (max) {
         if (value > 0) {
-          console.info(`SensorMin: ${sensor.max}`);
-          if (value < sensor.max) {
+          console.info(`SensorMax: ${sensor.max}`);
+          if (value > sensor.max) {
             sensor.max = value;
             console.info(`maxval: ${value}`);
           }
         }
-        count += 1;
-      }
-
-      // TODO: temp
-      sensor.calibrated = true;
-
-      const checkDoneInterval = setInterval(() => {
-        if (moment().unix() > startTime + this.calibrationTime / 1000) {
-          clearInterval(checkDoneInterval);
-          emit('stopCalibration', { channel });
-          emit('info', { sensors: this.sensors });
-          resolve();
+      } else if (value > 0) {
+        console.info(`SensorMin: ${sensor.min}`);
+        if (value < sensor.min) {
+          sensor.min = value;
+          console.info(`minval: ${value}`);
         }
-      }, 100);
-    });
+      }
+    }
+
+    if (!max) {
+      await this.checkChannels();
+    }
+    emit('stopCalibration', { channel });
   }
 
   /**
