@@ -22,10 +22,12 @@ class SignalController extends EventEmitter {
 
     this.actionDelayTimeout = null;
 
-    const actionDelayTimeoutSetting = Settings.find({ key: "actionDelayTimeout" });
-    if(actionDelayTimeoutSetting.count() > 0 ) {
-      this.actionDelayTimeout = actionDelayTimeoutSetting[0];
-    }
+    Settings.find({ key: "actionDelayTimeout" }, (err, result) => {
+      console.info("actionDelayResult", result);
+      if(result.length > 0 ) {
+        this.actionDelayTimeout = result[0].value;
+      }
+    });
   }
 
   initialEmits() {
