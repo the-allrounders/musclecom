@@ -1,5 +1,5 @@
 import { observable, computed } from 'mobx';
-import socket from '../client/Socket';
+import socket from '../Socket/index';
 import Sensor from './Objects/Sensor';
 
 class ActionStore {

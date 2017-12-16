@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import socket from '../../../client/Socket';
+import socket from '../../../Socket';
 // Components
 import ProgressBar from '../ProgressBar';
 import SensorStep from './SensorStep';

@@ -5,7 +5,7 @@ export default {
   entry: [
     'webpack-hot-middleware/client?reload=true&noInfo=true',
     'react-hot-loader/patch',
-    require.resolve('../client/index.jsx'),
+    require.resolve('./index.jsx'),
   ],
   output: { path: '/' },
   resolve: {

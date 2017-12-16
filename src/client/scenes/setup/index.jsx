@@ -4,7 +4,7 @@ import { inject, observer } from 'mobx-react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import qs from 'query-string';
 import { routes } from '../../router';
-import socket from '../../client/Socket';
+import socket from '../../Socket';
 // Components
 import Admin from './Admin';
 import Client from './Client';
