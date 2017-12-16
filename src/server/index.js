@@ -42,6 +42,7 @@ app.use(ui);
     await mongoose.connect('mongodb://127.0.0.1:27017/musclecomdb', {
       useMongoClient: true,
     });
+    log.info('Connected to mongodb.');
   } catch (error) {
     if (error.message.indexOf('connect ECONNREFUSED') !== -1) {
       log.error(`Mongodb isn't running.`);
