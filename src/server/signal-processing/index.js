@@ -108,28 +108,34 @@ class SignalProcessing extends EventEmitter {
     const sens = [];
 
     if (!this.dummy) {
-      /*eslint-disable */ // Disable eslint for await in loop
-        for(let count = 0; count < this.maxNumOfSensors; count += 1) {
-          const objIndex = this.sensors.findIndex((obj => obj.channel === count));
-          let newSens = { channel: count, connected: false, calibrated: false};
+      for (let count = 0; count < this.maxNumOfSensors; count += 1) {
+        const objIndex = this.sensors.findIndex(obj => obj.channel === count);
+        const newSens = { channel: count, connected: false, calibrated: false };
 
-          // Start reading the channel and break only if a value has returned
-          let channelValue = await this.readChannel(count);
-          if(channelValue > 10) { // Check for values larger than 10 to avoid channel interference
-            newSens.connected = true;
-            if(objIndex > -1 && this.sensors[objIndex].max > 0) {
-              newSens.calibrated = true;
-            } else { // add the new active sensor to the active list
-              this.sensors.push({ channel: count, min: 3000, max: 0, value: channelValue});
-            }
-          } else if(objIndex > -1) { // Remove the inactive sensor from the active list
-            this.sensors = this.sensors.splice(objIndex, 1);
+        // Start reading the channel and break only if a value has returned
+        const channelValue = await this.readChannel(count); // eslint-disable-line no-await-in-loop
+        if (channelValue > 10) {
+          // Check for values larger than 10 to avoid channel interference
+          newSens.connected = true;
+          if (objIndex > -1 && this.sensors[objIndex].max > 0) {
+            newSens.calibrated = true;
+          } else {
+            // add the new active sensor to the active list
+            this.sensors.push({
+              channel: count,
+              min: 3000,
+              max: 0,
+              value: channelValue,
+            });
           }
-
-          // Return our channels
-          sens.push(newSens);
+        } else if (objIndex > -1) {
+          // Remove the inactive sensor from the active list
+          this.sensors = this.sensors.splice(objIndex, 1);
         }
-        /* eslint-enable */
+
+        // Return our channels
+        sens.push(newSens);
+      }
       this.numOfSensors = sens;
       console.info(`Number of sensors final: ${this.numOfSensors}`);
 
@@ -209,7 +215,7 @@ class SignalProcessing extends EventEmitter {
         cancel = true;
 
         if (max) {
-          await this.checkChannels(); // eslint-disable-line
+          await this.checkChannels(); // eslint-disable-line no-await-in-loop
           return;
         }
         this.calibrate(channel, true);
@@ -217,7 +223,7 @@ class SignalProcessing extends EventEmitter {
       }
 
       // Read the values
-      const value = await this.readChannel(channel); // eslint-disable-line
+      const value = await this.readChannel(channel); // eslint-disable-line no-await-in-loop
 
       if (max) {
         if (value > 0) {
@@ -249,7 +255,7 @@ class SignalProcessing extends EventEmitter {
     while (this.dataCollection && !this.dummy) {
       console.log(this.sensors);
       for (let index = 0; index < this.sensors.length; index += 1) {
-        const value = await this.readChannel(this.sensors[index].channel); // eslint-disable-line
+        const value = await this.readChannel(this.sensors[index].channel); // eslint-disable-line no-await-in-loop
 
         if (value > 10) {
           // Saving to database
@@ -288,7 +294,7 @@ class SignalProcessing extends EventEmitter {
 
       // Check for new sensors every once in a while
       if (counter === 5000) {
-        await this.checkChannels(); // eslint-disable-line
+        await this.checkChannels(); // eslint-disable-line no-await-in-loop
         counter = 0;
       }
 

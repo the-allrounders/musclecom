@@ -1,91 +1,72 @@
-/* eslint-disable */
-
 import EventEmitter from 'events';
+import ip from 'internal-ip';
 import signalProcessing from '../signal-processing';
-import { emit, onConnection } from '../middleware/sockets';
+import { onConnection } from '../middleware/sockets';
 import Settings from '../db/models/settings';
-import ip from "internal-ip";
 
 class SignalController extends EventEmitter {
-
   constructor() {
     super();
 
     this.numberOfSensors = 0;
     this.addSPEventListeners();
 
-    this.sensorsObject = {};
-
-    this.sensorChangeTimeout;
+    this.sensors = [];
 
     this.currentAction = 0;
 
     this.actionDelayTimeout = null;
 
-    Settings.find({ key: "actionDelayTimeout" }, (err, result) => {
-      console.info("actionDelayResult", result);
-      if(result.length > 0 ) {
+    Settings.find({ key: 'actionDelayTimeout' }, (err, result) => {
+      console.info('actionDelayResult', result);
+      if (result.length > 0) {
         this.actionDelayTimeout = result[0].value;
       }
     });
 
     this.resetSensorChangeTimeout();
 
-    for (let i = 0; i < this.numberOfSensors; i++) {
-      this.sensorsObject[String(i)] = 0;
+    for (let i = 0; i < this.numberOfSensors; i += 1) {
+      this.sensors.push(0);
     }
   }
 
   initialEmits() {
-    this.emit("numberOfSensors", this.numOfSensors);
+    this.emit('numberOfSensors', this.numOfSensors);
   }
 
   addSPEventListeners() {
-    signalProcessing.addListener("receivedSignal", ({sensor, value}) => {
+    signalProcessing.addListener('receivedSignal', ({ sensor, value }) => {
       console.log(`Sensor ${sensor} is now ${value ? 'HIGH' : 'LOW'}`);
       this.resetSensorChangeTimeout();
 
-      let sensorString = String(sensor);
-      this.sensorsObject[sensorString] = value;
-      let binary = '';
-
-      for (let key in this.sensorsObject) {
-        // skip loop if the property is from prototype
-        if (!this.sensorsObject.hasOwnProperty(key)) continue;
-
-        let finalValue = this.sensorsObject[key];
-        console.info("logFinalValueSensorObject", this.sensorsObject);
-        let tempBinary = finalValue ? '1' : '0';
-        binary += tempBinary;
-        this.emit("recievedSignal", sensor, value);
-      }
-
-      binary = binary.split("").reverse().join("");
+      this.sensors[sensor] = value;
+      const binary = [...this.sensors].reverse().join('');
       this.currentAction = parseInt(binary, 2);
-      this.emit("intendedAction", this.currentAction);
+      this.emit('intendedAction', this.currentAction);
 
       this.resetSensorChangeTimeout();
     });
 
-    signalProcessing.addListener("numberOfSensors", (numSensors) => {
-        this.numberOfSensors = numSensors;
-        this.sensorsObject = {};
-        for (let i = 0; i < this.numberOfSensors; i++) {
-          this.sensorsObject[String(i)] = 0;
-        }
-        this.emit("numberOfSensors", this.numberOfSensors);
+    signalProcessing.addListener('numberOfSensors', numSensors => {
+      this.numberOfSensors = numSensors;
+      this.sensors = [];
+      for (let i = 0; i < this.numberOfSensors; i += 1) {
+        this.sensors.push(0);
+      }
+      this.emit('numberOfSensors', this.numberOfSensors);
     });
   }
 
   resetSensorChangeTimeout() {
-    if(this.sensorChangeTimeout) {
+    if (this.sensorChangeTimeout) {
       clearTimeout(this.sensorChangeTimeout);
       this.sensorChangeTimeout = null;
     }
-    this.sensorChangeTimeout = setTimeout( () => {
-      this.emit("chosenAction", this.currentAction);
+    this.sensorChangeTimeout = setTimeout(() => {
+      this.emit('chosenAction', this.currentAction);
 
-      if(this.sensorChangeTimeout) {
+      if (this.sensorChangeTimeout) {
         clearTimeout(this.sensorChangeTimeout);
         this.sensorChangeTimeout = null;
       }

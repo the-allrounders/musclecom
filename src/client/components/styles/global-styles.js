@@ -1,6 +1,6 @@
-/* eslint-disable */
 import { injectGlobal } from 'styled-components';
 
+// eslint-disable-next-line no-unused-expressions
 injectGlobal`
   /* reset stylesheet */
   /* stylelint-disable */
