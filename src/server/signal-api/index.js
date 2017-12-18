@@ -1,6 +1,7 @@
+import ip from 'internal-ip';
 import SignalController from '../signal-controller';
 import SignalProcessing from '../signal-processing';
-import { emit, listen } from '../middleware/sockets';
+import { emit, listen, onConnection } from '../middleware/sockets';
 import RawSensorLog from '../db/models/raw-sensor-log';
 import UserInputLog from '../db/models/user-input-log';
 import ProcessedSensorLog from '../db/models/processed-sensor-log';
@@ -8,12 +9,39 @@ import Settings from '../db/models/settings';
 import MenuItem from '../db/models/menu-item';
 
 class SignalInterpretation {
-  static async init() {
+  async init() {
     this.addSCEventListeners();
+
+    this.ip = await ip.v4();
+    this.actionsAvailable = 0;
+    this.sensors = [];
+
     await SignalController.init();
   }
 
-  static addSCEventListeners() {
+  /**
+   * This sends (new) info to one or all sockets.
+   *
+   * Use the socket parameter to send this to only one socket (on connection)
+   * and omit this parameter to send info to all parameters (when some info
+   * changed).
+   *
+   * @param socket
+   */
+  emitInfo(socket = null) {
+    const info = {
+      actionsAvailable: this.actionsAvailable,
+      sensors: this.sensors,
+      ip: this.ip,
+    };
+    if (socket) socket.emit('info', info);
+    else emit('info', info);
+  }
+
+  addSCEventListeners() {
+    // As soon as someone connects, send latest info.
+    onConnection(socket => this.emitInfo(socket));
+
     // Chosen menu items listener from frontend.
     listen('chosenMenuItem', chosenMenuItem => {
       const userInputLog = new UserInputLog({
@@ -109,10 +137,14 @@ class SignalInterpretation {
       processedSensorLog.save();
     });
 
-    SignalController.addListener('sensors', sensors => {
-      console.info('sensor data', sensors);
-      emit('sensors', sensors);
-    });
+    SignalController.addListener(
+      'sensors-data',
+      ({ sensors, actionsAvailable }) => {
+        this.actionsAvailable = actionsAvailable;
+        this.sensors = sensors;
+        this.emitInfo();
+      },
+    );
 
     SignalProcessing.addListener('receivedSignal', ({ sensor, value }) => {
       const rawSensorLog = new RawSensorLog({
@@ -124,4 +156,4 @@ class SignalInterpretation {
   }
 }
 
-export default SignalInterpretation;
+export default new SignalInterpretation();

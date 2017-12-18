@@ -1,7 +1,5 @@
 import EventEmitter from 'events';
-import ip from 'internal-ip';
 import signalProcessing from '../signal-processing';
-import { onConnection } from '../middleware/sockets';
 import Settings from '../db/models/settings';
 
 class SignalController extends EventEmitter {
@@ -45,7 +43,11 @@ class SignalController extends EventEmitter {
 
     signalProcessing.addListener('sensors', sensors => {
       this.sensorValues = sensors.map(() => 0);
-      this.emit('sensors', sensors);
+      this.emit('sensors-data', {
+        sensors,
+        actionsAvailable:
+          2 ** sensors.filter(s => s.connected && s.calibrated).length,
+      });
     });
   }
 
@@ -67,10 +69,3 @@ class SignalController extends EventEmitter {
 }
 
 export default new SignalController();
-
-onConnection(async socket => {
-  socket.emit('info', {
-    actionsAvailable: Math.floor(Math.random() * 5),
-    ip: ip.v4.sync(),
-  });
-});

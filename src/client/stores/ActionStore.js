@@ -31,9 +31,6 @@ class ActionStore {
     socket.on('action', this.setCurrentAction);
     socket.on('info', this.updateInfo);
     socket.on('numberOfSensors', this.updateSensors);
-    setTimeout(() => {
-      this.sensors[2].connected = true;
-    }, 5000);
 
     const keysWithValues = {};
 
@@ -56,12 +53,15 @@ class ActionStore {
     this.action = action;
   };
 
-  updateInfo = ({ ip, actionsAvailable }) => {
+  updateInfo = ({ ip, actionsAvailable, sensors }) => {
+    console.log(`Recieved new info from the back-end!
+    Ip: ${ip}
+    Actions available: ${actionsAvailable}
+    Sensors:`);
+    console.table(sensors);
+
     this.ip = `http://${ip}:6969`;
     this.actionsAvailable = actionsAvailable;
-  };
-
-  updateSensors = sensors => {
     sensors.forEach(({ channel, connected, calibrated }) => {
       const sensor = this.sensors.find(s => s.channel === channel);
       sensor.connected = connected;
