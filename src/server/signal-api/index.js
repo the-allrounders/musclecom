@@ -18,8 +18,8 @@ class SignalInterpretation {
     this.menuItems = [];
     this.settings = [];
 
-    this.getMenuItems();
-    this.getSettings();
+    await this.getMenuItems();
+    await this.getSettings();
 
     await SignalController.init();
   }
@@ -90,10 +90,10 @@ class SignalInterpretation {
         default:
           console.info('You can only add / delete or update');
       }
-      this.getMenuItems();
+      await this.getMenuItems();
     });
 
-    listen('settingChanged', settingArgs => {
+    listen('settingChanged', async settingArgs => {
       let newSetting = null;
       switch (settingArgs.action) {
         case 'add':
@@ -122,7 +122,7 @@ class SignalInterpretation {
         default:
           console.info('You can only add / delete or update');
       }
-      this.getSettings();
+      await this.getSettings();
     });
 
     SignalController.addListener('chosenAction', action => {
@@ -165,15 +165,13 @@ class SignalInterpretation {
   }
 
   async getMenuItems() {
-    this.menuItems = await MenuItem.find({}, () => {
-      this.emitInfo();
-    });
+    this.menuItems = await MenuItem.find({});
+    this.emitInfo();
   }
 
   async getSettings() {
-    this.settings = await Settings.find({}, () => {
-      this.emitInfo();
-    });
+    this.settings = await Settings.find({});
+    this.emitInfo();
   }
 }
 
