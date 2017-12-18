@@ -7,11 +7,9 @@ import Settings from '../db/models/settings';
 class SignalController extends EventEmitter {
   constructor() {
     super();
-
-    this.numberOfSensors = 0;
     this.addSPEventListeners();
 
-    this.sensors = [];
+    this.sensorValues = [];
 
     this.currentAction = 0;
 
@@ -25,14 +23,11 @@ class SignalController extends EventEmitter {
     });
 
     this.resetSensorChangeTimeout();
-
-    for (let i = 0; i < this.numberOfSensors; i += 1) {
-      this.sensors.push(0);
-    }
   }
 
-  initialEmits() {
-    this.emit('numberOfSensors', this.numOfSensors);
+  // eslint-disable-next-line class-methods-use-this
+  async init() {
+    await signalProcessing.init();
   }
 
   addSPEventListeners() {
@@ -40,21 +35,17 @@ class SignalController extends EventEmitter {
       console.log(`Sensor ${sensor} is now ${value ? 'HIGH' : 'LOW'}`);
       this.resetSensorChangeTimeout();
 
-      this.sensors[sensor] = value;
-      const binary = [...this.sensors].reverse().join('');
+      this.sensorValues[sensor] = value;
+      const binary = [...this.sensorValues].reverse().join('');
       this.currentAction = parseInt(binary, 2);
       this.emit('intendedAction', this.currentAction);
 
       this.resetSensorChangeTimeout();
     });
 
-    signalProcessing.addListener('numberOfSensors', numSensors => {
-      this.numberOfSensors = numSensors;
-      this.sensors = [];
-      for (let i = 0; i < this.numberOfSensors; i += 1) {
-        this.sensors.push(0);
-      }
-      this.emit('numberOfSensors', this.numberOfSensors);
+    signalProcessing.addListener('sensors', sensors => {
+      this.sensorValues = sensors.map(() => 0);
+      this.emit('sensors', sensors);
     });
   }
 
@@ -78,7 +69,6 @@ class SignalController extends EventEmitter {
 export default new SignalController();
 
 onConnection(async socket => {
-  await signalProcessing.init();
   socket.emit('info', {
     actionsAvailable: Math.floor(Math.random() * 5),
     ip: ip.v4.sync(),

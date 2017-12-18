@@ -1,4 +1,3 @@
-import EventEmitter from 'events';
 import SignalController from '../signal-controller';
 import SignalProcessing from '../signal-processing';
 import { emit, listen } from '../middleware/sockets';
@@ -7,20 +6,13 @@ import UserInputLog from '../db/models/user-input-log';
 import ProcessedSensorLog from '../db/models/processed-sensor-log';
 import Settings from '../db/models/settings';
 
-class SignalInterpretation extends EventEmitter {
-  constructor() {
-    super();
-
-    this.numberOfSensors = 0;
-
+class SignalInterpretation {
+  static async init() {
     this.addSCEventListeners();
+    await SignalController.init();
   }
 
-  async init() {
-    emit('numberOfSensors', this.numberOfSensors);
-  }
-
-  addSCEventListeners() {
+  static addSCEventListeners() {
     // Chosen menu items listener from frontend.
     listen('chosenMenuItem', chosenMenuItem => {
       const userInputLog = new UserInputLog({
@@ -68,11 +60,9 @@ class SignalInterpretation extends EventEmitter {
       processedSensorLog.save();
     });
 
-    SignalController.addListener('numberOfSensors', numSensors => {
-      console.info('number of sensors', numSensors);
-      // mongodbmeuk
-      this.numberOfSensors = numSensors;
-      emit('numberOfSensors', numSensors);
+    SignalController.addListener('sensors', sensors => {
+      console.info('sensor data', sensors);
+      emit('sensors', sensors);
     });
 
     SignalProcessing.addListener('receivedSignal', ({ sensor, value }) => {
@@ -85,4 +75,4 @@ class SignalInterpretation extends EventEmitter {
   }
 }
 
-export default new SignalInterpretation();
+export default SignalInterpretation;
