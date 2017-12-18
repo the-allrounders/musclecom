@@ -15,6 +15,11 @@ class SignalInterpretation {
     this.ip = await ip.v4();
     this.actionsAvailable = 0;
     this.sensors = [];
+    this.menuItems = [];
+    this.settings = [];
+
+    this.getMenuItems();
+    this.getSettings();
 
     await SignalController.init();
   }
@@ -33,6 +38,8 @@ class SignalInterpretation {
       actionsAvailable: this.actionsAvailable,
       sensors: this.sensors,
       ip: this.ip,
+      menuItems: this.menuItems,
+      settings: this.settings,
     };
     if (socket) socket.emit('info', info);
     else emit('info', info);
@@ -83,6 +90,7 @@ class SignalInterpretation {
         default:
           console.info('You can only add / delete or update');
       }
+      this.getMenuItems();
     });
 
     listen('settingChanged', settingArgs => {
@@ -114,6 +122,7 @@ class SignalInterpretation {
         default:
           console.info('You can only add / delete or update');
       }
+      this.getSettings();
     });
 
     SignalController.addListener('chosenAction', action => {
@@ -153,6 +162,16 @@ class SignalInterpretation {
       });
       rawSensorLog.save();
     });
+  }
+
+  getMenuItems() {
+    this.menuItems = MenuItem.find({});
+    this.emitInfo();
+  }
+
+  getSettings() {
+    this.settings = Settings.find({});
+    this.emitInfo();
   }
 }
 
