@@ -5,6 +5,7 @@ import RawSensorLog from '../db/models/raw-sensor-log';
 import UserInputLog from '../db/models/user-input-log';
 import ProcessedSensorLog from '../db/models/processed-sensor-log';
 import Settings from '../db/models/settings';
+import MenuItem from '../db/models/menu-item';
 
 class SignalInterpretation {
   static async init() {
@@ -21,22 +22,70 @@ class SignalInterpretation {
       userInputLog.save();
     });
 
-    listen('settingsChanged', settingsArgs => {
-      settingsArgs.forEach(setting => {
-        const foundSetting = Settings.find({ key: setting.name });
-        if (foundSetting.count() > 0) {
-          Settings.update(
-            { _id: foundSetting._id },
-            { $set: { value: setting.value } },
+    listen('menuChanged', async menuArgs => {
+      let menuItem = null;
+      switch (menuArgs.action) {
+        case 'add':
+          menuItem = new MenuItem({
+            parent: menuArgs.menuItem.parent,
+            name: menuArgs.menuItem.name,
+            icon: menuArgs.menuItem.icon,
+            order: menuArgs.menuItem.order,
+          });
+          await menuItem.save();
+          break;
+        case 'delete':
+          MenuItem.deleteOne({ name: menuArgs.menuItem.name }, () => {
+            console.info(`Deleted menu item:${menuArgs.menuItem.name}`);
+          });
+          break;
+        case 'update':
+          MenuItem.findOneAndUpdate(
+            { name: menuArgs.menuItem.name },
+            {
+              parent: menuArgs.menuItem.parent,
+              icon: menuArgs.menuItem.parent,
+              order: menuArgs.menuItem.order,
+            },
+            () => {
+              console.info(`Updated menu item:${menuArgs.menuItem.name}`);
+            },
           );
-        } else {
-          const newSetting = new Settings({
-            key: setting.name,
-            value: setting.value,
+          break;
+        default:
+          console.info('You can only add / delete or update');
+      }
+    });
+
+    listen('settingChanged', settingArgs => {
+      let newSetting = null;
+      switch (settingArgs.action) {
+        case 'add':
+          newSetting = new Settings({
+            key: settingArgs.setting.key,
+            value: settingArgs.setting.value,
           });
           newSetting.save();
-        }
-      });
+          break;
+        case 'delete':
+          Settings.deleteOne({ key: settingArgs.setting.key }, () => {
+            console.info(`Deleted setting: ${settingArgs.setting.key}`);
+          });
+          break;
+        case 'update':
+          Settings.findOneAndUpdate(
+            { key: settingArgs.setting.key },
+            {
+              value: settingArgs.setting.value,
+            },
+            () => {
+              console.info(`Updated setting: ${settingArgs.setting.key}`);
+            },
+          );
+          break;
+        default:
+          console.info('You can only add / delete or update');
+      }
     });
 
     SignalController.addListener('chosenAction', action => {
