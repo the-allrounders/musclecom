@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import ip from 'internal-ip';
 import signalProcessing from '../signal-processing';
-import { onConnection } from '../middleware/sockets';
+import { emit, onConnection } from '../middleware/sockets';
 import Settings from '../db/models/settings';
 
 class SignalController extends EventEmitter {
@@ -32,7 +32,7 @@ class SignalController extends EventEmitter {
   }
 
   initialEmits() {
-    this.emit('numberOfSensors', this.numOfSensors);
+    emit('numberOfSensors', this.numOfSensors);
   }
 
   addSPEventListeners() {
@@ -43,7 +43,8 @@ class SignalController extends EventEmitter {
       this.sensors[sensor] = value;
       const binary = [...this.sensors].reverse().join('');
       this.currentAction = parseInt(binary, 2);
-      this.emit('intendedAction', this.currentAction);
+      console.log(emit);
+      emit('intendedAction', this.currentAction);
 
       this.resetSensorChangeTimeout();
     });
@@ -54,7 +55,7 @@ class SignalController extends EventEmitter {
       for (let i = 0; i < this.numberOfSensors; i += 1) {
         this.sensors.push(0);
       }
-      this.emit('numberOfSensors', this.numberOfSensors);
+      emit('numberOfSensors', this.numberOfSensors);
     });
   }
 
@@ -64,7 +65,7 @@ class SignalController extends EventEmitter {
       this.sensorChangeTimeout = null;
     }
     this.sensorChangeTimeout = setTimeout(() => {
-      this.emit('chosenAction', this.currentAction);
+      emit('chosenAction', this.currentAction);
 
       if (this.sensorChangeTimeout) {
         clearTimeout(this.sensorChangeTimeout);
