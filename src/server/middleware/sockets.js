@@ -57,7 +57,7 @@ export default function(newIo) {
 /**
  * This uses our own 'onConnection' function to keep track of connections and attach listeners.
  */
-onConnection(async socket => {
+onConnection(socket => {
   // Keep the sockets array up-to-date.
   sockets.push(socket);
   socket.on('disconnect', () => sockets.splice(sockets.indexOf(socket), 1));

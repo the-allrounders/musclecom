@@ -30,7 +30,6 @@ class ActionStore {
   constructor() {
     socket.on('action', this.setCurrentAction);
     socket.on('info', this.updateInfo);
-    socket.on('numberOfSensors', this.updateSensors);
 
     const keysWithValues = {};
 
