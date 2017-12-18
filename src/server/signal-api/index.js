@@ -164,14 +164,14 @@ class SignalInterpretation {
     });
   }
 
-  getMenuItems() {
-    this.menuItems = MenuItem.find({}, () => {
+  async getMenuItems() {
+    this.menuItems = await MenuItem.find({}, () => {
       this.emitInfo();
     });
   }
 
-  getSettings() {
-    this.settings = Settings.find({}, () => {
+  async getSettings() {
+    this.settings = await Settings.find({}, () => {
       this.emitInfo();
     });
   }
