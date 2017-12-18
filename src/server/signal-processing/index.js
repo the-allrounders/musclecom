@@ -40,10 +40,20 @@ class SignalProcessing extends EventEmitter {
     super();
 
     // Define our constants
-    this.maxNumOfSensors = 4;
     this.calibrationTime = 5000;
     this.sensors = [];
-    this.intializing = null;
+    for (let i = 0; i < 4; i += 1) {
+      this.sensors.push({
+        channel: i + 1,
+        min: 3000,
+        max: 0,
+        value: 0,
+        avg: 0,
+        sd: 0,
+        connected: false,
+        calibrated: false,
+      });
+    }
 
     this.setGlobalListeners();
   }
@@ -63,7 +73,7 @@ class SignalProcessing extends EventEmitter {
       this.sensors.forEach((s, i) => {
         s.connected = i < numOfSensors; // eslint-disable-line no-param-reassign
       });
-      this.emit('sensors', this.sensors);
+      this.emitSensors();
     });
   }
 
@@ -72,35 +82,31 @@ class SignalProcessing extends EventEmitter {
    *
    * @param channel
    */
-  readChannel(channel) {
-    console.info(`Reading channel: ${channel}`);
+  async readChannel(channel) {
+    // console.info(`Reading channel: ${channel}`);
     if (!this.dummy && !this.adc.busy) {
-      return new Promise(async resolve => {
-        const samplesPerSecond = '250'; // see index.js for allowed values for your chip
-        const progGainAmp = '4096'; // see index.js for allowed values for your chip
+      const samplesPerSecond = '250'; // see index.js for allowed values for your chip
+      const progGainAmp = '4096'; // see index.js for allowed values for your chip
 
-        await this.adc.readADCSingleEnded(
+      return new Promise((resolve, reject) =>
+        this.adc.readADCSingleEnded(
           channel,
           progGainAmp,
           samplesPerSecond,
           (err, data) => {
             if (err) {
-              // Log the error code
-              console.error(err);
-            }
-
-            console.info(`Channel Read: ${channel} : ${data}`);
-            this.currentval = data;
-            resolve(this.currentval);
+              reject(err);
+            } else resolve(data);
           },
-        );
-      });
+        ),
+      );
+    } else if (this.dummy) {
+      await new Promise(r => setTimeout(r, 100));
+      return Math.floor(Math.random() * 750 + 1);
     }
 
     console.info('Device busy');
-    return new Promise(resolve => {
-      resolve(false);
-    });
+    return false;
   }
 
   /**
@@ -111,60 +117,50 @@ class SignalProcessing extends EventEmitter {
   async checkChannels() {
     console.info('Checking number of sensors');
 
-    // Our channel return
-    const sens = [];
-
     if (!this.dummy) {
-      for (let count = 0; count < this.maxNumOfSensors; count += 1) {
-        const objIndex = this.sensors.findIndex(obj => obj.channel === count);
-        const newSens = { channel: count, connected: false, calibrated: false };
-
+      for (const sensor of this.sensors) {
         // Start reading the channel and break only if a value has returned
-        const channelValue = await this.readChannel(count); // eslint-disable-line no-await-in-loop
+        const channelValue = await this.readChannel(sensor.channel); // eslint-disable-line no-await-in-loop
         if (channelValue > 10) {
           // Check for values larger than 10 to avoid channel interference
-          newSens.connected = true;
-          if (objIndex > -1 && this.sensors[objIndex].max > 0) {
-            newSens.calibrated = true;
-          } else {
-            // add the new active sensor to the active list
-            this.sensors.push({
-              channel: count,
-              min: 3000,
-              max: 0,
-              value: channelValue,
-            });
+          sensor.connected = true;
+          if (sensor.max > 0) {
+            sensor.calibrated = true;
           }
-        } else if (objIndex > -1) {
-          // Remove the inactive sensor from the active list
-          this.sensors = this.sensors.splice(objIndex, 1);
+        } else {
+          sensor.connected = false;
+          sensor.calibrated = false;
+          sensor.val = 0;
+          this.resetSensorCalibration(sensor.channel);
         }
-
-        // Return our channels
-        sens.push(newSens);
       }
-      this.numOfSensors = sens;
-      console.info(`Number of sensors final: ${this.numOfSensors}`);
 
       console.info('Emitting sensors');
 
       // Emit the number of sensors
-      this.emit('sensors', sens);
+      this.emitSensors();
+      return;
     }
-
-    if (this.sensors.length < 1) {
-      this.sensors = [
-        { channel: 1, connected: false, calibrated: false },
-        { channel: 2, connected: false, calibrated: false },
-        { channel: 3, connected: false, calibrated: false },
-        { channel: 4, connected: false, calibrated: false },
-      ];
+    // Dummy modus
+    for (const sensor of this.sensors) {
+      if (sensor.max > 0) {
+        sensor.calibrated = true;
+      }
     }
-
-    console.info('Emitting sensors');
 
     // Emit the number of sensors
-    this.emit('sensors', this.sensors);
+    this.emitSensors();
+  }
+
+  emitSensors() {
+    this.emit(
+      'sensors',
+      this.sensors.map(({ channel, connected, calibrated }) => ({
+        channel,
+        connected,
+        calibrated,
+      })),
+    );
   }
 
   /**
@@ -202,6 +198,8 @@ class SignalProcessing extends EventEmitter {
       startTime,
     });
 
+    // await new Promise(r => setTimeout(r, 100));
+
     // Current sensor
     const sensor = this.sensors.find(s => s.channel === channel);
 
@@ -216,12 +214,23 @@ class SignalProcessing extends EventEmitter {
       emit('canceledCalibration', { channel });
     });
 
+    // Count to check our average
+    let count = 0;
+    // Variable to save our average
+    let average = 0;
+    let SDaverage = 0;
+
     while (!cancel) {
       if (moment().unix() > startTime + this.calibrationTime / 1000) {
         emit('stopCalibration', { channel });
         cancel = true;
 
         if (max) {
+          // Set the average
+          sensor.avg = average / count;
+          // Calulate the standard deviation
+          sensor.sd = Math.sqrt(SDaverage / count);
+          // Re-emit the the checkChannels
           await this.checkChannels(); // eslint-disable-line no-await-in-loop
           return;
         }
@@ -234,17 +243,22 @@ class SignalProcessing extends EventEmitter {
 
       if (max) {
         if (value > 0) {
-          console.info(`SensorMax: ${sensor.max}`);
+          // console.info(`SensorMax: ${sensor.max}`);
           if (value > sensor.max) {
             sensor.max = value;
-            console.info(`maxval: ${value}`);
+            // console.info(`maxval: ${value}`);
           }
+          // Update our average
+          average += value;
+          SDaverage += (value - average / count) ** 2;
+          // Update our counter
+          count += 1;
         }
       } else if (value > 0) {
-        console.info(`SensorMin: ${sensor.min}`);
+        // console.info(`SensorMin: ${sensor.min}`);
         if (value < sensor.min) {
           sensor.min = value;
-          console.info(`minval: ${value}`);
+          // console.info(`minval: ${value}`);
         }
       }
     }
@@ -254,37 +268,35 @@ class SignalProcessing extends EventEmitter {
    * Start collecting data
    */
   async startDataCollection() {
-    console.info('Start datacollection'); // Disable esLint for using await in loop
+    console.info('Start datacollection');
     this.dataCollection = true;
     let counter = 0;
     let muscleHigh = false;
 
     while (this.dataCollection && !this.dummy) {
       console.log(this.sensors);
-      for (let index = 0; index < this.sensors.length; index += 1) {
-        const value = await this.readChannel(this.sensors[index].channel); // eslint-disable-line no-await-in-loop
+
+      for (const sensor of this.sensors.filter(s => s.connected)) {
+        // eslint-disable-line no-restricted-syntax
+        const value = await this.readChannel(sensor.channel); // eslint-disable-line no-await-in-loop
 
         if (value > 10) {
           // Saving to database
           console.info(`Saving:${value}`);
-          this.sensors[index].value = value;
+          sensor.value = value;
 
           // TODO implement proper signal processing here
-          const base =
-            (this.sensors[index].max - this.sensors[index].min) / 100 * 80;
-          const signal = value - this.sensors[index].min;
+          const base = (sensor.max - sensor.min) / 100 * 80;
+          const signal = value - sensor.min;
 
           // We recieve wierd values... time to recalibrate...
-          if (
-            value < this.sensors[index].min ||
-            value > this.sensors[index].max
-          ) {
+          if (value < sensor.min || value > sensor.max) {
             console.info('Sudden movement');
           } else if (signal > base) {
             // Our signal is over our base lets emit the signal
             muscleHigh = true;
             this.emit('receivedSignal', {
-              channel: this.sensors[index].channel,
+              channel: sensor.channel,
               signal: 1,
             });
           }
@@ -292,7 +304,7 @@ class SignalProcessing extends EventEmitter {
           // Previous signal was high make sure we emit it is now low.
           if (signal < base && muscleHigh === true) {
             this.emit('receivedSignal', {
-              channel: this.sensors[index].channel,
+              channel: sensor.channel,
               signal: 0,
             });
           }
