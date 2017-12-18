@@ -8,16 +8,7 @@ import Level from './Level';
 // Styled
 import LevelWrapper from './styled/LevelWrapper';
 
-@inject('actionStore')
-@observer
 class MenuScene extends Component {
-  static propTypes = {
-    actionStore: PropTypes.shape({
-      actionsAvailable: PropTypes.number,
-      timer: PropTypes.number,
-    }).isRequired,
-  };
-
   state = {
     categories: [],
     offset: 0,
@@ -193,4 +184,11 @@ class MenuScene extends Component {
   }
 }
 
-export default MenuScene;
+MenuScene.propTypes = {
+  actionStore: PropTypes.shape({
+    actionsAvailable: PropTypes.number,
+    totalMenuItems: PropTypes.number,
+  }).isRequired,
+};
+
+export default inject('actionStore')(observer(MenuScene));
