@@ -30,22 +30,6 @@ class ActionStore {
   constructor() {
     socket.on('action', this.setCurrentAction);
     socket.on('info', this.updateInfo);
-
-    const keysWithValues = {};
-
-    const emitKey = (high, { key, code, ctrlKey }) => {
-      if (code.substr(0, 5) === 'Digit' && keysWithValues[key] !== high) {
-        keysWithValues[key] = high;
-        socket.emit(`mocksensor`, {
-          high,
-          key: parseInt(key, 10),
-          ctrlKey,
-        });
-      }
-    };
-
-    window.addEventListener('keydown', e => emitKey(1, e));
-    window.addEventListener('keyup', e => emitKey(0, e));
   }
 
   setCurrentAction = action => {
