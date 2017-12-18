@@ -54,6 +54,11 @@ class SignalInterpretation extends EventEmitter {
       emit('chosenAction', { action });
     });
 
+    SignalController.addListener('intendedAction', action => {
+      console.info('intended action', action);
+      emit('chosenAction', { action });
+    });
+
     SignalController.addListener('recievedSignal', (sensor, value) => {
       console.info('received signal', sensor, value);
       const processedSensorLog = new ProcessedSensorLog({
