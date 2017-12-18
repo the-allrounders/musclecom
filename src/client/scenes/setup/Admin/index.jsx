@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import socket from '../../../Socket';
+import socket from '../../../socket';
 // Components
 import ProgressBar from '../ProgressBar';
 import SensorStep from './SensorStep';

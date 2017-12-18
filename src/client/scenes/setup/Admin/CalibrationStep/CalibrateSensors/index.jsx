@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
-import socket from '../../../../../Socket';
+import socket from '../../../../../socket';
 // Components
 import CalibrateSensor from './CalibrateSensor';
 
