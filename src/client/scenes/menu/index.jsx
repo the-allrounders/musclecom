@@ -7,12 +7,15 @@ import socket from '../../socket';
 import Level from './Level';
 // Styled
 import LevelWrapper from './styled/LevelWrapper';
+import IntendedActionWrapper from './styled/IntendedActionWrapper';
+import IntendedAction from './styled/IntendedAction';
 
 class MenuScene extends Component {
   state = {
     categories: [],
     offset: 0,
     current: 0,
+    intendedAction: 0,
   };
 
   componentWillMount() {
@@ -20,9 +23,47 @@ class MenuScene extends Component {
   }
 
   componentDidMount() {
-    socket.on('chosenAction', this.action);
-    socket.on('intendedAction', action => console.log(action));
+    socket.on('chosenAction', this.onAction);
+    socket.on('intendedAction', this.intendedAction);
   }
+
+  onAction = ({ action }) => {
+    // Stop if there are no categories
+    if (this.state.categories.length <= 0) return;
+
+    const { actionStore } = this.props;
+    // If action is not 0 then don't continue the loop.
+    if (action !== 0) return;
+
+    let { categories, offset, current } = this.state;
+
+    categories = categories.map(category => {
+      category.action = null; // eslint-disable-line no-param-reassign
+      category.selected = false; // eslint-disable-line no-param-reassign
+      return category;
+    });
+
+    if (
+      (categories.length > current && categories.length < offset) ||
+      offset === categories.length
+    ) {
+      offset = 0;
+      current = 0;
+    }
+
+    for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
+      const pointer = offset % categories.length;
+      categories[pointer].selected = true;
+      categories[pointer].action = i;
+      offset += 1;
+    }
+
+    if (offset > current + actionStore.totalMenuItems) {
+      current += actionStore.totalMenuItems;
+    }
+
+    this.setState({ categories, offset, current });
+  };
 
   // Get all the categories.
   getCategories = () => {
@@ -116,42 +157,8 @@ class MenuScene extends Component {
     this.setState({ categories });
   };
 
-  action = ({ action }) => {
-    // Stop if there are no categories
-    if (this.state.categories.length <= 0) return;
-
-    const { actionStore } = this.props;
-    // If action is not 0 then don't continue the loop.
-    if (action !== 0) return;
-
-    let { categories, offset, current } = this.state;
-
-    categories = categories.map(category => {
-      category.action = null; // eslint-disable-line no-param-reassign
-      category.selected = false; // eslint-disable-line no-param-reassign
-      return category;
-    });
-
-    if (
-      (categories.length > current && categories.length < offset) ||
-      offset === categories.length
-    ) {
-      offset = 0;
-      current = 0;
-    }
-
-    for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
-      const pointer = offset % categories.length;
-      categories[pointer].selected = true;
-      categories[pointer].action = i;
-      offset += 1;
-    }
-
-    if (offset > current + actionStore.totalMenuItems) {
-      current += actionStore.totalMenuItems;
-    }
-
-    this.setState({ categories, offset, current });
+  intendedAction = ({ action: intendedAction }) => {
+    this.setState({ intendedAction });
   };
 
   render() {
@@ -162,6 +169,7 @@ class MenuScene extends Component {
       current,
       current + actionStore.totalMenuItems,
     );
+
     const renderCategories = categories.map(
       ({ id, name, selected, action }) => (
         <Level
@@ -179,6 +187,11 @@ class MenuScene extends Component {
         <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
         </LevelWrapper>
+        {this.state.intendedAction > 0 && (
+          <IntendedActionWrapper>
+            <IntendedAction>{this.state.intendedAction}</IntendedAction>
+          </IntendedActionWrapper>
+        )}
       </div>
     );
   }
