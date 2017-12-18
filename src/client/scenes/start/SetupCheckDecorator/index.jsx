@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
@@ -6,35 +6,30 @@ import { observer, inject } from 'mobx-react';
 import Loading from './Loading';
 
 const setupCheckDecorator = InnerComponent => {
-  @inject('actionStore')
-  @observer
-  class _HOC extends Component {
-    static propTypes = {
-      actionStore: PropTypes.shape({
-        sensorsCalibrated: PropTypes.number,
-        sensorsConnected: PropTypes.number,
-      }).isRequired,
-    };
-
-    render() {
-      const { actionStore } = this.props;
-      if (typeof actionStore.sensorsCalibrated === 'undefined') {
-        return <Loading>Connecting...</Loading>;
-      }
-
-      // Calibration has yet to be done...
-      if (
-        true ||
-        actionStore.sensorsCalibrated !== actionStore.sensorsConnected
-      ) {
-        return <Redirect to="/setup" />;
-      }
-
-      return <InnerComponent {...this.props} />;
+  const _HOC = ({ actionStore }) => {
+    if (typeof actionStore.sensorsCalibrated === 'undefined') {
+      return <Loading>Connecting...</Loading>;
     }
-  }
 
-  return _HOC;
+    // Calibration has yet to be done...
+    if (
+      true ||
+      actionStore.sensorsCalibrated !== actionStore.sensorsConnected
+    ) {
+      return <Redirect to="/setup" />;
+    }
+
+    return <InnerComponent {...this.props} />;
+  };
+
+  _HOC.propTypes = {
+    actionStore: PropTypes.shape({
+      sensorsCalibrated: PropTypes.number,
+      sensorsConnected: PropTypes.number,
+    }).isRequired,
+  };
+
+  return inject('actionStore')(observer(_HOC));
 };
 
 export default setupCheckDecorator;
