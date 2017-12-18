@@ -58,6 +58,13 @@ class SignalProcessing extends EventEmitter {
         this.emit('receivedSignal', { sensor: key - 1, value: high });
       }
     });
+
+    listen('mockSensorsConnected', numOfSensors => {
+      this.sensors.forEach((s, i) => {
+        s.connected = i < numOfSensors; // eslint-disable-line no-param-reassign
+      });
+      this.emit('sensors', this.sensors);
+    });
   }
 
   /**
@@ -147,8 +154,8 @@ class SignalProcessing extends EventEmitter {
 
     if (this.sensors.length < 1) {
       this.sensors = [
-        { channel: 1, connected: true, calibrated: true },
-        { channel: 2, connected: true, calibrated: false },
+        { channel: 1, connected: false, calibrated: false },
+        { channel: 2, connected: false, calibrated: false },
         { channel: 3, connected: false, calibrated: false },
         { channel: 4, connected: false, calibrated: false },
       ];
