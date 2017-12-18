@@ -165,13 +165,15 @@ class SignalInterpretation {
   }
 
   getMenuItems() {
-    this.menuItems = MenuItem.find({});
-    this.emitInfo();
+    this.menuItems = MenuItem.find({}, () => {
+      this.emitInfo();
+    });
   }
 
   getSettings() {
-    this.settings = Settings.find({});
-    this.emitInfo();
+    this.settings = Settings.find({}, () => {
+      this.emitInfo();
+    });
   }
 }
 
