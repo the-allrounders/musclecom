@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { autorun } from 'mobx';
 import PropTypes from 'prop-types';
+import socket from '../../Socket';
 
 // Components
 import Level from './Level';
@@ -22,26 +22,15 @@ class MenuScene extends Component {
     categories: [],
     offset: 0,
     current: 0,
-    total: 6,
   };
 
   componentWillMount() {
-    const { actionStore } = this.props;
-
-    autorun(() => {
-      let total = 6;
-      if (
-        actionStore.actionsAvailable > 0 &&
-        actionStore.actionsAvailable > 3
-      ) {
-        total = actionStore.actionsAvailable * 2;
-      }
-      this.setState({ total }, this.getCategories);
-    });
+    this.getCategories();
   }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
+  componentDidMount() {
+    socket.on('chosenAction', this.action);
+    socket.on('intendedAction', action => console.log(action));
   }
 
   // Get all the categories.
@@ -133,67 +122,70 @@ class MenuScene extends Component {
         children: [],
       },
     ];
-    this.setState({ categories }, () => this.startTimer());
+    this.setState({ categories });
   };
 
-  // Start timer and select categories in component
-  startTimer = () => {
-    const { actionStore } = this.props;
-    clearInterval(this.interval);
-
-    // Only continue when there are more categories
+  action = ({ action }) => {
+    // Stop if there are no categories
     if (this.state.categories.length <= 0) return;
 
-    // Set interval, each interval the categories are selected based on the
-    // total categories.
-    this.interval = setInterval(() => {
-      let { categories, offset, current } = this.state;
-      const { total } = this.state;
+    const { actionStore } = this.props;
+    // If action is not 0 then don't continue the loop.
+    if (action !== 0) return;
 
-      categories = categories.map(category => {
-        category.action = 0; // eslint-disable-line no-param-reassign
-        category.selected = false; // eslint-disable-line no-param-reassign
-        return category;
-      });
+    let { categories, offset, current } = this.state;
 
-      if (
-        (categories.length > current && categories.length < offset) ||
-        offset === categories.length
-      ) {
-        offset = 0;
-        current = 0;
-      }
+    categories = categories.map(category => {
+      category.action = null; // eslint-disable-line no-param-reassign
+      category.selected = false; // eslint-disable-line no-param-reassign
+      return category;
+    });
 
-      for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
-        const pointer = offset % categories.length;
-        categories[pointer].selected = true;
-        offset += 1;
-      }
+    if (
+      (categories.length > current && categories.length < offset) ||
+      offset === categories.length
+    ) {
+      offset = 0;
+      current = 0;
+    }
 
-      if (offset > current + total) {
-        current += total;
-      }
+    for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
+      const pointer = offset % categories.length;
+      categories[pointer].selected = true;
+      categories[pointer].action = i;
+      offset += 1;
+    }
 
-      this.setState({ categories, offset, current });
-    }, actionStore.timer);
+    if (offset > current + actionStore.totalMenuItems) {
+      current += actionStore.totalMenuItems;
+    }
+
+    this.setState({ categories, offset, current });
   };
 
   render() {
-    const { current, total } = this.state;
-    const categories = this.state.categories.slice(current, current + total);
-    const renderCategories = categories.map(({ id, name, selected }) => (
-      <Level
-        key={id}
-        name={name}
-        action={0}
-        active={selected}
-        total={this.state.total}
-      />
-    ));
+    const { actionStore } = this.props;
+    const { current } = this.state;
+
+    const categories = this.state.categories.slice(
+      current,
+      current + actionStore.totalMenuItems,
+    );
+    const renderCategories = categories.map(
+      ({ id, name, selected, action }) => (
+        <Level
+          key={id}
+          name={name}
+          action={action}
+          active={selected}
+          total={actionStore.totalMenuItems}
+        />
+      ),
+    );
 
     return (
       <div>
-        <LevelWrapper actions={this.props.actionStore.actionsAvailable}>
+        <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
         </LevelWrapper>
       </div>

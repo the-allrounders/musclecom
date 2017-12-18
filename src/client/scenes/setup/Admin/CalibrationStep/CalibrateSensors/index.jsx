@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import socket from '../../../../../socket';
+import PropTypes from 'prop-types';
+import socket from '../../../../../Socket';
 // Components
 import CalibrateSensor from './CalibrateSensor';
 
@@ -62,5 +63,15 @@ class CalibrateSensorsComponent extends Component {
     );
   }
 }
+
+CalibrateSensorsComponent.propTypes = {
+  actionStore: PropTypes.shape({
+    sensors: PropTypes.arrayOf({
+      channel: PropTypes.number,
+      connected: PropTypes.bool,
+      calibrated: PropTypes.bool,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default inject('actionStore')(observer(CalibrateSensorsComponent));

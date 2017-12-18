@@ -1,10 +1,12 @@
-import { observable, computed } from 'mobx';
-import socket from '../socket/index';
+import { observable } from 'mobx';
+import socket from '../Socket';
 import Sensor from './Objects/Sensor';
 
 class ActionStore {
   @observable action = null;
   @observable actionsAvailable = 0;
+  @observable sensorsCalibrated = undefined;
+  @observable sensorsConnected = undefined;
   @observable
   sensors = [
     new Sensor(1, false, false),
@@ -15,25 +17,11 @@ class ActionStore {
   @observable actions = [];
   @observable ip = 'http://145.24.246.20:6969';
   @observable timer = 2000;
-  @observable totalMenuItems = 3;
-
-  @computed
-  get sensorsCalibrated() {
-    return this.sensors.filter(sensor => sensor.calibrated).length;
-  }
-
-  @computed
-  get sensorsConnected() {
-    return this.sensors.filter(sensor => sensor.connected).length;
-  }
+  @observable totalMenuItems = 6;
 
   constructor() {
     socket.on('action', this.setCurrentAction);
     socket.on('info', this.updateInfo);
-    socket.on('numberOfSensors', this.updateSensors);
-    setTimeout(() => {
-      this.sensors[2].connected = true;
-    }, 5000);
 
     const keysWithValues = {};
 
@@ -56,17 +44,24 @@ class ActionStore {
     this.action = action;
   };
 
-  updateInfo = ({ ip, actionsAvailable }) => {
-    this.ip = `http://${ip}:6969`;
-    this.actionsAvailable = actionsAvailable;
-  };
-
-  updateSensors = sensors => {
-    // console.log('sensors', sensors);
-    sensors.forEach(({ channel, connected, calibrated }) => {
-      const sensor = this.sensors.find(s => s.channel === channel);
-      sensor.connected = connected;
-      sensor.calibrated = calibrated;
+  updateInfo = newInfo => {
+    Object.entries(newInfo).forEach(([key, value]) => {
+      if (key === 'ip') {
+        this.ip = `http://${newInfo.ip}:6969`;
+      } else if (key === 'sensors') {
+        newInfo.sensors.forEach(({ channel, connected, calibrated }) => {
+          const sensor = this.sensors.find(s => s.channel === channel);
+          sensor.connected = connected;
+          sensor.calibrated = calibrated;
+        });
+      } else if (key === 'actionsAvailable') {
+        this[key] = value;
+        if (value > 3) {
+          this.totalMenuItems = value * 2;
+        }
+      } else {
+        this[key] = value;
+      }
     });
   };
 }
