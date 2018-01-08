@@ -49,6 +49,8 @@ class SignalProcessing extends EventEmitter {
         max: 0,
         value: 0,
         avg: 0,
+        tmpAvg: 0,
+        sdAvg: 0,
         sd: 0,
         connected: false,
         calibrated: false,
@@ -272,47 +274,62 @@ class SignalProcessing extends EventEmitter {
     this.dataCollection = true;
     let counter = 0;
     let muscleHigh = false;
-
     while (this.dataCollection && !this.dummy) {
-      console.log(this.sensors);
+      // console.log(this.sensors);
 
       for (const sensor of this.sensors.filter(s => s.connected)) {
         // eslint-disable-line no-restricted-syntax
         const value = await this.readChannel(sensor.channel); // eslint-disable-line no-await-in-loop
 
         if (value > 10) {
-          // Saving to database
-          console.info(`Saving:${value}`);
+          // Saving current value
           sensor.value = value;
+          // Adding new avg
+          sensor.tmpAvg += value;
+          sensor.sdAvg += (value - sensor.tmpAvg / counter) ** 2;
 
-          // TODO implement proper signal processing here
-          const base = (sensor.max - sensor.min) / 100 * 80;
-          const signal = value - sensor.min;
+          // If our values fall below the minimum or above the maximum, ignore the value
+          if (value < sensor.max && value > sensor.min) {
+            const signal = value - sensor.min;
 
-          // We recieve wierd values... time to recalibrate...
-          if (value < sensor.min || value > sensor.max) {
-            console.info('Sudden movement');
-          } else if (signal > base) {
-            // Our signal is over our base lets emit the signal
-            muscleHigh = true;
-            this.emit('receivedSignal', {
-              channel: sensor.channel,
-              signal: 1,
-            });
-          }
+            // TODO 80% method
+            // const base = (sensor.max - sensor.min) / 100 * 80;
 
-          // Previous signal was high make sure we emit it is now low.
-          if (signal < base && muscleHigh === true) {
-            this.emit('receivedSignal', {
-              channel: sensor.channel,
-              signal: 0,
-            });
+            // TODO AVG only method
+            // const base = sensor.avg - sensor.min;
+
+            // TODO SD method
+            const base = sensor.avg - sensor.min + sensor.sd;
+
+            if (signal > base) {
+              // Our signal is over our base lets emit the signal
+              muscleHigh = true;
+              this.emit('receivedSignal', {
+                channel: sensor.channel,
+                signal: 1,
+              });
+            }
+
+            // Previous signal was high make sure we emit it is now low.
+            if (signal < base && muscleHigh === true) {
+              this.emit('receivedSignal', {
+                channel: sensor.channel,
+                signal: 0,
+              });
+            }
           }
         }
       }
 
       // Check for new sensors every once in a while
       if (counter === 5000) {
+        // Recalculate avg and sd
+        for (const sensor of this.sensors.filter(s => s.connected)) {
+          sensor.sd = Math.sqrt(sensor.sdAvg / 5000);
+          sensor.avg = sensor.tmpAvg / 5000;
+          sensor.tmpAvg = 0;
+        }
+        // Check for new sensors
         await this.checkChannels(); // eslint-disable-line no-await-in-loop
         counter = 0;
       }
