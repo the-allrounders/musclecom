@@ -66,11 +66,13 @@ class CalibrateSensorsComponent extends Component {
 
 CalibrateSensorsComponent.propTypes = {
   actionStore: PropTypes.shape({
-    sensors: PropTypes.arrayOf({
-      channel: PropTypes.number,
-      connected: PropTypes.bool,
-      calibrated: PropTypes.bool,
-    }).isRequired,
+    sensors: PropTypes.arrayOf(
+      PropTypes.shape({
+        channel: PropTypes.number,
+        connected: PropTypes.bool,
+        calibrated: PropTypes.bool,
+      }),
+    ).isRequired,
   }).isRequired,
 };
 

@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'material-ui/Button';
 import SensorConnection from '../../SensorConnection';
 
 const SensorStepComponent = ({ sensors, pager }) => (
@@ -14,9 +16,18 @@ const SensorStepComponent = ({ sensors, pager }) => (
       Let op, dit scherm past automatisch aan als je sensors aansluit of
       loskoppelt.
     </p>
-    <button onClick={pager.next}>Ja, deze sensoren kloppen</button>
+    <Button raised color="primary" onClick={pager.next}>
+      Ja, deze sensoren kloppen
+    </Button>
     <SensorConnection sensors={sensors} />
   </section>
 );
+
+SensorStepComponent.propTypes = {
+  sensors: PropTypes.arrayOf().isRequired,
+  pager: PropTypes.shape({
+    next: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default SensorStepComponent;

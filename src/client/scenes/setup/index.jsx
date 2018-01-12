@@ -15,7 +15,7 @@ class SetupScene extends Component {
   componentDidMount() {
     socket.on('step', this.step);
     const step = this.getStep();
-    if (step === false) {
+    if (step === 0) {
       this.props.history.push({ search: qs.stringify({ step: 1 }) });
     }
   }
@@ -27,7 +27,7 @@ class SetupScene extends Component {
   getStep = () => {
     const search = qs.parse(this.props.location.search);
     const step = parseInt(search.step, 10);
-    return Number.isNaN(step) ? false : step;
+    return Number.isNaN(step) ? 0 : step;
   };
 
   step = step => {
@@ -74,6 +74,7 @@ SetupScene.propTypes = {
   }).isRequired,
   history: PropTypes.shape({
     search: PropTypes.string,
+    push: PropTypes.func.isRequired,
   }).isRequired,
   location: PropTypes.shape({
     search: PropTypes.string,

@@ -1,20 +1,24 @@
 import React from 'react';
-// styled
-import Bar from './styled/Bar';
-import BarItem from './styled/BarItem';
+import PropTypes from 'prop-types';
+
+import Stepper, { Step, StepLabel } from 'material-ui/Stepper';
 
 const ProgressBar = ({ step }) => (
-  <Bar>
-    <BarItem done={step > 0} active={step === 1}>
-      Verbinden
-    </BarItem>
-    <BarItem done={step > 1} active={step === 2}>
-      Sensoren
-    </BarItem>
-    <BarItem done={step > 2} active={step === 3 || step === 4}>
-      Kalibratie
-    </BarItem>
-  </Bar>
+  <Stepper activeStep={step - 1} alternativeLabel>
+    <Step>
+      <StepLabel>Verbinden</StepLabel>
+    </Step>
+    <Step>
+      <StepLabel>Sensoren</StepLabel>
+    </Step>
+    <Step>
+      <StepLabel>Afstellen</StepLabel>
+    </Step>
+  </Stepper>
 );
+
+ProgressBar.propTypes = {
+  step: PropTypes.number.isRequired,
+};
 
 export default ProgressBar;

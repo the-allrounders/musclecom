@@ -49,11 +49,13 @@ class AdminSetupComponent extends Component {
 
 AdminSetupComponent.propTypes = {
   actionStore: PropTypes.shape({
-    sensors: PropTypes.arrayOf({
-      channel: PropTypes.number,
-      connected: PropTypes.bool,
-      calibrated: PropTypes.bool,
-    }).isRequired,
+    sensors: PropTypes.arrayOf(
+      PropTypes.shape({
+        channel: PropTypes.number,
+        connected: PropTypes.bool,
+        calibrated: PropTypes.bool,
+      }),
+    ).isRequired,
   }).isRequired,
   getStep: PropTypes.func.isRequired,
 };

@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import Button from 'material-ui/Button';
 
 const CalibrationIntroComponent = ({ pager }) => (
   <div>
@@ -17,8 +19,16 @@ const CalibrationIntroComponent = ({ pager }) => (
       De begeleider bepaalt wanneer een oefening gelukt is. Je kunt dus net zo
       vaak oefenen tot het voor je gevoel goed gaat.
     </p>
-    <button onClick={pager.next}>Start eerste oefening</button>
+    <Button raised color="primary" onClick={pager.next}>
+      Start eerste oefening
+    </Button>
   </div>
 );
+
+CalibrationIntroComponent.propTypes = {
+  pager: PropTypes.shape({
+    next: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default CalibrationIntroComponent;
