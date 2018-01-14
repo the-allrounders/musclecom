@@ -5,6 +5,8 @@ import Sensor from './Objects/Sensor';
 class ActionStore {
   @observable action = null;
   @observable actionsAvailable = 0;
+  @observable menuItems = [];
+  @observable settings = [];
   @observable
   sensors = [
     new Sensor(1, false, false),
@@ -36,7 +38,14 @@ class ActionStore {
     this.action = action;
   };
 
-  updateInfo = ({ ip, actionsAvailable, sensors }) => {
+  getMenuItems(id) {
+    if (typeof id === 'undefined') {
+      return this.menuItems.filter(item => !item.parent);
+    }
+    return this.menuItems.filter(({ parent }) => parent === id);
+  }
+
+  updateInfo = ({ ip, actionsAvailable, sensors, menuItems, settings }) => {
     console.log(`Recieved new info from the back-end!
     Ip: ${ip}
     Actions available: ${actionsAvailable}
@@ -45,6 +54,9 @@ class ActionStore {
 
     this.ip = `http://${ip}:6969`;
     this.actionsAvailable = actionsAvailable;
+    this.totalMenuItems = actionsAvailable > 3 ? actionsAvailable * 2 : 6;
+    this.settings = settings;
+    this.menuItems = menuItems;
     sensors.forEach(({ channel, connected, calibrated }) => {
       const sensor = this.sensors.find(s => s.channel === channel);
       sensor.connected = connected;

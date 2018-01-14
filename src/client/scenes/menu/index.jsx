@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
@@ -12,15 +13,13 @@ import IntendedAction from './styled/IntendedAction';
 
 class MenuScene extends Component {
   state = {
-    categories: [],
+    currentMenuItem: {},
+    currentMenuItems: [],
+    selectedMenuItems: [],
     offset: 0,
     current: 0,
     intendedAction: 0,
   };
-
-  componentWillMount() {
-    this.getCategories();
-  }
 
   componentDidMount() {
     socket.on('chosenAction', this.onAction);
@@ -28,33 +27,46 @@ class MenuScene extends Component {
   }
 
   onAction = ({ action }) => {
-    // Stop if there are no categories
-    if (this.state.categories.length <= 0) return;
-
     const { actionStore } = this.props;
-    // If action is not 0 then don't continue the loop.
-    if (action !== 0) return;
+    // Stop if there are no menu items.
+    if (actionStore.menuItems.length <= 0) return false;
 
-    let { categories, offset, current } = this.state;
+    if (action !== 0) return this.chooseMenuItem(action);
 
-    categories = categories.map(category => {
-      category.action = null; // eslint-disable-line no-param-reassign
-      category.selected = false; // eslint-disable-line no-param-reassign
-      return category;
-    });
+    return this.nextMenuItems();
+  };
+
+  chooseMenuItem(action) {
+    const currentMenuItem = this.state.selectedMenuItems[action - 1];
+
+    if (!currentMenuItem || typeof currentMenuItem === 'undefined') {
+      return false;
+    }
+
+    return this.setState({ currentMenuItem, offset: 0, current: 0 });
+  }
+
+  nextMenuItems = () => {
+    const { actionStore } = this.props;
+    let { offset, current } = this.state;
+
+    const currentMenuItems = actionStore.getMenuItems(
+      this.state.currentMenuItem._id,
+    );
 
     if (
-      (categories.length > current && categories.length < offset) ||
-      offset === categories.length
+      (currentMenuItems.length > current && currentMenuItems.length < offset) ||
+      offset === currentMenuItems.length
     ) {
       offset = 0;
       current = 0;
     }
 
+    const selectedMenuItems = [];
+
     for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
-      const pointer = offset % categories.length;
-      categories[pointer].selected = true;
-      categories[pointer].action = i;
+      const pointer = offset % currentMenuItems.length;
+      selectedMenuItems.push(currentMenuItems[pointer]);
       offset += 1;
     }
 
@@ -62,99 +74,7 @@ class MenuScene extends Component {
       current += actionStore.totalMenuItems;
     }
 
-    this.setState({ categories, offset, current });
-  };
-
-  // Get all the categories.
-  getCategories = () => {
-    const categories = [
-      {
-        id: '1234567890',
-        name: 'Category 1',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '1234567891',
-        name: 'Category 2',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [
-          {
-            id: '1234567892',
-            name: 'Category 3',
-            image:
-              'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-            children: [],
-          },
-          {
-            id: '1234567893',
-            name: 'Category 4',
-            image:
-              'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-            children: [],
-          },
-        ],
-      },
-      {
-        id: '1234567892',
-        name: 'Category 3',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '1234567893',
-        name: 'Category 4',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '1234567898',
-        name: 'Category 5',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '123456789',
-        name: 'Category 6',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '123456790',
-        name: 'Category 7',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '123456791',
-        name: 'Category 8',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '123456792',
-        name: 'Category 9',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-      {
-        id: '123456793',
-        name: 'Category 10',
-        image:
-          'https://image.freepik.com/iconen-gratis/restaurant-datumkalender-pagina_318-58075.jpg',
-        children: [],
-      },
-    ];
-    this.setState({ categories });
+    this.setState({ offset, current, selectedMenuItems, currentMenuItems });
   };
 
   intendedAction = ({ action: intendedAction }) => {
@@ -165,27 +85,34 @@ class MenuScene extends Component {
     const { actionStore } = this.props;
     const { current } = this.state;
 
-    const categories = this.state.categories.slice(
+    const categories = this.state.currentMenuItems.slice(
       current,
       current + actionStore.totalMenuItems,
     );
 
-    const renderCategories = categories.map(
-      ({ id, name, selected, action }) => (
+    const renderCategories = categories.map(category => {
+      const selected = this.state.selectedMenuItems.includes(category);
+      return (
         <Level
-          key={id}
-          name={name}
-          action={action}
-          active={selected}
+          key={category._id}
+          name={category.name}
           total={actionStore.totalMenuItems}
+          active={selected}
         />
-      ),
-    );
+      );
+    });
 
     return (
       <div>
         <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
+          {this.state.currentMenuItems.length <= 0 &&
+            typeof this.state.currentMenuItem === 'object' && (
+              <Level
+                total={actionStore.totalMenuItems}
+                name={this.state.currentMenuItem.name}
+              />
+            )}
         </LevelWrapper>
         {this.state.intendedAction > 0 && (
           <IntendedActionWrapper>
