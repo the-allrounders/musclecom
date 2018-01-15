@@ -16,8 +16,6 @@ process.on('unhandledRejection', reason => {
 
 log.info('Starting application...');
 
-const chromeLauncher = require('chrome-launcher');
-
 // Setup a Promise library for mongoose.
 mongoose.Promise = global.Promise;
 
@@ -64,9 +62,15 @@ app.use(ui);
 
   // Start the chrome browser on the raspberry pi.
   if (process.argv[2] === 'prod') {
+    const chromeLauncher = require('chrome-launcher'); // eslint-disable-line global-require
     chromeLauncher.launch({
       startingUrl: `http://localhost:6969`,
-      chromeFlags: ['--disable-translate', '--kiosk', '--incognito'],
+      chromeFlags: [
+        '--disable-translate',
+        '--kiosk',
+        '--incognito',
+        '--noerrdialogs',
+      ],
       chromePath: '/usr/bin/chromium-browser',
     });
   }
