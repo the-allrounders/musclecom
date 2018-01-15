@@ -9,7 +9,13 @@ import Level from './Level';
 // Styled
 import LevelWrapper from './styled/LevelWrapper';
 import IntendedActionWrapper from './styled/IntendedActionWrapper';
-import IntendedAction from './styled/IntendedAction';
+import {
+  IntendedAction,
+  LeftCircle,
+  RightCircle,
+  RightFill,
+  LeftFill,
+} from './styled/IntendedAction';
 
 class MenuScene extends Component {
   state = {
@@ -117,6 +123,12 @@ class MenuScene extends Component {
         {this.state.intendedAction > 0 && (
           <IntendedActionWrapper>
             <IntendedAction>{this.state.intendedAction}</IntendedAction>
+            <LeftCircle>
+              <LeftFill />
+            </LeftCircle>
+            <RightCircle>
+              <RightFill />
+            </RightCircle>
           </IntendedActionWrapper>
         )}
       </div>
