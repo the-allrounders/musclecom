@@ -3,12 +3,16 @@ import PropTypes from 'prop-types';
 // styled
 import Level from './styled/Level';
 import LevelImage from './styled/LevelImage';
+import LevelFigCaption from './styled/LevelFigCaption';
+import LevelWrapper from './styled/LevelWrapper';
 
 const LevelComponent = ({ name, icon, active, action, total }) => (
   <Level active={active} total={total}>
-    <LevelImage src={icon} alt={name} />
-    <figcaption>{name}</figcaption>
-    <span>{action !== null ? action : ''}</span>
+    <LevelWrapper>
+      <LevelImage src={icon} alt={name} />
+      <LevelFigCaption active={active}>{name}</LevelFigCaption>
+      <span>{action !== null ? action : ''}</span>
+    </LevelWrapper>
   </Level>
 );
 

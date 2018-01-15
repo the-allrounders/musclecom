@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 function calculateWidth(total) {
-  return total > 6 ? `${100 / (total / 2)}%` : '33%';
+  return total > 6 ? `${100 / (total / 2)}%` : '33.33%';
 }
 
 export default styled.div`
