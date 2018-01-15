@@ -13,7 +13,7 @@ export const routes = {
 };
 
 const Router = () => (
-  <main>
+  <main style={{ height: '100%' }}>
     <Switch>
       <Route path={routes.START} component={scenes.StartScene} exact />
       <Route path={routes.MAIN} component={scenes.MainScene} />

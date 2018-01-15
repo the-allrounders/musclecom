@@ -6,6 +6,7 @@ import socket from '../../socket';
 
 // Components
 import Level from './Level';
+import SingleLevel from './SingleLevel';
 // Styled
 import LevelWrapper from './styled/LevelWrapper';
 import IntendedActionWrapper from './styled/IntendedActionWrapper';
@@ -109,15 +110,12 @@ class MenuScene extends Component {
     });
 
     return (
-      <div>
+      <div style={{ height: '100%' }}>
         <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
           {this.state.currentMenuItems.length <= 0 &&
             typeof this.state.currentMenuItem === 'object' && (
-              <Level
-                total={actionStore.totalMenuItems}
-                name={this.state.currentMenuItem.name}
-              />
+              <SingleLevel {...this.state.currentMenuItem} />
             )}
         </LevelWrapper>
         {this.state.intendedAction > 0 && (

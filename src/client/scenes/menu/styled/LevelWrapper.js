@@ -4,6 +4,6 @@ export default styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: ${props => (props.actions === 2 ? 'column' : 'row')};
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 `;
