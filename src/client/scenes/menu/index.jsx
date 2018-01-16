@@ -8,6 +8,7 @@ import socket from '../../socket';
 import Level from './Level';
 import SingleLevel from './SingleLevel';
 // Styled
+import globalClientStyles from '../../styles/global.client';
 import LevelWrapper from './styled/LevelWrapper';
 import IntendedActionWrapper from './styled/IntendedActionWrapper';
 import {
@@ -27,6 +28,10 @@ class MenuScene extends Component {
     current: 0,
     intendedAction: 0,
   };
+
+  componentWillMount() {
+    globalClientStyles();
+  }
 
   componentDidMount() {
     socket.on('chosenAction', this.onAction);
