@@ -46,11 +46,11 @@ class ActionStore {
   }
 
   updateInfo = ({ ip, actionsAvailable, sensors, menuItems, settings }) => {
-    console.log(`Recieved new info from the back-end!
-    Ip: ${ip}
-    Actions available: ${actionsAvailable}
-    Sensors:`);
-    console.table(sensors);
+    // console.log(`Recieved new info from the back-end!
+    // Ip: ${ip}
+    // Actions available: ${actionsAvailable}
+    // Sensors:`);
+    // console.table(sensors);
 
     this.ip = `http://${ip}:6969`;
     this.actionsAvailable = actionsAvailable;

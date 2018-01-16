@@ -3,10 +3,12 @@ import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import socket from '../../../socket';
+
 // Components
 import ProgressBar from '../ProgressBar';
 import SensorStep from './SensorStep';
 import CalibrationStep from './CalibrationStep';
+import AppBar from '../AppBar';
 
 class AdminSetupComponent extends Component {
   componentDidMount() {
@@ -31,6 +33,7 @@ class AdminSetupComponent extends Component {
 
     return (
       <section>
+        <AppBar />
         <ProgressBar step={step} />
         <h1>Instellen</h1>
         {step === 2 && (

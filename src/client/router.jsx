@@ -1,5 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { Reboot } from 'material-ui';
 import scenes from './scenes';
 
 export const routes = {
@@ -14,6 +15,7 @@ export const routes = {
 
 const Router = () => (
   <main style={{ height: '100%' }}>
+    <Reboot />
     <Switch>
       <Route path={routes.START} component={scenes.StartScene} exact />
       <Route path={routes.MAIN} component={scenes.MainScene} />
