@@ -1,15 +1,21 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+
+// components
 import SensorConnectionItem from './SensorConnectionItem';
 
+// styled
+import SensorList from './styled/SensorList';
+import SensorListItem from './styled/SensorListItem';
+
 const SensorConnectionComponent = ({ sensors }) => (
-  <ul>
+  <SensorList>
     {sensors.map(sensor => (
-      <li key={sensor.channel}>
+      <SensorListItem key={sensor.channel}>
         <SensorConnectionItem key={sensor.channel} sensor={sensor} />
-      </li>
+      </SensorListItem>
     ))}
-  </ul>
+  </SensorList>
 );
 
 export default observer(SensorConnectionComponent);
