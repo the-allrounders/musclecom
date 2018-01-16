@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
+import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import socket from '../../../socket';
+import Sensor from '../../../stores/Objects/Sensor';
 
 // Components
 import ProgressBar from '../ProgressBar';
@@ -52,13 +53,8 @@ class AdminSetupComponent extends Component {
 
 AdminSetupComponent.propTypes = {
   actionStore: PropTypes.shape({
-    sensors: PropTypes.arrayOf(
-      PropTypes.shape({
-        channel: PropTypes.number,
-        connected: PropTypes.bool,
-        calibrated: PropTypes.bool,
-      }),
-    ).isRequired,
+    sensors: MobxPropTypes.observableArrayOf(PropTypes.instanceOf(Sensor))
+      .isRequired,
   }).isRequired,
   getStep: PropTypes.func.isRequired,
 };

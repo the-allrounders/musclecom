@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Button from 'material-ui/Button';
+import { PropTypes as MobxPropTypes } from 'mobx-react';
 import SensorConnection from '../../SensorConnection';
+import Sensor from '../../../../stores/Objects/Sensor';
 
 const SensorStepComponent = ({ sensors, pager }) => (
   <section>
@@ -24,7 +26,8 @@ const SensorStepComponent = ({ sensors, pager }) => (
 );
 
 SensorStepComponent.propTypes = {
-  sensors: PropTypes.arrayOf().isRequired,
+  sensors: MobxPropTypes.observableArrayOf(PropTypes.instanceOf(Sensor))
+    .isRequired,
   pager: PropTypes.shape({
     next: PropTypes.func.isRequired,
   }).isRequired,
