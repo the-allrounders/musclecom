@@ -2,6 +2,7 @@ import { Server } from 'http';
 import express from 'express';
 import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
+import path from 'path';
 import { inspect } from 'util';
 import log from './log';
 import sockets from './middleware/sockets';
@@ -33,6 +34,9 @@ sockets(io);
 
 // Webpack middleware
 app.use(ui);
+
+// Static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 (async () => {
   // Connect to mongodb

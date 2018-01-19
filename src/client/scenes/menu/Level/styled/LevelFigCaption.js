@@ -6,5 +6,6 @@ export default styled.figcaption`
   font-size: 24px;
   text-align: center;
   font-weight: bold;
+  padding-top: 10px;
   color: ${props => (props.active ? 'yellow' : 'black')};
 `;
