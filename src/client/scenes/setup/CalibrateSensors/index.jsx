@@ -6,9 +6,9 @@ import socket from '../../../socket/index';
 import Sensor from '../../../stores/Objects/Sensor';
 
 // Components
-import CalibrateSensor from './CalibrateSensor/index';
+import CalibrateSensor from './CalibrateSensor';
+
 // styled
-import CalibrationStepWrapper from './styled/CalibrationStepWrapper';
 import SensorList from '../SensorConnection/styled/SensorList';
 
 class CalibrateSensorsComponent extends Component {
@@ -65,7 +65,7 @@ class CalibrateSensorsComponent extends Component {
       ));
 
     return (
-      <CalibrationStepWrapper>
+      <div>
         <Typography type="caption" gutterBottom paragraph>
           <em>
             Let op, dit scherm past automatisch aan als je sensors aansluit of
@@ -73,7 +73,7 @@ class CalibrateSensorsComponent extends Component {
           </em>
         </Typography>
         <SensorList>{calibrations}</SensorList>
-      </CalibrationStepWrapper>
+      </div>
     );
   }
 }

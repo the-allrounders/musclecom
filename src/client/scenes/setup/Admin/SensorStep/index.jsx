@@ -16,6 +16,7 @@ const SensorStepComponent = ({ sensors, pager }) => (
     <Button raised color="primary" onClick={pager.next}>
       Ja, alle spieren zijn aangesloten
     </Button>
+    <Typography paragraph />
     <SensorConnection sensors={sensors} />
   </SensorStepWrapper>
 );

@@ -41,7 +41,7 @@ class AdminSetupComponent extends Component {
         {step === 2 && (
           <SensorStep sensors={this.props.actionStore.sensors} pager={pager} />
         )}
-        {(step === 3 || step === 4) && (
+        {step === 3 && (
           <CalibrationStep
             sensors={this.props.actionStore.sensors}
             pager={pager}

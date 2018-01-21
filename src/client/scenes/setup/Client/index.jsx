@@ -20,8 +20,8 @@ class ClientSetupComponent extends Component {
     return (
       <SetupWrapper>
         {step === 1 && <SetupConnect />}
-        {(step === 2 || step === 3) && <SensorStep />}
-        {step === 4 && <CalibrationStep />}
+        {step === 2 && <SensorStep />}
+        {step === 3 && <CalibrationStep />}
       </SetupWrapper>
     );
   }
