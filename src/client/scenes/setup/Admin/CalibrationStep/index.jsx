@@ -1,5 +1,7 @@
 import React from 'react';
-import { Typography } from 'material-ui';
+import { Typography, Button } from 'material-ui';
+import { routes } from '../../../../router';
+import socket from '../../../../socket';
 
 // Components
 import CalibrateSensors from '../../common/CalibrateSensors';
@@ -24,6 +26,14 @@ const CalibrationStepComponent = () => (
       De begeleider bepaalt wanneer een oefening gelukt is. Je kunt dus net zo
       vaak oefenen tot het voor je gevoel goed gaat.
     </Typography>
+    <Button
+      onClick={() => socket.emit('pushRoute', routes.MENU)}
+      raised
+      color="primary"
+    >
+      Klaar met instellen
+    </Button>
+    <Typography paragraph />
     <CalibrateSensors interactive />
   </CalibrationStepWrapper>
 );
