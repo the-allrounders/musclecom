@@ -129,8 +129,10 @@ class MenuScene extends Component {
       current + actionStore.totalMenuItems,
     );
 
+    let i = 0;
     const renderCategories = categories.map(category => {
       const selected = this.state.selectedMenuItems.includes(category);
+      if (selected) i += 1;
       return (
         <Level
           icon={category.icon}
@@ -138,6 +140,7 @@ class MenuScene extends Component {
           name={category.name}
           total={actionStore.totalMenuItems}
           active={selected}
+          action={selected ? i : null}
         />
       );
     });
