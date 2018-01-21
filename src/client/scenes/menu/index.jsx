@@ -19,6 +19,14 @@ import {
   LeftFill,
 } from './styled/IntendedAction';
 
+const BACK_LEVEL = {
+  _id: 1,
+  parent: '',
+  name: 'Terug',
+  icon: '/images/back.png',
+  order: 0,
+};
+
 class MenuScene extends Component {
   state = {
     currentMenuItem: {},
@@ -47,11 +55,19 @@ class MenuScene extends Component {
   chooseMenuItem(action) {
     const currentMenuItem = this.state.selectedMenuItems[action - 1];
 
+    if (currentMenuItem._id === 1) {
+      return this.reset();
+    }
+
     if (!currentMenuItem || typeof currentMenuItem === 'undefined') {
       return false;
     }
 
-    return this.setState({ currentMenuItem, offset: 0, current: 0 });
+    return this.setState({
+      currentMenuItem,
+      offset: 0,
+      current: 0,
+    });
   }
 
   nextMenuItems = () => {
@@ -61,6 +77,10 @@ class MenuScene extends Component {
     const currentMenuItems = actionStore.getMenuItems(
       this.state.currentMenuItem._id,
     );
+
+    if (Object.keys(this.state.currentMenuItem).length >= 1) {
+      currentMenuItems.unshift(BACK_LEVEL);
+    }
 
     if (
       (currentMenuItems.length > current && currentMenuItems.length < offset) ||
@@ -85,6 +105,17 @@ class MenuScene extends Component {
     this.setState({ offset, current, selectedMenuItems, currentMenuItems });
   };
 
+  reset() {
+    const currentMenuItems = this.props.actionStore.getMenuItems();
+    currentMenuItems.unshift(BACK_LEVEL);
+    return this.setState({
+      currentMenuItems,
+      offset: 0,
+      current: 0,
+      currentMenuItem: {},
+    });
+  }
+
   intendedAction = ({ action: intendedAction }) => {
     this.setState({ intendedAction });
   };
@@ -98,8 +129,10 @@ class MenuScene extends Component {
       current + actionStore.totalMenuItems,
     );
 
+    let i = 0;
     const renderCategories = categories.map(category => {
       const selected = this.state.selectedMenuItems.includes(category);
+      if (selected) i += 1;
       return (
         <Level
           icon={category.icon}
@@ -107,6 +140,7 @@ class MenuScene extends Component {
           name={category.name}
           total={actionStore.totalMenuItems}
           active={selected}
+          action={selected ? i : null}
         />
       );
     });

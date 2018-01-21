@@ -56,7 +56,7 @@ class ActionStore {
     this.actionsAvailable = actionsAvailable;
     this.totalMenuItems = actionsAvailable > 3 ? actionsAvailable * 2 : 6;
     this.settings = settings;
-    this.menuItems = menuItems;
+    this.menuItems = menuItems.sort((a, b) => a.order > b.order);
     sensors.forEach(({ channel, connected, calibrated }) => {
       const sensor = this.sensors.find(s => s.channel === channel);
       sensor.connected = connected;

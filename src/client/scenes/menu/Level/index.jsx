@@ -1,18 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 // styled
-import Level from './styled/Level';
-import LevelImage from './styled/LevelImage';
-import LevelFigCaption from './styled/LevelFigCaption';
-import LevelWrapper from './styled/LevelWrapper';
+import {
+  Level,
+  LevelImage,
+  LevelFigCaption,
+  LevelWrapper,
+  LevelAction,
+} from './styled/Level';
 
 const LevelComponent = ({ name, icon, active, action, total }) => (
   <Level active={active} total={total}>
     <LevelWrapper>
       <LevelImage src={icon} alt={name} />
       <LevelFigCaption active={active}>{name}</LevelFigCaption>
-      <span>{action !== null ? action : ''}</span>
     </LevelWrapper>
+    {action !== null && <LevelAction>{action}</LevelAction>}
   </Level>
 );
 
