@@ -9,19 +9,13 @@ import SensorStepWrapper from './styled/SensorStepWrapper';
 
 const SensorStepComponent = ({ sensors, pager }) => (
   <SensorStepWrapper>
-    <Typography>
+    <Typography paragraph>
       Sluit nu alle sensoren aan en bevestig de stickers op de juiste spieren.
       Controleer hieronder of alle spieren aangesloten zijn.
     </Typography>
     <Button raised color="primary" onClick={pager.next}>
       Ja, alle spieren zijn aangesloten
     </Button>
-    <Typography type="caption">
-      <em>
-        Let op, dit scherm past automatisch aan als je sensors aansluit of
-        loskoppelt.
-      </em>
-    </Typography>
     <SensorConnection sensors={sensors} />
   </SensorStepWrapper>
 );

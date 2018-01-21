@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import SensorConnectionItem from '../../../../SensorConnection/SensorConnectionItem';
+// styled
+import SensorListItem from '../../../../SensorConnection/styled/SensorListItem';
 
 class CalibrateSensorComponent extends Component {
   state = {
@@ -38,7 +40,7 @@ class CalibrateSensorComponent extends Component {
     } = this.props;
     const active = currentChannel === channel;
     return (
-      <li
+      <SensorListItem
         style={{
           // eslint-disable-next-line no-nested-ternary
           backgroundColor: active
@@ -63,11 +65,13 @@ class CalibrateSensorComponent extends Component {
             {this.state.timeLeft / 1000}s
           </div>
         )}
-        <SensorConnectionItem sensor={sensor} />
-        <button onClick={() => startCalibration(channel)} disabled={active}>
-          Nu instellen
-        </button>
-      </li>
+        <SensorConnectionItem
+          sensor={sensor}
+          mode="calibrate"
+          onClick={() => startCalibration(channel)}
+          active={active}
+        />
+      </SensorListItem>
     );
   }
 }

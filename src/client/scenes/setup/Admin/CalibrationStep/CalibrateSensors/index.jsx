@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
 import PropTypes from 'prop-types';
+import { inject, observer } from 'mobx-react';
+import { Typography } from 'material-ui';
 import socket from '../../../../../socket';
 // Components
 import CalibrateSensor from './CalibrateSensor';
+// styled
+import CalibrationStepWrapper from './styled/CalibrationStepWrapper';
+import SensorList from '../../../SensorConnection/styled/SensorList';
 
 class CalibrateSensorsComponent extends Component {
   state = {
@@ -38,6 +42,7 @@ class CalibrateSensorsComponent extends Component {
   };
 
   startCalibration = channel => {
+    socket.emit('cancelCalibration', channel);
     socket.emit('onCalibrate', channel);
   };
 
@@ -57,9 +62,15 @@ class CalibrateSensorsComponent extends Component {
       ));
 
     return (
-      <section>
-        <ul>{calibrations}</ul>
-      </section>
+      <CalibrationStepWrapper>
+        <Typography type="caption" gutterBottom paragraph>
+          <em>
+            Let op, dit scherm past automatisch aan als je sensors aansluit of
+            loskoppelt.
+          </em>
+        </Typography>
+        <SensorList>{calibrations}</SensorList>
+      </CalibrationStepWrapper>
     );
   }
 }

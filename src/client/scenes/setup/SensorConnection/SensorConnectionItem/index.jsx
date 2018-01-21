@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
-import { CardContent, Typography } from 'material-ui';
+import { CardContent, CardActions, Typography, Button } from 'material-ui';
 import Sensor from '../../../../stores/Objects/Sensor';
 
 // components
@@ -12,7 +12,7 @@ import StyledCard from './styled/StyledCard';
 import StyledDetails from './styled/StyledDetails';
 import StyledCardMedia from './styled/StyledCardMedia';
 
-const SensorConnectionItemComponent = ({ sensor }) => (
+const SensorConnectionItemComponent = ({ sensor, mode, onClick, active }) => (
   <Fragment>
     <StyledCard>
       <StyledDetails>
@@ -25,9 +25,20 @@ const SensorConnectionItemComponent = ({ sensor }) => (
             {sensor.calibrated ? 'Al ingesteld' : 'Nog niet ingesteld'}
           </Typography>
         </CardContent>
+        <CardActions>
+          <Button dense onClick={onClick} disabled={active} color="primary">
+            {sensor.calibrated ? 'Opnieuw' : 'Nu'} instellen
+          </Button>
+        </CardActions>
       </StyledDetails>
       <StyledCardMedia
-        component={p => <SensorConnectionItemIcon {...p} sensor={sensor} />}
+        component={p => (
+          <SensorConnectionItemIcon
+            {...p}
+            check={sensor[mode === 'connect' ? 'connected' : 'calibrated']}
+            mode={mode}
+          />
+        )}
         image="#"
       />
     </StyledCard>
@@ -36,6 +47,11 @@ const SensorConnectionItemComponent = ({ sensor }) => (
 
 SensorConnectionItemComponent.propTypes = {
   sensor: PropTypes.instanceOf(Sensor).isRequired,
+  mode: PropTypes.oneOf(['connect', 'calibrate']),
+};
+
+SensorConnectionItemComponent.defaultProps = {
+  mode: 'connect',
 };
 
 export default observer(SensorConnectionItemComponent);

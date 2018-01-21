@@ -12,7 +12,7 @@ const ProgressBar = ({ step }) => (
       <StepLabel>Sensoren</StepLabel>
     </Step>
     <Step>
-      <StepLabel>Afstellen</StepLabel>
+      <StepLabel>Instellen</StepLabel>
     </Step>
   </Stepper>
 );
