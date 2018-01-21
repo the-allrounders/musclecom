@@ -52,7 +52,14 @@ class SensorConnectionItemComponent extends Component {
   }
 
   render() {
-    const { sensor, mode, onClick, active, interactive } = this.props;
+    const {
+      sensor,
+      mode,
+      onClick,
+      active,
+      interactive,
+      currentAction,
+    } = this.props;
 
     return (
       <Fragment>
@@ -60,12 +67,29 @@ class SensorConnectionItemComponent extends Component {
           <StyledDetails>
             <CardContent>
               <Typography type="headline">Sensor {sensor.channel}</Typography>
-              <Typography type="subheading" color="secondary">
-                {sensor.connected ? 'Aangesloten' : 'Niet aangesloten'}
-              </Typography>
-              <Typography type="subheading" color="secondary">
-                {sensor.calibrated ? 'Ingesteld' : 'Nog niet ingesteld'}
-              </Typography>
+              {active ? (
+                <div>
+                  {currentAction.action === 'min' && (
+                    <Typography type="subheading" color="secondary">
+                      Span de spier nu zo min mogelijk aan.
+                    </Typography>
+                  )}
+                  {currentAction.action === 'max' && (
+                    <Typography type="subheading" color="secondary">
+                      Span de spier nu aan.
+                    </Typography>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <Typography type="subheading" color="secondary">
+                    {sensor.connected ? 'Aangesloten' : 'Niet aangesloten'}
+                  </Typography>
+                  <Typography type="subheading" color="secondary">
+                    {sensor.calibrated ? 'Ingesteld' : 'Nog niet ingesteld'}
+                  </Typography>
+                </div>
+              )}
             </CardContent>
             {interactive && (
               <CardActions>
