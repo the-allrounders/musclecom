@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { AppBar, Toolbar, Typography } from 'material-ui';
 
 const AppBarComponent = ({ title, subtitle }) => (
-  <AppBar position="static">
+  <AppBar>
     <Toolbar>
       <Typography type="title" color="inherit" styles={{ flex: 1 }}>
         {subtitle && `${subtitle} | `}

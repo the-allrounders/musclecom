@@ -6,7 +6,6 @@ import CalibrateSensors from './CalibrateSensors';
 
 const CalibrationStepComponent = ({ pager }) => (
   <section>
-    <h2>Stap 2 - Kalibratie</h2>
     {pager.step === 3 && <CalibrationIntro pager={pager} />}
     {pager.step === 4 && <CalibrateSensors />}
   </section>

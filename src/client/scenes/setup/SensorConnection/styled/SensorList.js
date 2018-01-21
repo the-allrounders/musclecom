@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export default styled.ul`
-  margin: 3em;
+  margin: 2em 0;
   display: flex;
   flex-flow: row wrap;
-  width: calc(100% - 6em);
+  width: 100%;
   justify-content: space-between;
 `;

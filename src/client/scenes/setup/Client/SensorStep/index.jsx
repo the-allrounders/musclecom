@@ -7,10 +7,15 @@ import Sensor from '../../../../stores/Objects/Sensor';
 import SensorConnection from '../../SensorConnection';
 import AppBar from '../../AppBar';
 
+// styled
+import SetupWrapper from './styled/SetupWrapper';
+
 const SensorStepComponent = ({ sensors }) => (
   <section>
     <AppBar subtitle="Stap 1 - Sensoren" />
-    <SensorConnection sensors={sensors} />
+    <SetupWrapper>
+      <SensorConnection sensors={sensors} />
+    </SetupWrapper>
   </section>
 );
 

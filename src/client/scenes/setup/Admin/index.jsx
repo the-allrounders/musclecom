@@ -10,6 +10,8 @@ import ProgressBar from '../ProgressBar';
 import SensorStep from './SensorStep';
 import CalibrationStep from './CalibrationStep';
 import AppBar from '../AppBar';
+// styled
+import SetupWrapper from './styled/SetupWrapper';
 
 class AdminSetupComponent extends Component {
   componentDidMount() {
@@ -33,10 +35,9 @@ class AdminSetupComponent extends Component {
     };
 
     return (
-      <section>
+      <SetupWrapper>
         <AppBar />
         <ProgressBar step={step} />
-        <h1>Instellen</h1>
         {step === 2 && (
           <SensorStep sensors={this.props.actionStore.sensors} pager={pager} />
         )}
@@ -46,7 +47,7 @@ class AdminSetupComponent extends Component {
             pager={pager}
           />
         )}
-      </section>
+      </SetupWrapper>
     );
   }
 }
