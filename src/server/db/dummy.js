@@ -9,7 +9,7 @@ export default async function() {
     const menuParent1 = new MenuItem({
       parent: '',
       name: 'Primair',
-      icon: '',
+      icon: '/images/image4.png',
       order: 0,
     });
     await menuParent1.save();
@@ -18,31 +18,31 @@ export default async function() {
       {
         parent: '',
         name: 'Alarm',
-        icon: '',
+        icon: '/images/image91.png',
         order: 0,
       },
       {
         parent: menuParent1._id,
         name: 'Honger',
-        icon: '',
+        icon: '/images/image42.png',
         order: 1,
       },
       {
         parent: menuParent1._id,
         name: 'WC',
-        icon: '',
+        icon: '/images/image87.png',
         order: 2,
       },
       {
         parent: menuParent1._id,
         name: 'Spelletje',
-        icon: '',
+        icon: '/images/image69.png',
         order: 3,
       },
       {
         parent: menuParent1._id,
         name: 'Naar buiten',
-        icon: '',
+        icon: '/images/image23.png',
         order: 4,
       },
     ];

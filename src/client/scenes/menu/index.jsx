@@ -106,6 +106,7 @@ class MenuScene extends Component {
       const selected = this.state.selectedMenuItems.includes(category);
       return (
         <Level
+          icon={category.icon}
           key={category._id}
           name={category.name}
           total={actionStore.totalMenuItems}
