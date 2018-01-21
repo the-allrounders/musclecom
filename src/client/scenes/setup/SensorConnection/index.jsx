@@ -11,7 +11,7 @@ import SensorConnectionItem from './SensorConnectionItem';
 import SensorList from './styled/SensorList';
 import SensorListItem from './styled/SensorListItem';
 
-const SensorConnectionComponent = ({ actionStore }) => (
+const SensorConnectionComponent = ({ actionStore, mode }) => (
   <div>
     <Typography type="caption" gutterBottom paragraph>
       <em>
@@ -20,17 +20,28 @@ const SensorConnectionComponent = ({ actionStore }) => (
       </em>
     </Typography>
     <SensorList>
-      {actionStore.sensors.map(sensor => (
-        <SensorListItem key={sensor.channel}>
-          <SensorConnectionItem key={sensor.channel} sensor={sensor} />
-        </SensorListItem>
-      ))}
+      {actionStore.sensors
+        .filter(sensor => mode === 'connect' || sensor.connected)
+        .map(sensor => (
+          <SensorListItem key={sensor.channel}>
+            <SensorConnectionItem
+              key={sensor.channel}
+              sensor={sensor}
+              mode={mode}
+            />
+          </SensorListItem>
+        ))}
     </SensorList>
   </div>
 );
 
 SensorConnectionComponent.propTypes = {
   actionStore: PropTypes.instanceOf(ActionStore).isRequired,
+  mode: PropTypes.oneOf(['connect', 'calibrate']),
+};
+
+SensorConnectionComponent.defaultProps = {
+  mode: 'connect',
 };
 
 export default inject('actionStore')(observer(SensorConnectionComponent));

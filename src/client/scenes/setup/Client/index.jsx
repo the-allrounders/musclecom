@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 // Components
 import SetupConnect from './SetupConnect';
 import SensorStep from './SensorStep';
+import CalibrationStep from './CalibrationStep';
 
 // styled
 import globalClientStyles from '../../../styles/global.client';
@@ -20,6 +21,7 @@ class ClientSetupComponent extends Component {
       <SetupWrapper>
         {step === 1 && <SetupConnect />}
         {(step === 2 || step === 3) && <SensorStep />}
+        {step === 4 && <CalibrationStep />}
       </SetupWrapper>
     );
   }
