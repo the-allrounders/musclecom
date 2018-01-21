@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { CardContent, CardActions, Typography, Button } from 'material-ui';
-import Sensor from '../../../../stores/Objects/Sensor';
+import Sensor from '../../../../../stores/Objects/Sensor';
 
 // components
 import SensorConnectionItemIcon from './SensorConnectionItemIcon';

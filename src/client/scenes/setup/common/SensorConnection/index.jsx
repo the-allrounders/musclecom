@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { Typography } from 'material-ui';
-import { ActionStore } from '../../../stores/ActionStore';
+import { ActionStore } from '../../../../stores/ActionStore';
 
 // components
 import SensorConnectionItem from './SensorConnectionItem';

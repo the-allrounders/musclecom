@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
 import { Typography } from 'material-ui';
-import socket from '../../../socket/index';
-import Sensor from '../../../stores/Objects/Sensor';
+import socket from '../../../../socket/index';
+import Sensor from '../../../../stores/Objects/Sensor';
 
 // Components
 import CalibrateSensor from './CalibrateSensor';
