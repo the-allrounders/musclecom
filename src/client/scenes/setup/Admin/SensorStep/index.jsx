@@ -1,20 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Typography } from 'material-ui';
-import { PropTypes as MobxPropTypes } from 'mobx-react';
+import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
 import SensorConnection from '../../common/SensorConnection';
 import Sensor from '../../../../stores/Objects/Sensor';
+
 // styled
 import SensorStepWrapper from './styled/SensorStepWrapper';
 
-const SensorStepComponent = ({ sensors, pager }) => (
+const SensorStepComponent = ({ sensors, pager, actionStore }) => (
   <SensorStepWrapper>
     <Typography paragraph>
       Sluit nu alle sensoren aan en bevestig de stickers op de juiste spieren.
       Controleer hieronder of alle spieren aangesloten zijn.
     </Typography>
-    <Button raised color="primary" onClick={pager.next}>
-      Ja, alle spieren zijn aangesloten
+    <Button
+      raised
+      color="primary"
+      onClick={pager.next}
+      disabled={actionStore.sensorsConnected === 0}
+    >
+      {actionStore.sensorsConnected === 0
+        ? 'Sluit ten minste 1 sensor aan'
+        : 'Ja, alle spieren zijn aangesloten'}
     </Button>
     <Typography paragraph />
     <SensorConnection sensors={sensors} />
@@ -29,4 +37,4 @@ SensorStepComponent.propTypes = {
   }).isRequired,
 };
 
-export default SensorStepComponent;
+export default inject('actionStore')(observer(SensorStepComponent));
