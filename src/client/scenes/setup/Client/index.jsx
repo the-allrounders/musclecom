@@ -14,14 +14,12 @@ class ClientSetupComponent extends Component {
   }
 
   render() {
-    const { actionStore, getStep } = this.props;
+    const { getStep } = this.props;
     const step = getStep();
     return (
       <SetupWrapper>
         {step === 1 && <SetupConnect />}
-        {(step === 2 || step === 3) && (
-          <SensorStep sensors={actionStore.sensors} />
-        )}
+        {(step === 2 || step === 3) && <SensorStep />}
       </SetupWrapper>
     );
   }

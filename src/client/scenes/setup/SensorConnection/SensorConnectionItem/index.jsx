@@ -25,19 +25,17 @@ const SensorConnectionItemComponent = ({ sensor, mode, onClick, active }) => (
             {sensor.calibrated ? 'Al ingesteld' : 'Nog niet ingesteld'}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button dense onClick={onClick} disabled={active} color="primary">
-            {sensor.calibrated ? 'Opnieuw' : 'Nu'} instellen
-          </Button>
-        </CardActions>
+        {mode === 'calibrate' && (
+          <CardActions>
+            <Button dense onClick={onClick} disabled={active} color="primary">
+              {sensor.calibrated ? 'Opnieuw' : 'Nu'} instellen
+            </Button>
+          </CardActions>
+        )}
       </StyledDetails>
       <StyledCardMedia
         component={p => (
-          <SensorConnectionItemIcon
-            {...p}
-            check={sensor[mode === 'connect' ? 'connected' : 'calibrated']}
-            mode={mode}
-          />
+          <SensorConnectionItemIcon {...p} sensor={sensor} mode={mode} />
         )}
         image="#"
       />

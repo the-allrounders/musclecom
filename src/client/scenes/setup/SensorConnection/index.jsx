@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer, PropTypes as MobxPropTypes } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 import { Typography } from 'material-ui';
-import Sensor from '../../../stores/Objects/Sensor';
+import { ActionStore } from '../../../stores/ActionStore';
 
 // components
 import SensorConnectionItem from './SensorConnectionItem';
@@ -11,7 +11,7 @@ import SensorConnectionItem from './SensorConnectionItem';
 import SensorList from './styled/SensorList';
 import SensorListItem from './styled/SensorListItem';
 
-const SensorConnectionComponent = ({ sensors }) => (
+const SensorConnectionComponent = ({ actionStore }) => (
   <div>
     <Typography type="caption" gutterBottom paragraph>
       <em>
@@ -20,7 +20,7 @@ const SensorConnectionComponent = ({ sensors }) => (
       </em>
     </Typography>
     <SensorList>
-      {sensors.map(sensor => (
+      {actionStore.sensors.map(sensor => (
         <SensorListItem key={sensor.channel}>
           <SensorConnectionItem key={sensor.channel} sensor={sensor} />
         </SensorListItem>
@@ -30,8 +30,7 @@ const SensorConnectionComponent = ({ sensors }) => (
 );
 
 SensorConnectionComponent.propTypes = {
-  sensors: MobxPropTypes.observableArrayOf(PropTypes.instanceOf(Sensor))
-    .isRequired,
+  actionStore: PropTypes.instanceOf(ActionStore).isRequired,
 };
 
-export default observer(SensorConnectionComponent);
+export default inject('actionStore')(observer(SensorConnectionComponent));

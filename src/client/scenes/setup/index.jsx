@@ -51,16 +51,12 @@ class SetupScene extends Component {
         <Route
           path={routes.SETUP}
           exact
-          component={p => (
-            <Client {...p} getStep={this.getStep} actionStore={actionStore} />
-          )}
+          component={p => <Client {...p} getStep={this.getStep} />}
         />
         <Route
           path={routes.SETUP_ADMIN}
           exact
-          component={p => (
-            <Admin {...p} getStep={this.getStep} actionStore={actionStore} />
-          )}
+          component={p => <Admin {...p} getStep={this.getStep} />}
         />
       </Switch>
     );

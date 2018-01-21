@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export default styled.svg`
   position: absolute;
-  width: 40px;
-  height: 40px;
-  margin-top: 10px;
-  margin-left: -48px;
-  background-color: ${p => p.bgColor};
-  border-radius: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 25px;
+  width: 35px;
+  height: 35px;
 `;
