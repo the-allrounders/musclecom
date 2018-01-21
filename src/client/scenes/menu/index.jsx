@@ -150,7 +150,7 @@ class MenuScene extends Component {
         <style>{globalClientStyles}</style>
         <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
-          {this.state.currentMenuItems.length <= 0 &&
+          {this.state.currentMenuItems.length <= 1 &&
             typeof this.state.currentMenuItem === 'object' && (
               <SingleLevel {...this.state.currentMenuItem} />
             )}
