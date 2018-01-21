@@ -151,6 +151,7 @@ class MenuScene extends Component {
         <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
           {this.state.currentMenuItems.length <= 1 &&
+            Object.keys(this.state.currentMenuItem).length > 0 &&
             typeof this.state.currentMenuItem === 'object' && (
               <SingleLevel {...this.state.currentMenuItem} />
             )}
