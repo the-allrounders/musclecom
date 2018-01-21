@@ -29,10 +29,6 @@ class MenuScene extends Component {
     intendedAction: 0,
   };
 
-  componentWillMount() {
-    globalClientStyles();
-  }
-
   componentDidMount() {
     socket.on('chosenAction', this.onAction);
     socket.on('intendedAction', this.intendedAction);
@@ -117,6 +113,7 @@ class MenuScene extends Component {
 
     return (
       <div style={{ height: '100%' }}>
+        <style>{globalClientStyles}</style>
         <LevelWrapper actions={actionStore.actionsAvailable}>
           {renderCategories}
           {this.state.currentMenuItems.length <= 0 &&
