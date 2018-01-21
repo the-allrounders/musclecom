@@ -1,8 +1,8 @@
 import React from 'react';
 
 // Components
-import SensorConnection from '../../SensorConnection';
-import AppBar from '../../AppBar';
+import SensorConnection from '../../common/SensorConnection';
+import AppBar from '../../common/AppBar';
 
 // styled
 import SetupWrapper from './styled/SetupWrapper';

@@ -6,10 +6,10 @@ import socket from '../../../socket';
 import Sensor from '../../../stores/Objects/Sensor';
 
 // Components
-import ProgressBar from '../ProgressBar';
+import ProgressBar from '../common/ProgressBar';
 import SensorStep from './SensorStep';
 import CalibrationStep from './CalibrationStep';
-import AppBar from '../AppBar';
+import AppBar from '../common/AppBar';
 // styled
 import SetupWrapper from './styled/SetupWrapper';
 

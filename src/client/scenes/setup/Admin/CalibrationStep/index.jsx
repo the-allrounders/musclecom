@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography } from 'material-ui';
 
 // Components
-import CalibrateSensors from '../../CalibrateSensors';
+import CalibrateSensors from '../../common/CalibrateSensors';
 
 // styled
 import CalibrationStepWrapper from './styled/CalibrationStepWrapper';

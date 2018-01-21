@@ -1,5 +1,5 @@
 import React from 'react';
-import SensorConnectionItem from '../../SensorConnection/SensorConnectionItem/index';
+import SensorConnectionItem from '../../SensorConnection/SensorConnectionItem';
 
 // styled
 import SensorListItem from '../../SensorConnection/styled/SensorListItem';

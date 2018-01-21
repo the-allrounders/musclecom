@@ -1,8 +1,8 @@
 import React from 'react';
 
 // Components
-import AppBar from '../../AppBar';
-import CalibrateSensors from '../../CalibrateSensors';
+import AppBar from '../../common/AppBar';
+import CalibrateSensors from '../../common/CalibrateSensors';
 
 // styled
 import CalibrationWrapper from './styled/CalibrationWrapper';

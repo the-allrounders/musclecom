@@ -6,7 +6,7 @@ import { CardMedia, Typography } from 'material-ui';
 import { routes } from '../../../../router';
 
 // Components
-import AppBar from '../../AppBar';
+import AppBar from '../../common/AppBar';
 
 // styled
 import QRCardWrapper from './styled/QRCardWrapper';

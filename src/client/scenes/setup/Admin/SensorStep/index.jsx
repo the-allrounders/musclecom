@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Typography } from 'material-ui';
 import { PropTypes as MobxPropTypes } from 'mobx-react';
-import SensorConnection from '../../SensorConnection';
+import SensorConnection from '../../common/SensorConnection';
 import Sensor from '../../../../stores/Objects/Sensor';
 // styled
 import SensorStepWrapper from './styled/SensorStepWrapper';
