@@ -1,8 +1,8 @@
 import React from 'react';
 
 // Components
-import SensorConnection from '../../SensorConnection';
 import AppBar from '../../AppBar';
+import CalibrateSensors from '../../CalibrateSensors';
 
 // styled
 import CalibrationWrapper from './styled/CalibrationWrapper';
@@ -11,7 +11,7 @@ const CalibrationStep = () => (
   <section>
     <AppBar subtitle="Stap 2 - Instellen" />
     <CalibrationWrapper>
-      <SensorConnection mode="calibrate" />
+      <CalibrateSensors />
     </CalibrationWrapper>
   </section>
 );

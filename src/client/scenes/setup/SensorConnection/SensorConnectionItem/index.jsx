@@ -52,7 +52,7 @@ class SensorConnectionItemComponent extends Component {
   }
 
   render() {
-    const { sensor, mode, onClick, active, showActions } = this.props;
+    const { sensor, mode, onClick, active, interactive } = this.props;
 
     return (
       <Fragment>
@@ -67,7 +67,7 @@ class SensorConnectionItemComponent extends Component {
                 {sensor.calibrated ? 'Ingesteld' : 'Nog niet ingesteld'}
               </Typography>
             </CardContent>
-            {showActions && (
+            {interactive && (
               <CardActions>
                 <Button
                   dense
@@ -100,12 +100,12 @@ class SensorConnectionItemComponent extends Component {
 SensorConnectionItemComponent.propTypes = {
   sensor: PropTypes.instanceOf(Sensor).isRequired,
   mode: PropTypes.oneOf(['connect', 'calibrate']),
-  showActions: PropTypes.bool,
+  interactive: PropTypes.bool,
 };
 
 SensorConnectionItemComponent.defaultProps = {
   mode: 'connect',
-  showActions: false,
+  interactive: false,
 };
 
 export default observer(SensorConnectionItemComponent);

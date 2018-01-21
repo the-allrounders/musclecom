@@ -20,7 +20,7 @@ const CalibrationIntroComponent = ({ pager }) => (
       vaak oefenen tot het voor je gevoel goed gaat.
     </p>
     <Button raised color="primary" onClick={pager.next}>
-      Start eerste oefening
+      Ga naar oefeningen
     </Button>
   </div>
 );
