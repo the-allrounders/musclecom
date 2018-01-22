@@ -4,25 +4,7 @@ import { emit, listen } from '../middleware/sockets';
 import signal from './signal';
 
 class SignalProcessing extends EventEmitter {
-  init() {
-    if (this.initializing) {
-      this.checkChannels();
-      return this.initializing;
-    }
-    this.initializing = this.realInit();
-    return this.initializing;
-  }
-
-  async realInit() {
-    // Set initial number of signals / sensors.
-    await this.checkChannels();
-
-    // Start collecting data
-    this.startDataCollection();
-  }
-
   constructor() {
-    console.info('Starting signal processing');
     super();
 
     // Define our constants
@@ -44,10 +26,6 @@ class SignalProcessing extends EventEmitter {
       });
     }
 
-    this.setGlobalListeners();
-  }
-
-  setGlobalListeners() {
     listen('onCalibrate', channel => {
       if (this.calibrating === false) {
         this.calibrating = true;
@@ -61,6 +39,19 @@ class SignalProcessing extends EventEmitter {
         this.emit('receivedSignal', { sensor: key - 1, value: high });
       }
     });
+  }
+
+  async init() {
+    if (this.initializing) {
+      throw new Error('You can only initialize once!');
+    }
+    this.initializing = true;
+
+    // Set initial number of signals / sensors.
+    await this.checkChannels();
+
+    // Start collecting data
+    this.startDataCollection();
   }
 
   /**
