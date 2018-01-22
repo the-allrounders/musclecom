@@ -62,6 +62,7 @@ class SignalProcessing extends EventEmitter {
 
   setGlobalListeners() {
     listen('onCalibrate', channel => {
+      this.pauseDataCollection();
       this.calibrate(channel, false);
     });
 
@@ -241,7 +242,7 @@ class SignalProcessing extends EventEmitter {
       }
 
       // Read the values
-      const value = await this.readChannel(channel - 1); // eslint-disable-line no-await-in-loop
+      const value = await this.readChannel(channel); // eslint-disable-line no-await-in-loop
 
       if (max) {
         if (value > 0) {
@@ -275,11 +276,9 @@ class SignalProcessing extends EventEmitter {
     let counter = 0;
     let muscleHigh = false;
     while (this.dataCollection && !this.dummy) {
-      // console.log(this.sensors);
-
       for (const sensor of this.sensors.filter(s => s.connected)) {
         // eslint-disable-line no-restricted-syntax
-        const value = await this.readChannel(sensor.channel - 1); // eslint-disable-line no-await-in-loop
+        const value = await this.readChannel(sensor.channel); // eslint-disable-line no-await-in-loop
 
         if (value > 10) {
           // Saving current value
