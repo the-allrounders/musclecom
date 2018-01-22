@@ -62,8 +62,4 @@ typings/
 .env
 
 # database folder
-<<<<<<< HEAD
 /db/
-=======
-/db/
->>>>>>> master
