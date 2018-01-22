@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { Typography } from 'material-ui';
-import { ActionStore } from '../../../../stores/ActionStore';
+import { actionStore } from '../../../../stores';
 
 // components
 import SensorConnectionItem from './SensorConnectionItem';
@@ -11,7 +11,7 @@ import SensorConnectionItem from './SensorConnectionItem';
 import SensorList from './styled/SensorList';
 import SensorListItem from './styled/SensorListItem';
 
-const SensorConnectionComponent = ({ actionStore, mode }) => (
+const SensorConnectionComponent = ({ mode }) => (
   <div>
     <Typography type="caption" gutterBottom paragraph>
       <em>
@@ -36,7 +36,6 @@ const SensorConnectionComponent = ({ actionStore, mode }) => (
 );
 
 SensorConnectionComponent.propTypes = {
-  actionStore: PropTypes.instanceOf(ActionStore).isRequired,
   mode: PropTypes.oneOf(['connect', 'calibrate']),
 };
 
