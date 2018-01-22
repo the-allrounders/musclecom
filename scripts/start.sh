@@ -3,8 +3,8 @@
 # Change to current directory
 cd "$(dirname "$0")"
 
-echo "Resetting git repository..."
-git reset HEAD --hard
+#echo "Resetting git repository..."
+#git reset HEAD --hard
 
 echo "Pulling git repository..."
 git pull

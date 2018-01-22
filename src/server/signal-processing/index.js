@@ -112,13 +112,11 @@ class SignalProcessing extends EventEmitter {
     for (const sensor of this.sensors.filter(s => s.connected)) {
       const value = await signal.read(sensor.channel); // eslint-disable-line no-await-in-loop
 
-      // If the value was below 10, don't use this value.
+      // If the value was below 10, do not use this value.
       if (value <= 10) {
         continue;
       }
 
-      // Saving current value
-      sensor.value = value;
       sensor.values.push(value);
       if (sensor.values.length > MAX_VALUES_FOR_AVERAGE_AND_DIVIATION) {
         sensor.values.shift();
@@ -148,6 +146,7 @@ class SignalProcessing extends EventEmitter {
         const base = sensor.avg - sensor.min + sensor.sd;
 
         if (thisSignal > base && sensor.lastSignal !== 1) {
+          // console.log(sensor);
           // Our signal is over our base lets emit the signal
           this.emit('receivedSignal', {
             channel: sensor.channel,
@@ -158,12 +157,16 @@ class SignalProcessing extends EventEmitter {
 
         // Previous signal was high make sure we emit it is now low.
         if (thisSignal < base && sensor.lastSignal !== 0) {
+          // console.log(sensor);
           this.emit('receivedSignal', {
             channel: sensor.channel,
             signal: 0,
           });
           sensor.lastSignal = 0;
         }
+
+        // Saving current value
+        sensor.value = value;
       }
     }
   }

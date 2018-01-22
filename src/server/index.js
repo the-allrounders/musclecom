@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import express from 'express';
+import * as child from 'child_process';
 import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -66,16 +67,12 @@ app.use(express.static(path.join(`${__dirname}/public`)));
 
   // Start the chrome browser on the raspberry pi.
   if (process.argv[2] === 'prod') {
-    const chromeLauncher = require('chrome-launcher'); // eslint-disable-line global-require
-    chromeLauncher.launch({
-      startingUrl: `http://localhost:6969`,
-      chromeFlags: [
-        '--disable-translate',
-        // '--kiosk',
-        '--incognito',
-        '--noerrdialogs',
-      ],
-      chromePath: '/usr/bin/chromium-browser',
-    });
+    // Lauch Chromium in the browser
+    child.exec(
+      'DISPLAY=:0 chromium-browser http://localhost:6969 --disable-translate --incognito --noerrdialogs --kiosk &',
+      (err, stdout) => {
+        console.log(stdout);
+      },
+    );
   }
 })();
