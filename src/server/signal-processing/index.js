@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import moment from 'moment';
 import { emit, listen } from '../middleware/sockets';
+import signal from './signal';
 
 class SignalProcessing extends EventEmitter {
   init() {
@@ -13,21 +14,6 @@ class SignalProcessing extends EventEmitter {
   }
 
   async realInit() {
-    // Dummy mode off
-    this.dummy = false;
-
-    // Try to import the module that allows us to read the adc
-    // If this fails return dummy data
-    try {
-      const Ads1x15 = require('node-ads1x15'); // eslint-disable-line global-require, import/no-extraneous-dependencies
-      this.adc = new Ads1x15(0);
-    } catch (err) {
-      console.info(
-        'It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions',
-      );
-      this.dummy = true;
-    }
-
     // Set initial number of signals / sensors.
     await this.checkChannels();
 
@@ -75,45 +61,6 @@ class SignalProcessing extends EventEmitter {
         this.emit('receivedSignal', { sensor: key - 1, value: high });
       }
     });
-
-    listen('mockSensorsConnected', numOfSensors => {
-      this.sensors.forEach((s, i) => {
-        s.connected = i < numOfSensors; // eslint-disable-line no-param-reassign
-      });
-      this.emitSensors();
-    });
-  }
-
-  /**
-   * Read the channel for a single value
-   *
-   * @param channel
-   */
-  async readChannel(channel) {
-    // console.info(`Reading channel: ${channel}`);
-    if (!this.dummy && !this.adc.busy) {
-      const samplesPerSecond = '250'; // see index.js for allowed values for your chip
-      const progGainAmp = '4096'; // see index.js for allowed values for your chip
-
-      return new Promise((resolve, reject) =>
-        this.adc.readADCSingleEnded(
-          channel - 1,
-          progGainAmp,
-          samplesPerSecond,
-          (err, data) => {
-            if (err) {
-              reject(err);
-            } else resolve(data);
-          },
-        ),
-      );
-    } else if (this.dummy) {
-      await new Promise(r => setTimeout(r, 100));
-      return Math.floor(Math.random() * 750 + 1);
-    }
-
-    console.info('Device busy');
-    return false;
   }
 
   /**
@@ -124,36 +71,24 @@ class SignalProcessing extends EventEmitter {
   async checkChannels() {
     console.info('Checking number of sensors');
 
-    if (!this.dummy) {
-      for (const sensor of this.sensors) {
-        // Start reading the channel and break only if a value has returned
-        const channelValue = await this.readChannel(sensor.channel); // eslint-disable-line no-await-in-loop
-        if (channelValue > 10) {
-          // Check for values larger than 10 to avoid channel interference
-          sensor.connected = true;
-          if (sensor.max > 0) {
-            sensor.calibrated = true;
-          }
-        } else {
-          sensor.connected = false;
-          sensor.calibrated = false;
-          sensor.val = 0;
-          this.resetSensorCalibration(sensor.channel);
-        }
-      }
-
-      console.info('Emitting sensors');
-
-      // Emit the number of sensors
-      this.emitSensors();
-      return;
-    }
-    // Dummy modus
     for (const sensor of this.sensors) {
-      if (sensor.max > 0) {
-        sensor.calibrated = true;
+      // Start reading the channel and break only if a value has returned
+      const channelValue = await signal.read(sensor.channel); // eslint-disable-line no-await-in-loop
+      if (channelValue > 10) {
+        // Check for values larger than 10 to avoid channel interference
+        sensor.connected = true;
+        if (sensor.max > 0) {
+          sensor.calibrated = true;
+        }
+      } else {
+        sensor.connected = false;
+        sensor.calibrated = false;
+        sensor.val = 0;
+        this.resetSensorCalibration(sensor.channel);
       }
     }
+
+    console.info('Emitting sensors');
 
     // Emit the number of sensors
     this.emitSensors();
@@ -249,7 +184,7 @@ class SignalProcessing extends EventEmitter {
       }
 
       // Read the values
-      const value = await this.readChannel(channel); // eslint-disable-line no-await-in-loop
+      const value = await signal.read(channel); // eslint-disable-line no-await-in-loop
 
       if (max) {
         if (value > 0) {
@@ -282,10 +217,10 @@ class SignalProcessing extends EventEmitter {
     this.dataCollection = true;
     let counter = 0;
     let muscleHigh = false;
-    while (this.dataCollection && !this.dummy) {
+    while (this.dataCollection) {
       for (const sensor of this.sensors.filter(s => s.connected)) {
         // eslint-disable-line no-restricted-syntax
-        const value = await this.readChannel(sensor.channel); // eslint-disable-line no-await-in-loop
+        const value = await signal.read(sensor.channel); // eslint-disable-line no-await-in-loop
 
         if (value > 10) {
           // Saving current value
@@ -296,7 +231,7 @@ class SignalProcessing extends EventEmitter {
 
           // If our values fall below the minimum or above the maximum, ignore the value
           if (value < sensor.max && value > sensor.min) {
-            const signal = value - sensor.min;
+            const thisSignal = value - sensor.min;
 
             // TODO 80% method
             // const base = (sensor.max - sensor.min) / 100 * 80;
@@ -307,7 +242,7 @@ class SignalProcessing extends EventEmitter {
             // TODO SD method
             const base = sensor.avg - sensor.min + sensor.sd;
 
-            if (signal > base) {
+            if (thisSignal > base) {
               // Our signal is over our base lets emit the signal
               muscleHigh = true;
               this.emit('receivedSignal', {
@@ -317,7 +252,7 @@ class SignalProcessing extends EventEmitter {
             }
 
             // Previous signal was high make sure we emit it is now low.
-            if (signal < base && muscleHigh === true) {
+            if (thisSignal < base && muscleHigh === true) {
               this.emit('receivedSignal', {
                 channel: sensor.channel,
                 signal: 0,
