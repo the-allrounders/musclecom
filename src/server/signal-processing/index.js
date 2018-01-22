@@ -37,6 +37,8 @@ class SignalProcessing extends EventEmitter {
         connected: false,
         // If the sensor has calibration values
         calibrated: false,
+        // The last signal that was sent to the front-end. 0 for LOW, 1 for HIGH.
+        lastSignal: 0,
       });
     }
 
@@ -145,20 +147,22 @@ class SignalProcessing extends EventEmitter {
         // TODO SD method
         const base = sensor.avg - sensor.min + sensor.sd;
 
-        if (thisSignal > base) {
+        if (thisSignal > base && sensor.lastSignal !== 1) {
           // Our signal is over our base lets emit the signal
           this.emit('receivedSignal', {
             channel: sensor.channel,
             signal: 1,
           });
+          sensor.lastSignal = 1;
         }
 
         // Previous signal was high make sure we emit it is now low.
-        if (thisSignal < base) {
+        if (thisSignal < base && sensor.lastSignal !== 0) {
           this.emit('receivedSignal', {
             channel: sensor.channel,
             signal: 0,
           });
+          sensor.lastSignal = 0;
         }
       }
     }
