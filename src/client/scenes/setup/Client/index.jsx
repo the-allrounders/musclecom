@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import socket from '../../../socket';
+import { observer } from 'mobx-react';
+import { actionStore } from '../../../stores';
 
 // Components
 import SetupConnect from './SetupConnect';
@@ -11,31 +11,19 @@ import CalibrationStep from './CalibrationStep';
 import globalClientStyles from '../../../styles/global.client';
 import SetupWrapper from './styled/SetupWrapper';
 
+@observer
 class ClientSetupComponent extends Component {
-  componentDidMount() {
-    socket.on('pushRoute', this.onPushRoute);
-  }
-
-  componentWillUnmount() {
-    socket.off('step');
-  }
-
-  onPushRoute = route => {
-    this.props.history.push(route);
-  };
-
   render() {
-    const { getStep } = this.props;
-    const step = getStep();
+    const { step } = actionStore;
     return (
       <SetupWrapper>
         <style>{globalClientStyles}</style>
-        {step === 1 && <SetupConnect />}
-        {step === 2 && <SensorStep />}
-        {step === 3 && <CalibrationStep />}
+        {step === 0 && <SetupConnect />}
+        {step === 1 && <SensorStep />}
+        {step === 2 && <CalibrationStep />}
       </SetupWrapper>
     );
   }
 }
 
-export default withRouter(ClientSetupComponent);
+export default ClientSetupComponent;

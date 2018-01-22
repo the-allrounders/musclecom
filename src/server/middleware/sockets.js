@@ -64,8 +64,4 @@ onConnection(socket => {
 
   // Attach all listeners.
   listeners.forEach(args => socket.on(...args));
-
-  // Todo: Move this to another file.
-  socket.on('step', step => emit('step', step));
-  socket.on('pushRoute', route => emit('pushRoute', route));
 });

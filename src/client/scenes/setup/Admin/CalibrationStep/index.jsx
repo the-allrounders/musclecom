@@ -8,9 +8,8 @@ import {
   DialogActions,
   DialogContentText,
 } from 'material-ui';
-import { inject, observer } from 'mobx-react';
-import { routes } from '../../../../router';
-import socket from '../../../../socket';
+import { observer } from 'mobx-react';
+import { actionStore } from '../../../../stores';
 
 // Components
 import CalibrateSensors from '../../common/CalibrateSensors';
@@ -18,6 +17,7 @@ import CalibrateSensors from '../../common/CalibrateSensors';
 // styled
 import CalibrationStepWrapper from './styled/CalibrationStepWrapper';
 
+@observer
 class CalibrationStepComponent extends Component {
   state = {
     openConfirmDialog: false,
@@ -28,7 +28,7 @@ class CalibrationStepComponent extends Component {
   };
 
   checkBeforeRoutePush = () => {
-    const { sensorsCalibrated, sensorsConnected } = this.props.actionStore;
+    const { sensorsCalibrated, sensorsConnected } = actionStore;
     if (sensorsConnected > sensorsCalibrated) {
       this.toggleConfirmDialog();
     } else {
@@ -37,11 +37,11 @@ class CalibrationStepComponent extends Component {
   };
 
   pushRoute = () => {
-    socket.emit('pushRoute', routes.MENU);
+    actionStore.setStep(actionStore.step + 1);
   };
 
   render() {
-    const { sensorsCalibrated, sensorsConnected } = this.props.actionStore;
+    const { sensorsCalibrated, sensorsConnected } = actionStore;
     return (
       <CalibrationStepWrapper>
         <Typography paragraph>
@@ -108,4 +108,4 @@ class CalibrationStepComponent extends Component {
   }
 }
 
-export default inject('actionStore')(observer(CalibrationStepComponent));
+export default CalibrationStepComponent;

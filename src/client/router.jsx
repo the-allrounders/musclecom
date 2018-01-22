@@ -1,30 +1,29 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { Reboot } from 'material-ui';
+import { observer } from 'mobx-react';
+import { actionStore } from './stores';
 import scenes from './scenes';
 
 export const routes = {
-  START: '/',
-  MAIN: '/main',
-  MARIO: '/mario',
-  MENU: '/menu',
-  SETUP: '/setup',
-  SETUP_ADMIN: '/setup/admin',
-  SETTINGS: '/settings',
+  SCREEN: '/',
+  REMOTE: '/admin',
 };
 
-const Router = () => (
-  <main style={{ height: '100%' }}>
-    <Reboot />
-    <Switch>
-      <Route path={routes.START} component={scenes.StartScene} exact />
-      <Route path={routes.MAIN} component={scenes.MainScene} />
-      <Route path={routes.MARIO} component={scenes.MarioScene} />
-      <Route path={routes.MENU} component={scenes.MenuScene} />
-      <Route path={routes.SETUP} component={scenes.SetupScene} />
-      <Route path={routes.SETTINGS} component={scenes.SettingsScene} />
-    </Switch>
-  </main>
-);
+const Router = () => {
+  const ScreenScene =
+    actionStore.step < 3 ? scenes.SetupScene : scenes.MenuScene;
+  const RemoteScene = scenes.RemoteSetupScene;
 
-export default Router;
+  return (
+    <main style={{ height: '100%' }}>
+      <Reboot />
+      <Switch>
+        <Route path={routes.REMOTE} component={RemoteScene} />
+        <Route component={ScreenScene} />
+      </Switch>
+    </main>
+  );
+};
+
+export default observer(Router);

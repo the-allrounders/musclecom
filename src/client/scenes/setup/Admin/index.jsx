@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
-import socket from '../../../socket';
-import Sensor from '../../../stores/Objects/Sensor';
+import { observer } from 'mobx-react';
+import { actionStore } from '../../../stores';
 
 // Components
 import ProgressBar from '../common/ProgressBar';
@@ -13,51 +10,28 @@ import AppBar from '../common/AppBar';
 // styled
 import SetupWrapper from './styled/SetupWrapper';
 
+@observer
 class AdminSetupComponent extends Component {
   componentDidMount() {
-    const step = this.props.getStep();
-    if (!step || step === 1) {
-      this.onStep(2);
+    console.log('current step', actionStore.step);
+    if (actionStore.step === 0) {
+      console.log('Going to step 1!');
+      actionStore.setStep(1);
     }
   }
 
-  onStep = step => {
-    socket.emit('step', step);
-  };
-
   render() {
-    const step = this.props.getStep();
-
-    const pager = {
-      step,
-      next: () => this.onStep(step + 1),
-      previous: () => this.onStep(step - 1),
-    };
+    const { step } = actionStore;
 
     return (
       <SetupWrapper>
         <AppBar />
         <ProgressBar step={step} />
-        {step === 2 && (
-          <SensorStep sensors={this.props.actionStore.sensors} pager={pager} />
-        )}
-        {step === 3 && (
-          <CalibrationStep
-            sensors={this.props.actionStore.sensors}
-            pager={pager}
-          />
-        )}
+        {step === 1 && <SensorStep sensors={actionStore.sensors} />}
+        {step === 2 && <CalibrationStep sensors={actionStore.sensors} />}
       </SetupWrapper>
     );
   }
 }
 
-AdminSetupComponent.propTypes = {
-  actionStore: PropTypes.shape({
-    sensors: MobxPropTypes.observableArrayOf(PropTypes.instanceOf(Sensor))
-      .isRequired,
-  }).isRequired,
-  getStep: PropTypes.func.isRequired,
-};
-
-export default inject('actionStore')(observer(withRouter(AdminSetupComponent)));
+export default AdminSetupComponent;

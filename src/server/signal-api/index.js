@@ -1,5 +1,6 @@
 import ip from 'internal-ip';
 import SignalController from '../signal-controller';
+import appController from '../appController';
 import SignalProcessing from '../signal-processing';
 import { emit, listen, onConnection } from '../middleware/sockets';
 import RawSensorLog from '../db/models/raw-sensor-log';
@@ -40,6 +41,7 @@ class SignalInterpretation {
       ip: this.ip,
       menuItems: this.menuItems,
       settings: this.settings,
+      step: appController.step,
     };
     if (socket) socket.emit('info', info);
     else emit('info', info);
@@ -48,6 +50,10 @@ class SignalInterpretation {
   addSCEventListeners() {
     // As soon as someone connects, send latest info.
     onConnection(socket => this.emitInfo(socket));
+
+    appController.addListener('step-changed', () => {
+      this.emitInfo();
+    });
 
     // Chosen menu items listener from frontend.
     listen('chosenMenuItem', chosenMenuItem => {

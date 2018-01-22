@@ -1,40 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Button, Typography } from 'material-ui';
-import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
+import { observer } from 'mobx-react';
+import { actionStore } from '../../../../stores';
 import SensorConnection from '../../common/SensorConnection';
-import Sensor from '../../../../stores/Objects/Sensor';
 
 // styled
 import SensorStepWrapper from './styled/SensorStepWrapper';
 
-const SensorStepComponent = ({ sensors, pager, actionStore }) => (
-  <SensorStepWrapper>
-    <Typography paragraph>
-      Sluit nu alle sensoren aan en bevestig de stickers op de juiste spieren.
-      Controleer hieronder of alle spieren aangesloten zijn.
-    </Typography>
-    <Button
-      raised
-      color="primary"
-      onClick={pager.next}
-      disabled={actionStore.sensorsConnected === 0}
-    >
-      {actionStore.sensorsConnected === 0
-        ? 'Sluit ten minste 1 sensor aan'
-        : 'Ja, alle spieren zijn aangesloten'}
-    </Button>
-    <Typography paragraph />
-    <SensorConnection sensors={sensors} />
-  </SensorStepWrapper>
-);
+@observer
+class SensorStepComponent extends Component {
+  render() {
+    return (
+      <SensorStepWrapper>
+        <Typography paragraph>
+          Sluit nu alle sensoren aan en bevestig de stickers op de juiste
+          spieren. Controleer hieronder of alle spieren aangesloten zijn.
+        </Typography>
+        <Button
+          raised
+          color="primary"
+          onClick={() => {
+            actionStore.setStep(actionStore.step + 1);
+          }}
+          disabled={actionStore.sensorsConnected === 0}
+        >
+          {actionStore.sensorsConnected === 0
+            ? 'Sluit ten minste 1 sensor aan'
+            : 'Ja, alle spieren zijn aangesloten'}
+        </Button>
+        <Typography paragraph />
+        <SensorConnection />
+      </SensorStepWrapper>
+    );
+  }
+}
 
-SensorStepComponent.propTypes = {
-  sensors: MobxPropTypes.observableArrayOf(PropTypes.instanceOf(Sensor))
-    .isRequired,
-  pager: PropTypes.shape({
-    next: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default inject('actionStore')(observer(SensorStepComponent));
+export default SensorStepComponent;

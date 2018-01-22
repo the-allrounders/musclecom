@@ -5,3 +5,5 @@ const stores = {
 };
 
 export default stores;
+
+export { actionStore };

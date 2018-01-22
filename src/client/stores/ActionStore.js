@@ -3,6 +3,13 @@ import socket from '../socket';
 import Sensor from './Objects/Sensor';
 
 class ActionStore {
+  @observable step = 0;
+
+  // eslint-disable-next-line class-methods-use-this
+  setStep(step) {
+    socket.emit('step', step);
+  }
+
   @observable action = null;
   @observable actionsAvailable = 0;
   @observable menuItems = [];
@@ -45,7 +52,14 @@ class ActionStore {
     return this.menuItems.filter(({ parent }) => parent === id);
   }
 
-  updateInfo = ({ ip, actionsAvailable, sensors, menuItems, settings }) => {
+  updateInfo = ({
+    ip,
+    actionsAvailable,
+    sensors,
+    menuItems,
+    settings,
+    step,
+  }) => {
     // console.log(`Recieved new info from the back-end!
     // Ip: ${ip}
     // Actions available: ${actionsAvailable}
@@ -57,6 +71,7 @@ class ActionStore {
     this.totalMenuItems = actionsAvailable > 3 ? actionsAvailable * 2 : 6;
     this.settings = settings;
     this.menuItems = menuItems.sort((a, b) => a.order > b.order);
+    this.step = step;
     sensors.forEach(({ channel, connected, calibrated }) => {
       const sensor = this.sensors.find(s => s.channel === channel);
       sensor.connected = connected;
