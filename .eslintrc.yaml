@@ -23,4 +23,6 @@ rules:
   no-underscore-dangle: warn
   # We probabily dont have problems with this, with the newest node version
   no-restricted-syntax: warn
+  # Sometimes we do need continue statements
+  no-continue: off
 

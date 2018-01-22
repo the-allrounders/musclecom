@@ -78,7 +78,7 @@ class Sensors {
       }
     });
 
-    log.info(`Channel ${channel} has value ${value}`);
+    // log.info(`Channel ${channel} has value ${value}`);
 
     this.reading = false;
     return value;
