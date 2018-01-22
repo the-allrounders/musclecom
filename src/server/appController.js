@@ -29,6 +29,15 @@ class AppController extends EventEmitter {
     log.info(`The app is now in step ${newStep}`);
     this.emit('step-changed', newStep);
   }
+
+  /**
+   * If the sensor connectivity changes, we need to assure we're in step 0 or 1.
+   */
+  assureSensorStep() {
+    if (this.step > 1) {
+      this.setStep(0);
+    }
+  }
 }
 
 const controller = new AppController();
