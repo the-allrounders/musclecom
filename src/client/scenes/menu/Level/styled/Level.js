@@ -24,7 +24,7 @@ const LevelFigCaption = styled.figcaption`
 const LevelImage = styled.img`
   display: block;
   position: relative;
-  max-width: 170px;
+  max-width: 80%;
   max-height: 170px;
   margin: 0 auto;
 `;
