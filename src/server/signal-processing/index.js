@@ -41,6 +41,7 @@ class SignalProcessing extends EventEmitter {
 
     // Define our constants
     this.calibrationTime = 5000;
+    this.calibrating = false;
     this.sensors = [];
     for (let i = 0; i < 4; i += 1) {
       this.sensors.push({
@@ -62,8 +63,11 @@ class SignalProcessing extends EventEmitter {
 
   setGlobalListeners() {
     listen('onCalibrate', channel => {
-      this.pauseDataCollection();
-      this.calibrate(channel, false);
+      if (this.calibrating === false) {
+        this.calibrating = true;
+        this.pauseDataCollection();
+        this.calibrate(channel, false);
+      }
     });
 
     listen('mocksensor', ({ high, key, cntrlKey }) => {
@@ -235,6 +239,9 @@ class SignalProcessing extends EventEmitter {
           sensor.sd = Math.sqrt(SDaverage / count);
           // Re-emit the the checkChannels
           await this.checkChannels(); // eslint-disable-line no-await-in-loop
+          console.log(`calibrated: ${channel}`);
+          this.calibrating = false;
+          this.startDataCollection();
           return;
         }
         this.calibrate(channel, true);
@@ -341,6 +348,7 @@ class SignalProcessing extends EventEmitter {
    * Pause collecting data
    */
   pauseDataCollection() {
+    console.log('Pausing data collection');
     this.dataCollection = false;
   }
 }

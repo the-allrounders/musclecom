@@ -71,7 +71,7 @@ app.use(express.static(path.join(`${__dirname}/public`)));
       startingUrl: `http://localhost:6969`,
       chromeFlags: [
         '--disable-translate',
-        '--kiosk',
+        // '--kiosk',
         '--incognito',
         '--noerrdialogs',
       ],
