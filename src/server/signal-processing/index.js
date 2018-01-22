@@ -92,7 +92,7 @@ class SignalProcessing extends EventEmitter {
 
       return new Promise((resolve, reject) =>
         this.adc.readADCSingleEnded(
-          channel,
+          channel - 1,
           progGainAmp,
           samplesPerSecond,
           (err, data) => {
