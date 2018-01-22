@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Button, Typography } from 'material-ui';
-import { actionStore } from '../../stores';
-import ProgressBar from '../common/ProgressBar';
+import { actionStore } from '../../../stores';
+import ProgressBar from '../../common/ProgressBar';
 import SensorStep from './SensorStep';
 import CalibrationStep from './CalibrationStep';
-import AppBar from '../common/AppBar';
+import AppBar from '../../common/AppBar';
 import SetupWrapper from './styled/SetupWrapper';
 import SetupInnerWrapper from './styled/SetupInnerWrapper';
 

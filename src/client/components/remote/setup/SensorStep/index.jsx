@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Typography } from 'material-ui';
 import { observer } from 'mobx-react';
-import { actionStore } from '../../../stores';
-import SensorConnection from '../../common/SensorConnection';
+import { actionStore } from '../../../../stores';
+import SensorConnection from '../../../common/SensorConnection';
 
 // styled
 import SetupInnerWrapper from '../styled/SetupInnerWrapper';

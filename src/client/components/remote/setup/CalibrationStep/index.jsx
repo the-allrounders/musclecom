@@ -9,10 +9,10 @@ import {
   DialogContentText,
 } from 'material-ui';
 import { observer } from 'mobx-react';
-import { actionStore } from '../../../stores';
+import { actionStore } from '../../../../stores';
 
 // Components
-import CalibrateSensors from '../../common/CalibrateSensors';
+import CalibrateSensors from '../../../common/CalibrateSensors';
 import SetupInnerWrapper from '../styled/SetupInnerWrapper';
 
 @observer
