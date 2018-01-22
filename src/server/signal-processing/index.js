@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import { emit, listen } from '../middleware/sockets';
 import signal from './signal';
+import appController from '../appController';
 
 /** Number of milliseconds to calibrate a 'min' or 'max' value. */
 const CALIBRATION_TIME = 5000;
@@ -16,6 +17,7 @@ class SignalProcessing extends EventEmitter {
     super();
 
     // Define our constants
+    this.looping = false;
     this.sensors = [];
     for (let i = 0; i < 4; i += 1) {
       this.sensors.push({
@@ -46,6 +48,7 @@ class SignalProcessing extends EventEmitter {
     this.needsCalibration = null;
     listen('onCalibrate', channel => {
       this.needsCalibration = channel;
+      this.startLoop();
     });
 
     /** This is set to Date.now() every time all sensors are check for connectivity. */
@@ -55,6 +58,11 @@ class SignalProcessing extends EventEmitter {
       if (!cntrlKey) {
         this.emit('receivedSignal', { sensor: key - 1, value: high });
       }
+    });
+
+    // Wether the loop is running. It can be paused when the sensors aren't used.
+    appController.addListener('step-changed', () => {
+      this.startLoop();
     });
   }
 
@@ -68,7 +76,15 @@ class SignalProcessing extends EventEmitter {
     await this.checkChannels();
 
     // We start the never-ending loop
-    this.loop();
+    this.startLoop();
+  }
+
+  startLoop() {
+    // If we weren't running the loop, run it again.
+    if (!this.looping) {
+      console.log('Starting the loop again.');
+      this.loop();
+    }
   }
 
   /**
@@ -76,15 +92,23 @@ class SignalProcessing extends EventEmitter {
    * Only do logic here that needs to happen every tick.
    */
   async loop() {
-    if (this.needsCalibration) {
+    this.looping = true;
+
+    // If there aren't any sensors connected, make sure we're in step 0 or 1.
+    if (!this.sensors.find(sensor => sensor.connected)) {
+      appController.assureSensorStep();
+    }
+
+    if (appController.step === 2 && this.needsCalibration) {
       /**
        * If a sensor is awaiting calibration (clicked button on remote), calibrate it immediately.
        */
       await this.calibrate(this.needsCalibration, false);
       this.needsCalibration = null;
     } else if (
-      !this.sensors.find(sensor => sensor.connected) ||
-      this.latestSensorCheck < Date.now() - CHECK_FOR_SENSOR_CONNECTIVITY
+      appController.step === 1 ||
+      (appController.step === 3 &&
+        this.latestSensorCheck < Date.now() - CHECK_FOR_SENSOR_CONNECTIVITY)
     ) {
       /**
        * If it was a more then 15s ago we checked for sensor connectivity, check it now.
@@ -93,11 +117,16 @@ class SignalProcessing extends EventEmitter {
       await this.checkChannels();
 
       this.latestSensorCheck = Date.now();
-    } else {
+    } else if (appController.step === 3) {
       /**
        * Otherwhise, just update all values.
        */
       await this.updateAllValues();
+    } else {
+      // If sensors aren't used at this moment, we should stop looping and wait for the step to change.
+      console.log('Stopping the loop, waiting for step change.');
+      this.looping = false;
+      return;
     }
 
     // Run the loop again.
@@ -182,6 +211,8 @@ class SignalProcessing extends EventEmitter {
         // A value higher then 10 means it is connected.
         // If it wasn't connected before, emit this.
         if (!sensor.connected) {
+          // Make sure we're in step 0 or 1, otherwise we need to restart te setup.
+          appController.assureSensorStep();
           sensorConnectivityChanged = true;
         }
         sensor.connected = true;
@@ -192,7 +223,11 @@ class SignalProcessing extends EventEmitter {
           sensor.calibrated = true;
         }
       } else {
-        if (sensor.connected) sensorConnectivityChanged = true;
+        if (sensor.connected) {
+          // Make sure we're in step 0 or 1, otherwise we need to restart te setup.
+          appController.assureSensorStep();
+          sensorConnectivityChanged = true;
+        }
         sensor.connected = false;
         sensor.calibrated = false;
         this.resetSensorCalibration(sensor.channel);
