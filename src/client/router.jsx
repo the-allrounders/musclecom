@@ -3,7 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 import { Reboot } from 'material-ui';
 import { observer } from 'mobx-react';
 import { actionStore } from './stores';
-import scenes from './scenes';
+import scenes from './components';
 
 export const routes = {
   SCREEN: '/',

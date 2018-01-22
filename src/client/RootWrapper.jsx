@@ -1,9 +1,9 @@
 import React from 'react';
-import Root from './components/Root';
+import Router from './router';
 
 // We need a Root component for React Hot Loading.
 function RootWrapper() {
-  return <Root />;
+  return <Router />;
 }
 
 export default RootWrapper;
