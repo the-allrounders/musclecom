@@ -103,7 +103,7 @@ class SignalProcessing extends EventEmitter {
       /**
        * If a sensor is awaiting calibration (clicked button on remote), calibrate it immediately.
        */
-      await this.calibrate(this.needsCalibration, false);
+      await this.calibrate(this.needsCalibration);
       this.needsCalibration = null;
     } else if (
       appController.step === 1 ||
@@ -265,15 +265,14 @@ class SignalProcessing extends EventEmitter {
   /**
    * Calibrate the sensor and set the min
    */
-  async calibrate(channel, max) {
-    let action = 'min';
-    // Reset the calibration the sensors
-    if (!max) {
-      this.resetSensorCalibration(channel);
-    } else {
-      action = 'max';
-    }
+  async calibrate(channel) {
+    this.resetSensorCalibration(channel);
+    await this.doCalibrate(channel, 'min');
+    await this.doCalibrate(channel, 'max');
+    await this.checkChannels();
+  }
 
+  async doCalibrate(channel, action) {
     console.info(`Calibrating: ${channel}, action: ${action}`);
 
     const startTime = Date.now();
@@ -288,29 +287,17 @@ class SignalProcessing extends EventEmitter {
     const sensor = this.sensors.find(s => s.channel === channel);
 
     while (Date.now() < startTime + CALIBRATION_TIME) {
-      // Read the values
       const value = await signal.read(channel); // eslint-disable-line no-await-in-loop
 
-      if (max) {
-        if (value > sensor.max) {
-          sensor.max = value;
-        }
-      } else if (value > 0) {
-        if (value < sensor.min) {
-          sensor.min = value;
-        }
+      if (
+        (action === 'max' && value > sensor.max) ||
+        (action === 'min' && value < sensor.min)
+      ) {
+        sensor[action] = value;
       }
     }
 
     emit('stopCalibration', { channel });
-
-    if (max) {
-      // Re-emit the the checkChannels
-      await this.checkChannels(); // eslint-disable-line no-await-in-loop
-      console.log(`calibrated: ${channel}`);
-    } else {
-      await this.calibrate(channel, true);
-    }
   }
 }
 
