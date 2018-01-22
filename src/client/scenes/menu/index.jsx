@@ -100,8 +100,7 @@ class MenuScene extends Component {
     const selectedMenuItems = [];
 
     for (let i = 0; i < actionStore.actionsAvailable; i += 1) {
-      const pointer = offset % currentMenuItems.length;
-      selectedMenuItems.push(currentMenuItems[pointer]);
+      selectedMenuItems.push(currentMenuItems[offset]);
       offset += 1;
     }
 
