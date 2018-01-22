@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { inject, observer, PropTypes as MobxPropTypes } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Typography } from 'material-ui';
+import { actionStore } from '../../../../stores';
 import socket from '../../../../socket';
-import Sensor from '../../../../stores/Objects/Sensor';
 
 // Components
 import CalibrateSensor from './CalibrateSensor';
@@ -11,6 +11,7 @@ import CalibrateSensor from './CalibrateSensor';
 // styled
 import SensorList from '../SensorConnection/styled/SensorList';
 
+@observer
 class CalibrateSensorsComponent extends Component {
   state = {
     currentChannel: -1,
@@ -49,7 +50,7 @@ class CalibrateSensorsComponent extends Component {
   };
 
   render() {
-    const { actionStore, interactive } = this.props;
+    const { interactive } = this.props;
     const calibrations = actionStore.sensors
       .filter(sensor => sensor.connected)
       .map(sensor => (
@@ -79,10 +80,6 @@ class CalibrateSensorsComponent extends Component {
 }
 
 CalibrateSensorsComponent.propTypes = {
-  actionStore: PropTypes.shape({
-    sensors: MobxPropTypes.observableArrayOf(PropTypes.instanceOf(Sensor))
-      .isRequired,
-  }).isRequired,
   interactive: PropTypes.bool,
 };
 
@@ -90,4 +87,4 @@ CalibrateSensorsComponent.defaultProps = {
   interactive: false,
 };
 
-export default inject('actionStore')(observer(CalibrateSensorsComponent));
+export default CalibrateSensorsComponent;

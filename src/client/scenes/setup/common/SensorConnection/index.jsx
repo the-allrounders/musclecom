@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Typography } from 'material-ui';
 import { ActionStore } from '../../../../stores/ActionStore';
 
@@ -44,4 +44,4 @@ SensorConnectionComponent.defaultProps = {
   mode: 'connect',
 };
 
-export default inject('actionStore')(observer(SensorConnectionComponent));
+export default observer(SensorConnectionComponent);

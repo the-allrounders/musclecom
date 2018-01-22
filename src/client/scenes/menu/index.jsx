@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
-import PropTypes from 'prop-types';
+import { observer } from 'mobx-react';
+import { actionStore } from '../../stores';
 import socket from '../../socket';
 
 // Components
@@ -27,6 +27,7 @@ const BACK_LEVEL = {
   order: 0,
 };
 
+@observer
 class MenuScene extends Component {
   state = {
     currentMenuItem: {},
@@ -43,7 +44,6 @@ class MenuScene extends Component {
   }
 
   onAction = ({ action }) => {
-    const { actionStore } = this.props;
     // Stop if there are no menu items.
     if (actionStore.menuItems.length <= 0) return false;
 
@@ -63,9 +63,7 @@ class MenuScene extends Component {
       return false;
     }
 
-    const currentMenuItems = this.props.actionStore.getMenuItems(
-      currentMenuItem._id,
-    );
+    const currentMenuItems = actionStore.getMenuItems(currentMenuItem._id);
 
     currentMenuItems.unshift(BACK_LEVEL);
 
@@ -78,7 +76,6 @@ class MenuScene extends Component {
   }
 
   nextMenuItems = () => {
-    const { actionStore } = this.props;
     let { offset, current } = this.state;
 
     const currentMenuItems = actionStore.getMenuItems(
@@ -112,7 +109,7 @@ class MenuScene extends Component {
   };
 
   reset() {
-    const currentMenuItems = this.props.actionStore.getMenuItems();
+    const currentMenuItems = actionStore.getMenuItems();
     return this.setState({
       currentMenuItems,
       offset: 0,
@@ -126,7 +123,6 @@ class MenuScene extends Component {
   };
 
   render() {
-    const { actionStore } = this.props;
     const { current } = this.state;
 
     const categories = this.state.currentMenuItems.slice(
@@ -177,11 +173,4 @@ class MenuScene extends Component {
   }
 }
 
-MenuScene.propTypes = {
-  actionStore: PropTypes.shape({
-    actionsAvailable: PropTypes.number,
-    totalMenuItems: PropTypes.number,
-  }).isRequired,
-};
-
-export default inject('actionStore')(observer(MenuScene));
+export default MenuScene;
