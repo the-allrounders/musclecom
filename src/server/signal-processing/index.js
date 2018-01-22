@@ -117,6 +117,8 @@ class SignalProcessing extends EventEmitter {
         continue;
       }
 
+      // Saving current value
+      sensor.value = value;
       sensor.values.push(value);
       if (sensor.values.length > MAX_VALUES_FOR_AVERAGE_AND_DIVIATION) {
         sensor.values.shift();
@@ -146,27 +148,18 @@ class SignalProcessing extends EventEmitter {
         const base = sensor.avg - sensor.min + sensor.sd;
 
         if (thisSignal > base && sensor.lastSignal !== 1) {
-          // console.log(sensor);
           // Our signal is over our base lets emit the signal
-          this.emit('receivedSignal', {
-            channel: sensor.channel,
-            signal: 1,
-          });
+          console.log(`HIGH: ${sensor.channel}`);
+          this.emit('receivedSignal', sensor.channel - 1, 1);
           sensor.lastSignal = 1;
         }
 
         // Previous signal was high make sure we emit it is now low.
         if (thisSignal < base && sensor.lastSignal !== 0) {
-          // console.log(sensor);
-          this.emit('receivedSignal', {
-            channel: sensor.channel,
-            signal: 0,
-          });
+          console.log(`LOW: ${sensor.channel}`);
+          this.emit('receivedSignal', sensor.channel - 1, 0);
           sensor.lastSignal = 0;
         }
-
-        // Saving current value
-        sensor.value = value;
       }
     }
   }
