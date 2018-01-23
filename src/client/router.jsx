@@ -13,7 +13,8 @@ export const routes = {
 const Router = () => {
   const ScreenScene =
     actionStore.step < 3 ? scenes.SetupScene : scenes.MenuScene;
-  const RemoteScene = scenes.RemoteSetupScene;
+  const RemoteScene =
+    actionStore.step < 3 ? scenes.RemoteSetupScene : scenes.RemoteSettingsScene;
 
   return (
     <main style={{ height: '100%' }}>
