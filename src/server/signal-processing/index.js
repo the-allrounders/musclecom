@@ -166,15 +166,20 @@ class SignalProcessing extends EventEmitter {
       // If our values fall below the minimum or above the maximum, ignore the value
       if (value < sensor.max && value > sensor.min) {
         const thisSignal = value - sensor.min;
+        let base = 0;
 
         // TODO 80% method
-        // const base = (sensor.max - sensor.min) / 100 * 80;
+        if (sensor.lastSignal === 1) {
+          base = (sensor.max - sensor.min) / 100 * 15;
+        } else {
+          base = (sensor.max - sensor.min) / 100 * 50;
+        }
 
         // TODO AVG only method
-        // const base = sensor.avg - sensor.min;
+        // base = sensor.avg - sensor.min;
 
         // TODO SD method
-        const base = sensor.avg - sensor.min + sensor.sd;
+        // base = sensor.avg - sensor.min + sensor.sd;
 
         if (thisSignal > base && sensor.lastSignal !== 1) {
           // Our signal is over our base lets emit the signal

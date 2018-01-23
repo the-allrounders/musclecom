@@ -78,6 +78,8 @@ class Sensors {
       }
     });
 
+    // console.log(value);
+
     // log.info(`Channel ${channel} has value ${value}`);
 
     this.reading = false;
