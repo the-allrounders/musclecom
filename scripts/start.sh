@@ -17,7 +17,9 @@ if hash npm 2>/dev/null; then
     echo "ℹ️ Your node version is $(node -v)"
 else
     echo "ℹ️ Node.js is not installed yet, installing.."
+    curl -sL https://deb.nodesource.com/setup_9.x | sudo bash -
     sudo apt-get install -y nodejs
+    echo "ℹ️ Installing done... node version is $(node -v)"
 fi
 
 echo ""
@@ -43,7 +45,7 @@ echo ""
 echo ""
 
 echo "ℹ️ Installing yarn / checking for updates"
-npm install --global yarn@0
+sudo npm install --global yarn@0
 
 echo ""
 echo ""

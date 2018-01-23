@@ -170,7 +170,8 @@ class SignalProcessing extends EventEmitter {
 
         // TODO 80% method
         if (sensor.lastSignal === 1) {
-          base = (sensor.max - sensor.min) / 100 * 15;
+          base = (sensor.max - sensor.min) / 100 * 8;
+          console.log(`base: ${base} val: ${thisSignal}`);
         } else {
           base = (sensor.max - sensor.min) / 100 * 50;
         }
@@ -291,14 +292,29 @@ class SignalProcessing extends EventEmitter {
     // Current sensor
     const sensor = this.sensors.find(s => s.channel === channel);
 
+    const values = [];
+
     while (Date.now() < startTime + CALIBRATION_TIME) {
       const value = await signal.read(channel); // eslint-disable-line no-await-in-loop
 
+      // Check if we are lower than the minimum + a tad
       if (
-        (action === 'max' && value > sensor.max) ||
-        (action === 'min' && value < sensor.min)
+        (action === 'max' && value > sensor.max - sensor.min / 100 * 10) ||
+        (action === 'min' && value < sensor.min + sensor.min / 100 * 10)
       ) {
-        sensor[action] = value;
+        // Pushing current value
+        values.push(value);
+        if (values.length > MAX_VALUES_FOR_AVERAGE_AND_DIVIATION) {
+          values.shift();
+        }
+
+        // Calculate average from latest min or max values
+        const total = values.reduce((sum, v) => sum + v, 0);
+        // console.log(`total: ${total}`);
+        const avg = total / values.length;
+        // Save the min
+        sensor[action] = avg;
+        // console.log(`AVG: ${avg}`);
       }
     }
 
