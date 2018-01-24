@@ -67,12 +67,15 @@ class MenuScene extends Component {
 
     currentMenuItems.unshift(BACK_LEVEL);
 
-    return this.setState({
-      currentMenuItems,
-      currentMenuItem,
-      offset: 0,
-      current: 0,
-    });
+    return this.setState(
+      {
+        currentMenuItems,
+        currentMenuItem,
+        offset: 0,
+        current: 0,
+      },
+      this.nextMenuItems,
+    );
   }
 
   nextMenuItems = () => {
@@ -110,12 +113,15 @@ class MenuScene extends Component {
 
   reset() {
     const currentMenuItems = actionStore.getMenuItems();
-    return this.setState({
-      currentMenuItems,
-      offset: 0,
-      current: 0,
-      currentMenuItem: {},
-    });
+    return this.setState(
+      {
+        currentMenuItems,
+        offset: 0,
+        current: 0,
+        currentMenuItem: {},
+      },
+      this.nextMenuItems,
+    );
   }
 
   intendedAction = ({ action: intendedAction }) => {
