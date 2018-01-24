@@ -54,12 +54,6 @@ class SignalProcessing extends EventEmitter {
     /** This is set to Date.now() every time all sensors are check for connectivity. */
     this.latestSensorCheck = 0;
 
-    listen('mocksensor', ({ high, key, cntrlKey }) => {
-      if (!cntrlKey) {
-        this.emit('receivedSignal', { sensor: key - 1, value: high });
-      }
-    });
-
     // Wether the loop is running. It can be paused when the sensors aren't used.
     appController.addListener('step-changed', () => {
       this.startLoop();

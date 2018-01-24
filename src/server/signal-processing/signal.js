@@ -28,12 +28,17 @@ class Sensors {
         'It appears you are not running this on a Raspberry, I will feed you dummy data for the called functions',
       );
 
-      this.sensorMockings = {};
+      this.sensorConnectedMockings = {};
+      this.sensorValueMockings = {};
 
       listen('mockSensorsConnected', channel => {
-        const c = !this.sensorMockings[channel];
+        const c = !this.sensorConnectedMockings[channel];
         log.info(`Sensor ${channel} is ${c ? '' : 'dis'}connected.`);
-        this.sensorMockings[channel] = c;
+        this.sensorConnectedMockings[channel] = c;
+      });
+
+      listen('mocksensor', ({ high, key }) => {
+        this.sensorValueMockings[key] = high;
       });
     }
   }
@@ -69,11 +74,16 @@ class Sensors {
          * If there is no adc, send a random number after 100 ms. This can be used for dummy
          */
         setTimeout(() => {
-          /** We check if the sensor is 'connected' or not */
-          const mockedValue = this.sensorMockings[channel]
-            ? Math.random() * 750 + 10
-            : Math.random() * 9;
-          resolve(mockedValue);
+          /** If the sensor isn't connected, send interference (0-9) */
+          if (!this.sensorConnectedMockings[channel])
+            return resolve(Math.random() * 9);
+
+          /** If the sensor is connected and mocked HIGH, send a high value (700 - 750). */
+          if (this.sensorValueMockings[channel])
+            return resolve(Math.random() * 50 + 700);
+
+          /** If the sensor is connected and mocked LOW, send a low value (10 - 60) */
+          return resolve(Math.random() * 50 + 10);
         }, 100);
       }
     });
