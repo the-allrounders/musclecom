@@ -76,7 +76,7 @@ class SensorConnectionItemComponent extends Component {
                   )}
                   {currentAction.action === 'max' && (
                     <Typography type="subheading" color="secondary">
-                      Span de spier nu aan.
+                      Span de spier nu 5 keer kort aan.
                     </Typography>
                   )}
                 </div>
