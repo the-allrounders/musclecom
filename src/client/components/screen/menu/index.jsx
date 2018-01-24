@@ -158,7 +158,7 @@ class MenuScene extends Component {
             )}
         </LevelWrapper>
         {this.state.intendedAction > 0 && (
-          <IntendedActionWrapper>
+          <IntendedActionWrapper key={this.state.intendedAction}>
             <IntendedAction>{this.state.intendedAction}</IntendedAction>
             <LeftCircle>
               <LeftFill />
