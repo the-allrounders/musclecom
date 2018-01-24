@@ -47,7 +47,7 @@ class SignalController extends EventEmitter {
       this.emit('sensors-data', {
         sensors,
         actionsAvailable:
-          2 ** sensors.filter(s => s.connected && s.calibrated).length,
+          2 ** sensors.filter(s => s.connected && s.calibrated).length - 1,
       });
     });
   }
