@@ -1,6 +1,5 @@
 import { Server } from 'http';
 import express from 'express';
-import * as child from 'child_process';
 import SocketIo from 'socket.io';
 import mongoose from 'mongoose';
 import path from 'path';
@@ -64,15 +63,4 @@ app.use(express.static(path.join(`${__dirname}/public`)));
   await new Promise(r => server.listen(6969, r));
 
   log.success(`Server started on port 6969`);
-
-  // Start the chrome browser on the raspberry pi.
-  if (process.argv[2] === 'prod') {
-    // Lauch Chromium in the browser
-    child.exec(
-      'DISPLAY=:0 chromium-browser http://localhost:6969 --disable-translate --incognito --noerrdialogs --kiosk &',
-      (err, stdout) => {
-        console.log(stdout);
-      },
-    );
-  }
 })();
