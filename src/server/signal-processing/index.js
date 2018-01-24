@@ -10,7 +10,7 @@ const CALIBRATION_TIME = 5000;
 const CHECK_FOR_SENSOR_CONNECTIVITY = 15000;
 
 /** The maximum number of values to use for the calculation of 'avg' and 'sd' */
-const MAX_VALUES_FOR_AVERAGE_AND_DIVIATION = 5000;
+const MAX_VALUES_FOR_AVERAGE_AND_DIVIATION = 25; // 50000
 
 class SignalProcessing extends EventEmitter {
   constructor() {
@@ -159,12 +159,12 @@ class SignalProcessing extends EventEmitter {
 
       // If our values fall below the minimum or above the maximum, ignore the value
       if (value < sensor.max && value > sensor.min) {
-        const thisSignal = value - sensor.min;
+        const thisSignal = sensor.avg - sensor.min;
         let base = 0;
 
         // TODO 80% method
         if (sensor.lastSignal === 1) {
-          base = (sensor.max - sensor.min) / 100 * 8;
+          base = (sensor.max - sensor.min) / 100 * 30;
           console.log(`base: ${base} val: ${thisSignal}`);
         } else {
           base = (sensor.max - sensor.min) / 100 * 50;
@@ -291,25 +291,25 @@ class SignalProcessing extends EventEmitter {
     while (Date.now() < startTime + CALIBRATION_TIME) {
       const value = await signal.read(channel); // eslint-disable-line no-await-in-loop
 
-      // Check if we are lower than the minimum + a tad
-      if (
-        (action === 'max' && value > sensor.max - sensor.min / 100 * 10) ||
-        (action === 'min' && value < sensor.min + sensor.min / 100 * 10)
-      ) {
-        // Pushing current value
-        values.push(value);
-        if (values.length > MAX_VALUES_FOR_AVERAGE_AND_DIVIATION) {
-          values.shift();
-        }
-
-        // Calculate average from latest min or max values
-        const total = values.reduce((sum, v) => sum + v, 0);
-        // console.log(`total: ${total}`);
-        const avg = total / values.length;
-        // Save the min
-        sensor[action] = avg;
-        // console.log(`AVG: ${avg}`);
+      // // Check if we are lower than the minimum + a tad
+      // if (
+      //   (action === 'max' && value > sensor.max) ||
+      //   (action === 'min' && value < sensor.min)
+      // ) {
+      // Pushing current value
+      values.push(value);
+      if (values.length > MAX_VALUES_FOR_AVERAGE_AND_DIVIATION) {
+        values.shift();
       }
+
+      // Calculate average from latest min or max values
+      const total = values.reduce((sum, v) => sum + v, 0);
+      // console.log(`total: ${total}`);
+      const avg = total / values.length;
+      // Save the min
+      sensor[action] = avg;
+      // console.log(`AVG: ${avg}`);
+      // }
     }
 
     emit('stopCalibration', { channel });
