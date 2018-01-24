@@ -41,7 +41,7 @@ function RemoteSettingsScene() {
       </AppBar>
       <MenuList>
         {items.map(({ icon: Icon, label, onClick }) => (
-          <MenuItem onclick={onClick}>
+          <MenuItem key={label} onClick={onClick}>
             <ListItemIcon>
               <Icon />
             </ListItemIcon>
