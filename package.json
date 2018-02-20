@@ -44,7 +44,7 @@
     "mongoose": "^4.13.5",
     "prettier": "^1.8.2",
     "prop-types": "^15.6.0",
-    "qrcode.react": "^0.7.2",
+    "qrcode.react": "^0.8.0",
     "query-string": "^5.0.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
