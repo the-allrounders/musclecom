@@ -69,7 +69,7 @@
     "lint-staged": "^5.0.0",
     "react-addons-test-utils": "^15.6.2",
     "react-svg-loader": "^2.1.0",
-    "stylelint": "^8.2.0",
+    "stylelint": "^9.1.2",
     "stylelint-config-standard": "^17.0.0",
     "stylelint-config-styled-components": "^0.1.1",
     "stylelint-processor-styled-components": "^1.0.0"
